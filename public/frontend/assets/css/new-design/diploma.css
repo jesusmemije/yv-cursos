@@ -1,0 +1,157 @@
+/*-----------------------------------------------
+    Diploma - New Design
+-------------------------------------------------*/
+.diploma-banner-title {
+    padding: 0px 80px;
+    margin-left: -40px;
+    background-position: unset;
+    display: block;
+    position: absolute;
+    margin-top: 36px;
+}
+
+.custom-diploma-item {
+    box-shadow: 0px 5px 10px rgb(53 53 53 / 45%);
+    min-height: 417px;
+    border-radius: 0;
+}
+
+.swiper-diploma-main {
+    width: 100%;
+    height: 720px;
+}
+
+.swiper-diploma-main .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    transition: all .3s ease;
+
+    &.swiper-slide-active {
+        transform: scale(1.4);
+        z-index: 2
+    }
+}
+
+.swiper-diploma-main .swiper-button-prev::after,
+.swiper-diploma-main .swiper-button-next::after {
+    display: none;
+    /* Oculta los botones por defecto */
+}
+
+.swiper-diploma-main .swiper-button-next {
+    right: 28%;
+}
+
+.swiper-diploma-main .swiper-button-prev {
+    left: 28%;
+}
+
+.icon-prev-diploma-main,
+.icon-next-diploma-main {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    cursor: pointer;
+}
+
+.icon-prev-diploma-main img,
+.icon-next-diploma-main img {
+    width: 44px;
+    height: 44px;
+}
+
+.theme-button4 {
+    border-radius: 25px;
+    background-color: #e7daec;
+    font-weight: 500 !important;
+}
+
+.card-diplomado {
+    border-radius: 15px;
+    background-color: var(--white-color);
+    padding: 16px;
+}
+
+.icon-arrow-swiper-diploma-secundary {
+    width: 24px;
+    height: 24px;
+    padding: 15px 25px;
+    background-color: var(--white-color);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.coursesLeftSidebar {
+    z-index: 1;
+}
+
+.custom-navigation-subscribe {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 22%;
+    width: 150%;
+    z-index: 10;
+}
+
+/* Flechas personalizadas */
+.icon-next-diploma-subscribe,
+.icon-prev-diploma-subscribe {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    /* Hacer que los botones sean redondos */
+    color: var(--bs-gray-dark);
+    /* Color del ícono */
+    font-size: 16px;
+    /* Tamaño del ícono */
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.icon-next-diploma-subscribe::after,
+.icon-prev-diploma-subscribe::after {
+    display: none;
+}
+
+@media only screen and (max-width: 768px) {
+    .diploma-banner-title {
+        padding: 0px 40px;
+        margin-left: unset;
+        background-position: unset;
+        position: unset;
+    }
+
+    .coursesLeftSidebar {
+        padding: 30px;
+    }
+
+    .swiper-diploma-main .swiper-slide {
+        transition: unset;
+        z-index: unset;
+    }
+
+    .swiper-diploma-main .swiper-slide-active {
+        transform: scale(1) !important;
+        z-index: unset;
+    }
+
+    .swiper-diploma-main .swiper-button-prev {
+        left: 6%;
+    }
+
+    .swiper-diploma-main .swiper-button-next {
+        right: 6%;
+    }
+
+    .swiper-diploma-main {
+        height: 520px;
+    }
+}

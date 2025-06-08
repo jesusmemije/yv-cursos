@@ -1,0 +1,146 @@
+/*-----------------------------------------------
+    Courses - New Design
+-------------------------------------------------*/
+.swiper-course-main {
+    width: 100%;
+    height: 520px;
+}
+
+.swiper-course-main .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    transition: all .3s ease;
+
+    &.swiper-slide-active {
+        transform: scale(1.4);
+        z-index: 2
+    }
+}
+
+.swiper-course-main .swiper-button-prev::after,
+.swiper-course-main .swiper-button-next::after {
+    display: none;
+}
+
+.swiper-course-main .swiper-button-next {
+    right: 26%;
+}
+
+.swiper-course-main .swiper-button-prev {
+    left: 26%;
+}
+
+.icon-prev-course-main,
+.icon-next-course-main {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    cursor: pointer;
+}
+
+.icon-prev-course-main img,
+.icon-next-course-main img {
+    width: 32px;
+    height: 32px;
+}
+
+.custom-course-title {
+    text-transform: uppercase;
+    font-size: 12px;
+    line-height: 1;
+    text-align: center;
+}
+
+.course-img-wrap img {
+    min-height: unset;
+}
+
+.course-img-wrap {
+    min-height: unset;
+}
+
+.instructor-bottom-item {
+    font-size: 12px;
+    text-align: justify;
+}
+
+.hero-btns {
+    margin-top: 10px !important;
+}
+
+.hero-btns a {
+    font-size: 10px !important;
+    padding: 2px 8px !important;
+}
+
+.hero-btns .theme-btn {
+    margin-right: unset;
+
+}
+
+.custom-course-item {
+    box-shadow: -5px 4px 5px 0px rgb(53 53 53 / 45%);
+    min-height: unset;
+}
+
+.circle-icon>svg {
+    width: 16px;
+    height: 16px;
+}
+
+.custom-bg {
+    background-position: right -170px top 560px, center bottom;
+}
+
+.course-item {
+    padding: unset;
+    min-height: unset;
+}
+
+@media only screen and (max-width: 768px) {
+    .section-heading-brushed {
+        font-size: 50px;
+    }
+    .swiper-course-main .swiper-slide {
+        transition: unset;
+        z-index: unset;
+    }
+
+    .swiper-course-main .swiper-slide-active {
+        transform: scale(1) !important;
+        z-index: unset;
+    }
+
+    .swiper-course-main .swiper-button-prev {
+        left: 6%;
+    }
+
+    .swiper-course-main .swiper-button-next {
+        right: 6%;
+    }
+
+    .swiper-course-main {
+        width: 80%;
+    }
+    .custom-course-title {
+        font-size: 20px;
+    }
+    .instructor-bottom-item {
+        font-size: 16px;
+    }
+    .hero-btns a {
+        font-size: 18px !important;
+    }
+    .show-all-course-area {
+        margin-top: unset;
+    }
+    .coursesLeftSidebar {
+        padding: 30px;
+    }
+    .hero-btns {
+        margin-top: 30px !important;
+    }
+}

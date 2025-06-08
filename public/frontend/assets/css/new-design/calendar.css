@@ -1,0 +1,142 @@
+#calendario {
+    max-width: 420px;
+    margin-top: 50px;
+    position: relative;
+}
+
+#calendario .eventos {
+    color: white;
+    position: absolute;
+    top: 20px;
+    right: -90%;
+    z-index: 1;
+}
+
+#calendario .eventos .evento {
+    background-color: #9b499f;
+    padding: 10px 40px;
+    border-radius: 0px 36px 36px 0px;
+    width: 380px;
+    margin-bottom: 15px;
+    font-size: .9em;
+}
+
+#calendario .eventos .evento:nth-child(1) {
+    background-color: #9b499f;
+}
+
+#calendario .eventos .evento:nth-child(2) {
+    background-color: #c4a6ce;
+}
+
+#calendario .eventos .evento:nth-child(3) {
+    background-color: #dfcae6;
+    color: #7C4385;
+}
+
+#calendario .eventos h3 {
+    margin: 10px 0;
+    font-size: 1.2em;
+}
+
+#calendario .mes {
+    text-transform: uppercase;
+}
+
+#calendario table {
+    padding: 15px;
+    font-size: 1.2em;
+    width: 100%;
+    border-collapse: unset;
+}
+
+#calendario .domingo {
+    color: #e7344c
+}
+
+#calendario .hoy {
+    color: #9b499f
+}
+
+.dias {
+    display: flex;
+    justify-content: space-between;
+    text-transform: uppercase;
+    color: white;
+    background-color: #9b499f;
+    padding: 5px 20px;
+    font-size: 1.1em;
+}
+
+#calendario strong {
+    font-size: 2em;
+}
+
+#calendario .calendario-wrapper {
+    background-color: #F0F2F7;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    z-index: 2;
+    position: relative;
+}
+
+#calendario .head {
+    background-color: #aa64ad;
+    color: white;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 0 10px;
+    z-index: 2;
+    position: relative;
+}
+
+#calendario .espiral {
+    border-width: 50px;
+    /* Ancho del borde */
+    border-style: solid;
+    /* Estilo del borde */
+    border-bottom: none;
+    border-image-outset: 5px 0;
+    border-image: url('/frontend/assets/img/espiral.png') 30 / 50px round;
+    border-image-slice: 49 6;
+    position: relative;
+    top: -17.5px;
+}
+
+#calendario tbody {
+    color: #435a7f;
+}
+
+#calendario th {
+    color: white;
+    background-color: #9b499f;
+    text-transform: uppercase;
+}
+
+#calendario th,
+#calendario td {
+    text-align: center;
+}
+
+#calendario tbody {
+    border-bottom-left-radius: 15px;
+}
+
+#calendario table tr:hover {
+    background-color: transparent !important;
+}
+
+.cursor-pointer {
+    cursor: pointer!important;
+}
+
+@media (max-width: 600px) {
+    #calendario {
+        margin: 50px auto
+    }
+
+    #calendario .eventos {
+        position: static;
+        margin-top: 30px;
+    }
+}

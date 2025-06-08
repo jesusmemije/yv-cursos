@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'EyesomeScript';
+  src: url('fonts/eyesome-duo-script.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.eyesome-font {
+  font-family: 'EyesomeScript', sans-serif;
+}

@@ -1,0 +1,38 @@
+/vendor/
+/node_modules/
+
+# Laravel specific
+/bootstrap/cache/
+/storage/*.key
+/storage/debugbar/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/testing/
+/storage/framework/views/
+/storage/logs/
+!/storage/framework/.gitignore
+/public/storage
+/public/uploads/meta
+/public/hot
+
+# Laravel environment files
+.env
+.env.backup
+.env.dusk.local
+.env.testing
+.phpunit.result.cache
+
+# Folders related to IDEs and text editors
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS specific files
+.DS_Store
+Thumbs.db
+demo.sql
+# resources/lang/
+# resources/lang/en.json
+# resources/lang/mx.json
+package-lock.json
