@@ -889,10 +889,18 @@
                 <div class="row mt-4 mt-md-5">
                     <div class="col-12">
                         <div class="d-flex justify-content-center separate-network-icons">
-                            <img src="{{ asset('frontend/assets/img/home/youtube.svg') }}" width="62" height="62" alt="youtube">
-                            <img src="{{ asset('frontend/assets/img/home/instagram.svg') }}" width="62" height="62" alt="instagram">
-                            <img src="{{ asset('frontend/assets/img/home/tiktok.svg') }}" width="62" height="62" alt="tiktok">
-                            <img src="{{ asset('frontend/assets/img/home/facebook.svg') }}" width="62" height="62" alt="facebook">
+                            <a href="https://www.youtube.com/@ProductosparaSpa" target="_blank" rel="noopener">
+                                <img src="{{ asset('frontend/assets/img/home/youtube.svg') }}" width="62" height="62" alt="youtube">
+                            </a>
+                            <a href="https://www.instagram.com/yessicaavillaa/" target="_blank" rel="noopener">
+                                <img src="{{ asset('frontend/assets/img/home/instagram.svg') }}" width="62" height="62" alt="instagram">
+                            </a>
+                            <a href="https://www.tiktok.com/@yessica_villa_cosmetica" target="_blank" rel="noopener">
+                                <img src="{{ asset('frontend/assets/img/home/tiktok.svg') }}" width="62" height="62" alt="tiktok">
+                            </a>
+                            <a href="https://www.facebook.com/yessicaavillaa/" target="_blank" rel="noopener">
+                                <img src="{{ asset('frontend/assets/img/home/facebook.svg') }}" width="62" height="62" alt="facebook">
+                            </a>
                         </div>
                     </div>
                 </div>

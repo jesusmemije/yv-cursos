@@ -608,10 +608,9 @@
                                                                     id="flexCheckChecked" checked>
                                                                 <label class="form-check-label mb-0"
                                                                     for="flexCheckChecked">
-                                                                    Please check to acknowledge our <a
-                                                                        href="{{ route('privacy-policy') }}"
-                                                                        class="color-hover text-decoration-underline">Privacy
-                                                                        & Terms Policy</a>
+                                                                    Por favor, marca esta casilla para confirmar que aceptas nuestra <a
+                                                                        href="{{ route('privacy-policy') }}" target="_blank" rel="noopener"
+                                                                        class="color-hover text-decoration-underline">Política de Privacidad y Términos</a>
                                                                 </label>
                                                             </div>
                                                         </div>
