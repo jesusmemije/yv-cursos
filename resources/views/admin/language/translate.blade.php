@@ -34,7 +34,7 @@
                         <form action="{{route('update.translate', [$language->id])}}" method="post" enctype="multipart/form-data" data-parsley-validate>
 
                             <div class="item-title d-flex justify-content-between">
-                                <h2> Translate Your Language (English => {{$language->language}} ) </h2>
+                                <h2> Traduce tu idioma (English => {{$language->language}} ) </h2>
                                 <div>
                                     <button class="btn btn-primary addmore"> <i class="fa fa-plus"></i>
                                         {{ __('Add More') }}</button>

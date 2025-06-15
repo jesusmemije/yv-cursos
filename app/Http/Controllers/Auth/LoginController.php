@@ -297,7 +297,7 @@ class LoginController extends Controller
                 $user->save();
                 Session::put('email', '');
                 Session::put('verification_code', '');
-                $this->showToastrMessage('success', 'Successfully changed your password.');
+                $this->showToastrMessage('success', __('Successfully changed your password.'));
                 return redirect()->route('login');
             }
         } else {
