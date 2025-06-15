@@ -140,9 +140,9 @@ class LoginController extends Controller
     // Google callback
     public function handleGoogleCallback()
     {
-        $user = Socialite::driver('google')->user();
+        $googleUser = Socialite::driver('google')->user();
 
-        $this->_registerOrLoginUser($user);
+        $this->_registerOrLoginUser($googleUser);
 
         // Return home after login
         return redirect()->route('main.index');
@@ -156,10 +156,15 @@ class LoginController extends Controller
     // Facebook callback
     public function handleFacebookCallback()
     {
-        $user = Socialite::driver('facebook')->user();
+        $facebookUser = Socialite::driver('facebook')->user();
 
-        $this->_registerOrLoginUser($user);
+        // Nos aseguramos de que venga el email
+        if (!$facebookUser->getEmail()) {
+            return redirect()->route('login')->withErrors(['email' => 'No se pudo obtener el email de Facebook.']);
+       }
 
+        $this->_registerOrLoginUser($facebookUser);
+            
         // Return home after login
         return redirect()->route('main.index');
     }
@@ -172,9 +177,9 @@ class LoginController extends Controller
     // Twitter callback
     public function handleTwitterCallback()
     {
-        $user = Socialite::driver('twitter')->user();
+        $twitterUser = Socialite::driver('twitter')->user();
 
-        $this->_registerOrLoginUser($user);
+        $this->_registerOrLoginUser($twitterUser);
 
         // Return home after login
         return redirect()->route('main.index');
