@@ -16,11 +16,6 @@ return [
         'api_key' => env('MAILCHIMP_API_KEY'),
     ],
 
-    /*
-     * The list name to use when no list name is specified in a method.
-     */
-    'default_list_name' => 'subscribers',
-
     'lists' => [
 
         /*
@@ -30,24 +25,12 @@ return [
          * You can set it to any string you want and you can add
          * as many lists as you want.
          */
-        'subscribers' => [
-
-            /*
-             * When using the Mailcoach driver, this should be Email list UUID
-             * which is displayed in the Mailcoach UI
-             *
-             * When using the MailChimp driver, this should be a MailChimp list id.
-             * http://kb.mailchimp.com/lists/managing-subscribers/find-your-list-id.
-             */
-            'id' => env('MAILCHIMP_LIST_ID'),
-        ],
-
-        'upcoming_posts' => [
-            'id' => env('MAILCHIMP_LIST_ID_POSTS'),
+        'next_posts' => [
+            'id' => env('MAILCHIMP_ID_LIST_NEXT_POSTS'),
         ],
         
-        'upcoming_courses' => [
-            'id' => env('MAILCHIMP_LIST_ID_COURSES'),
+        'next_courses' => [
+            'id' => env('MAILCHIMP_ID_LIST_NEXT_COURSES'),
         ],
     ],
 ];

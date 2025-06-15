@@ -25,7 +25,7 @@ class NewsletterController extends Controller
             'phone' => ['required', 'digits:10'],
         ]);
 
-        return $this->subscribe('upcoming_courses', $$request->email, [
+        return $this->subscribe('next_courses', $request->email, [
             'FNAME' => $request->name,
             'PHONE' => $request->phone,
         ]);
@@ -45,7 +45,7 @@ class NewsletterController extends Controller
             'email' => 'required|email',
         ]);
 
-        return $this->subscribe('upcoming_posts', $request->email);
+        return $this->subscribe('next_posts', $request->email);
     }
 
     /**
