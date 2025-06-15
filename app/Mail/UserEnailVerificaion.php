@@ -31,7 +31,7 @@ class UserEnailVerificaion extends Mailable
     public function build()
     {
         return $this->from(get_option('MAIL_FROM_ADDRESS'), get_option('app_name'))
-            ->subject('Account Verification '. get_option('app_name'))
+            ->subject('Verificación de cuenta '. get_option('app_name'))
             ->markdown('mail.email-verification')
             ->with([
                 'user' => $this->user,

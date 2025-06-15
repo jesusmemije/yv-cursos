@@ -32,7 +32,7 @@ class ForgotPasswordMail extends Mailable
     {
 
         return $this->from(get_option('MAIL_FROM_ADDRESS'), get_option('app_name'))
-            ->subject('Forgot Password Verification '. get_option('app_name'))
+            ->subject('Verificación de contraseña olvidada '. get_option('app_name'))
             ->markdown('mail.forgot-verification')
             ->with([
                 'user' => $this->user,
