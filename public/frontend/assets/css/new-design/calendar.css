@@ -130,6 +130,11 @@
     cursor: pointer!important;
 }
 
+#calendario #prevMonth,
+#calendario #nextMonth {
+    color: white;
+}
+
 @media (max-width: 600px) {
     #calendario {
         margin: 50px auto
@@ -138,5 +143,9 @@
     #calendario .eventos {
         position: static;
         margin-top: 30px;
+    }
+
+    #calendario .eventos .evento {
+        border-radius: 16px;
     }
 }

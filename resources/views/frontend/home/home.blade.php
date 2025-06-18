@@ -597,7 +597,7 @@
             <div class="row align-items-center welcome-hello">
                 <div class="col-md-6 col-lg-7 col-xl-7">
                     <div class="video-area-left position-relative d-flex align-items-center justify-content-center">
-                        <img src="{{ asset('frontend/assets/img/yv-hello.png') }}" alt="video" class="w-420px">
+                        <img src="{{ asset('frontend/assets/img/yv-hello.png') }}" alt="video" class="img-ys-hello">
                         <button type="button" class="play-btn position-absolute" data-bs-toggle="modal" data-bs-target="#newVideoPlayerModal">
                             <img src="{{ asset('frontend/assets/img/icons-svg/play.svg') }}" alt="play">
                         </button>

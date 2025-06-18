@@ -9443,7 +9443,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .w-150px {
     width: 150px!important;
 }
-.w-420px {
+.img-ys-hello {
     width: 420px;
 }
 .course-slider-items .owl-nav button {
@@ -9712,6 +9712,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     }
     .swiper-hero-secundary .swiper-slide img {
     border-width: 8px;
+    }
+
+    .right-top-campana  {
+        right: 0;
+    }
+
+    .img-ys-hello {
+        width: 320px;
     }
 }
 
