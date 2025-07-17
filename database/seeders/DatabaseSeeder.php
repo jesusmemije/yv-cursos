@@ -20,6 +20,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call([
+            CountrySeeder::class,
+            StateSeeder::class,
+            CitySeeder::class,
+        ]);
 
 //         $this->call(AppSetting::class);
 //         $this->call(LanguageSeeder::class);

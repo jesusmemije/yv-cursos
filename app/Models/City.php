@@ -12,6 +12,7 @@ class City extends Model
     protected $table = 'cities';
     protected $primaryKey = 'id';
     protected $fillable = [
+        'id',
         'state_id',
         'name',
     ];
