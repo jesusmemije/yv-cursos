@@ -80,9 +80,9 @@
 
                         <div class="footer-links d-flex">
                             <ul>
-                                <li><span class="iconify"
+                                <!-- <li><span class="iconify"
                                         data-icon="carbon:location-filled"></span><span>{{ __(get_option('app_location')) }}</span>
-                                </li>
+                                </li> -->
                                 <li><span class="iconify"
                                         data-icon="fluent-emoji-high-contrast:telephone-receiver"></span><a
                                         href="tel:{{ get_option('app_contact_number') }}">{{ __(get_option('app_contact_number')) }}</a>

@@ -97,6 +97,11 @@ $relation = getUserRoleRelation($course->user);
                         @include('frontend.course.partial.partial-instructor-tab')
                     </div>
                 </div>
+                
+                <!-- La categoría 5 corresponde a los diplomados -->
+                @if($course->category_id == 5)
+                <div class="fw-bold mt-3">Todos nuestros diplomados están certificados por la SEP</div>
+                @endif
             </div>
             <div class="col-12 col-md-12 col-lg-4">
                 <div class="course-single-details-right-content">

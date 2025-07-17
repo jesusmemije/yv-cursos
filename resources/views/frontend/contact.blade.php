@@ -134,20 +134,20 @@
                         <!-- Contact Info Item End-->
 
                         <!-- Contact Info Item Start-->
-                        <div class="d-flex align-items-center">
+                        <!-- <div class="d-flex align-items-center">
                             <div class="flex-shrink-0 contact-icon-img-wrap">
                                 <img src="{{ asset('frontend/assets/img/icons-svg/contact-icon-6.svg') }}" width="42" height="42" alt="feature">
                             </div>
                             <div class="flex-grow-1 ms-4 contact-info-content">
                                 <p>{{ __(get_option('contact_us_location')) }}</p>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- Contact Info Item End-->
 
                         <!-- Google Map Part Start-->
-                        <div class="map-container">
+                        <!-- <div class="map-container">
                             <iframe src="{{ get_option('contact_us_map_link') }}" allowfullscreen="" loading="lazy"></iframe>
-                        </div>
+                        </div> -->
                         <!-- Google Map Part End-->
                     </div>
 

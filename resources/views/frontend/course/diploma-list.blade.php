@@ -76,6 +76,7 @@
                                 </div>
                             </div>
                             <!-- End Swiper Banner main -->
+                            <div class="text-center fw-bold">Todos nuestros diplomados están certificados por la SEP</div>
                         </div>
                     </div>
                     <div class="row mt-5 mx-3 font-lato">
