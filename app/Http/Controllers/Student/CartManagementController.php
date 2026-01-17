@@ -29,6 +29,7 @@ use App\Models\Student;
 use App\Models\User;
 use App\Models\UserPackage;
 use App\Models\Withdraw;
+use App\Models\Group;
 use App\Traits\General;
 use App\Traits\ImageSaveTrait;
 use App\Traits\SendNotification;
@@ -45,6 +46,7 @@ use Openpay;
 use Razorpay\Api\Api;
 use Exception;
 use Mollie\Laravel\Facades\Mollie;
+use Illuminate\Support\Facades\Log;
 
 class CartManagementController extends Controller
 {
@@ -1685,6 +1687,7 @@ class CartManagementController extends Controller
 
                     $order_item->save();
                     $this->addAffiliateHistory($cart,$order,$order_item);
+                    $this->enrollStudentToGroup($cart->course_id, auth()->id());
 
                 } elseif ($cart->bundle_id) {
                     // $bundleIds = Enrollment::where('user_id', auth()->id())->whereNotIn('course_id', $cart->bundle_course_ids)->whereDate('end_date', '<', now())->select('course_id')->get()->toArray();
@@ -1830,5 +1833,25 @@ class CartManagementController extends Controller
             }
         }
 
+    }
+
+    /**
+     * Inscribir automáticamente al estudiante en el grupo asociado al curso
+     */
+    private function enrollStudentToGroup($courseId, $userId)
+    {
+        // Encontrar el grupo asociado a este curso
+        $group = Group::whereHas('courses', function ($query) use ($courseId) {
+            $query->where('course_id', $courseId);
+        })->first();
+
+        if ($group) {
+            // Crear una relación entre el usuario y el grupo
+            // Necesitaremos crear una tabla de pivote: group_students
+            $group->students()->syncWithoutDetaching($userId);
+
+            // Log para auditoría
+            Log::info("Usuario {$userId} inscrito al grupo {$group->id} - Curso {$courseId}");
+        }
     }
 }

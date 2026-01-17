@@ -46,10 +46,22 @@ use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\SaasController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\WalletRechargeController;
+use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\VersionUpdateController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('admin.dashboard');
+
+// Grupos
+Route::prefix('groups')->group(function () {     
+    Route::get('/', [GroupController::class, 'index'])->name('admin.group.index');
+    Route::get('create-step-one', [GroupController::class, 'createStepOne'])->name('admin.group.createStepOne');
+    Route::post('store-step-one', [GroupController::class, 'storeStepOne'])->name('admin.group.storeStepOne');
+    Route::get('create-step-two/{uuid}', [GroupController::class, 'createStepTwo'])->name('admin.group.createStepTwo');
+    Route::post('add-course', [GroupController::class, 'addCourse'])->name('admin.group.addCourse');
+    Route::delete('remove-course', [GroupController::class, 'removeCourse'])->name('admin.group.removeCourse');
+    Route::delete('delete', [GroupController::class, 'delete'])->name('admin.group.delete');
+});
 
 Route::group(['prefix' => 'payout', 'as' => 'payout.'], function () {
     Route::get('new-withdraw', [PayoutController::class, 'newWithdraw'])->name('new-withdraw');

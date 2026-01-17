@@ -22,6 +22,14 @@
                 <span>{{__('Dashboard')}}</span>
             </a>
         </li>
+
+        <li class=" {{ active_if_match('admin/groups') }} ">
+            <a href="{{ route('admin.group.index') }}">
+                <span class="iconify" data-icon="bxs:group"></span>
+                <span>Grupos</span>
+            </a>
+        </li>
+
         @canany(['manage_course', 'pending_course', 'hold_course', 'approved_course', 'all_course'])
             <li>
                 <a class="has-arrow" href="#">

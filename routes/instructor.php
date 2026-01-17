@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('instructor.dashboard');
 Route::get('ranking-level-list', [DashboardController::class, 'rankingLevelList'])->name('instructor.ranking-level');
+Route::get('groups', [DashboardController::class, 'groups'])->name('instructor.groups.index');
 
 Route::get('profile', [ProfileController::class, 'profile'])->name('instructor.profile');
 Route::post('save-profile/{uuid}', [ProfileController::class, 'saveProfile'])->name('save.profile');
