@@ -165,7 +165,7 @@
                         <!-- Botones de Acción -->
                         <div class="row mt-5 pt-4 border-top">
                             <div class="col-md-12 text-end">
-                                <button class="btn btn-primary btn-lg" id="submitBtn" type="button" onclick="submitForm()">
+                                <button class="btn btn-primary btn-lg" id="submitBtn" type="button">
                                     <i class="fa fa-check"></i> Finalizar
                                 </button>
                             </div>
@@ -290,24 +290,38 @@
 
         });
 
-        function submitForm() {
+        // Manejar botón Finalizar
+        $(document).on('click', '#submitBtn', function(e) {
+            e.preventDefault();
+            
             const selectedCount = $('.course-checkbox:checked').length;
-
+            
             if (selectedCount === 0) {
-                toastr.warning('Por favor, selecciona al menos un diplomado');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Advertencia',
+                    text: 'Por favor, selecciona al menos un diplomado',
+                    confirmButtonText: 'Entendido'
+                });
                 return;
             }
             
             Swal.fire({
-                title: '¿Confirmar?',
+                title: '¿Confirmar asignación?',
                 text: `Se guardarán ${selectedCount} diplomado(s) para este grupo`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Guardar',
-                cancelButtonText: 'Cancelar'
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33'
             }).then((result) => {
-                window.location.href = "{{ route('admin.group.index') }}";
+                if (result.value) {
+                    // Redirigir al listado de grupos
+                    window.location.href = '{{ route("admin.group.index") }}';
+                }
             });
-        }
+        });
+
     </script>
 @endpush
