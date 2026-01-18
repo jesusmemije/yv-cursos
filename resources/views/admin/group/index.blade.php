@@ -51,40 +51,38 @@
                                             </td>
                                             <td>
                                                 <div class="finance-table-inner-item">
-                                                    <span class="fw-bold">Inicio:</span> 
+                                                    <i class="fa fa-calendar-plus text-success" title="Fecha de inicio"></i>
                                                     {{ \Carbon\Carbon::parse($group->start_date)->translatedFormat('d \d\e F \d\e Y') }}
                                                 </div>
+
                                                 <div class="finance-table-inner-item">
-                                                    <span class="fw-bold">Fin:</span> 
+                                                    <i class="fa fa-calendar-times text-danger" title="Fecha de fin"></i>
                                                     {{ \Carbon\Carbon::parse($group->end_date)->translatedFormat('d \d\e F \d\e Y') }}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="finance-table-inner-item">
-                                                    <span class="fw-bold">Inicio:</span> 
+                                                    <i class="fa fa-calendar-check text-success" title="Inicio de inscripción"></i>
                                                     {{ \Carbon\Carbon::parse($group->enrollment_start_at)->translatedFormat('d \d\e F \d\e Y') }}
                                                 </div>
+
                                                 <div class="finance-table-inner-item">
-                                                    <span class="fw-bold">Fin:</span> 
+                                                    <i class="fa fa-calendar-times text-danger" title="Fin de inscripción"></i>
                                                     {{ \Carbon\Carbon::parse($group->enrollment_end_at)->translatedFormat('d \d\e F \d\e Y') }}
                                                 </div>
                                             </td>
                                             <td>
-                                                @if($group->status == 1)
-                                                    <span class="status bg-green">Activo</span>
-                                                @else
-                                                    <span class="status bg-danger">Inactivo</span>
-                                                @endif
+                                                <select
+                                                    class="status-select badge text-white" data-id="{{ $group->id }}"
+                                                    style="background-color: {{ $group->status == 1 ? '#28a745' : '#dc3545' }};">
+                                                    <option value="1" @selected($group->status == 1)>Activo</option>
+                                                    <option value="0" @selected($group->status == 0)>Inactivo</option>
+                                                </select>
                                             </td>
-                                            <td>
-                                                <div class="action__buttons text-center">
-                                                    <a href="{{ route('admin.group.createStepTwo', $group->uuid) }}" title="Editar">
-                                                        <img src="{{ asset('admin/images/icons/edit-2.svg') }}" alt="editar">
-                                                    </a>
-                                                    <a href="javascript:void(0);" class="delete-btn" data-uuid="{{ $group->uuid }}" title="Eliminar">
-                                                        <img src="{{ asset('admin/images/icons/trash-2.svg') }}" alt="eliminar">
-                                                    </a>
-                                                </div>
+                                            <td class="text-center">
+                                                <a href="javascript:void(0);" class="delete-btn" data-uuid="{{ $group->uuid }}" title="Eliminar">
+                                                    <img src="{{ asset('admin/images/icons/trash-2.svg') }}" alt="eliminar">
+                                                </a>
                                             </td>
                                         </tr>
                                     @empty
@@ -118,6 +116,71 @@
     <script src="{{ asset('admin/js/custom/data-table-page.js') }}"></script>
     <script>
         'use strict'
+
+        // Cambiar estado del grupo
+        $(document).on('change', '.status-select', function () {
+            const $select = $(this);
+            const previousValue = $select.data('previous');
+            const status = $select.val();
+            const statusText = status == 1 ? 'Activo' : 'Inactivo';
+            const id = $select.data('id');
+
+            Swal.fire({
+                title: "¡Cambiar estado!",
+                text: `¿Deseas cambiar el estado del grupo a "${statusText}"?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, cambiar",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('admin.group.changeStatus') }}",
+                        data: {
+                            id: id,
+                            status: status,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            toastr.options.positionClass = 'toast-bottom-right';
+
+                            if (response.status) {
+                                const bgColor = status == 1 ? '#28a745' : '#dc3545';
+                                $select.css('background-color', bgColor);
+                                toastr.success(response.message);
+                                $select.data('previous', status);
+                            } else {
+                                revert();
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function () {
+                            revert();
+                            toastr.error('Error al cambiar el estado');
+                        }
+                    });
+                } else {
+                    revert();
+                }
+            });
+
+            function revert() {
+                $select.val(previousValue);
+
+                const bgColor = previousValue == 1 ? '#28a745' : '#dc3545';
+                $select.css('background-color', bgColor);
+            }
+        });
+
+        $(document).ready(function () {
+            $('.status-select').each(function () {
+                $(this).data('previous', $(this).val());
+            });
+        });
+
         // Eliminar grupo
         $(document).on('click', '.delete-btn', function(e){
             e.preventDefault();
@@ -131,7 +194,7 @@
                 confirmButtonText: "Eliminar",
                 cancelButtonText: "Cancelar"
             }).then((result) => {
-                if (result.isConfirmed) {
+                if (result.value) {
                     $.ajax({
                         url: "{{ route('admin.group.delete') }}",
                         type: 'DELETE',

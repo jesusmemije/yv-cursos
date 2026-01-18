@@ -60,6 +60,7 @@ Route::prefix('groups')->group(function () {
     Route::get('create-step-two/{uuid}', [GroupController::class, 'createStepTwo'])->name('admin.group.createStepTwo');
     Route::post('add-course', [GroupController::class, 'addCourse'])->name('admin.group.addCourse');
     Route::delete('remove-course', [GroupController::class, 'removeCourse'])->name('admin.group.removeCourse');
+    Route::post('change-status', [GroupController::class, 'changeStatus'])->name('admin.group.changeStatus');
     Route::delete('delete', [GroupController::class, 'delete'])->name('admin.group.delete');
 });
 

@@ -104,6 +104,30 @@ class GroupController extends Controller
         }
     }
 
+    public function changeStatus(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|exists:groups,id',
+                'status' => 'required|in:0,1'
+            ]);
+
+            $group = Group::findOrFail($request->id);
+            $group->status = $request->status;
+            $group->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => __('Estado del grupo actualizado correctamente')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => __('Error al actualizar el estado')
+            ], 400);
+        }
+    }
+
     public function delete(Request $request)
     {
         try {
