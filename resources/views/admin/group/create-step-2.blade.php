@@ -57,14 +57,14 @@
                         <!-- Diplomados Disponibles -->
                         <div class="instructor-panel-bundles-courses-page create-bundles-courses-page bg-white">
                             <label class="label-text-title color-heading font-medium font-16 mb-4">
-                                Diplomados Disponibles 
+                                Diplomados Disponibles
                             </label>
 
-                            <div class="row create-bundles-courses-item-wrap">
+                            <div class="row create-bundles-courses-item-wrap" id="coursesContainer">
                                 @forelse($courses as $course)
                                     <!-- Course item start -->
                                     <div class="col-12 col-sm-6 col-lg-4 mb-4">
-                                        <div class="card course-item instructor-my-course-item create-bundles-course-item bg-white h-100 shadow-sm">
+                                        <div class="card course-item instructor-my-course-item create-bundles-course-item bg-white h-100 shadow-sm {{ in_array($course->id, $alreadyAddedCourseIds) ? 'selected' : '' }}" data-course-id="{{ $course->id }}">
                                             <!-- Imagen del Curso -->
                                             <div class="course-img-wrap flex-shrink-0 overflow-hidden position-relative" style="height: 180px;">
                                                 <span class="course-tag badge radius-3 font-14 font-medium position-absolute bg-white color-hover" style="top: 10px; right: 10px; z-index: 10;">
@@ -128,7 +128,7 @@
                                                 <!-- Checkbox -->
                                                 <div class="form-check mt-auto pt-2 border-top">
                                                     <input 
-                                                        class="form-check-input course-checkbox appendAddRemoveCourse{{ $course->id }}" 
+                                                        class="form-check-input course-checkbox" 
                                                         type="checkbox" 
                                                         id="course_{{ $course->id }}" 
                                                         data-course_id="{{ $course->id }}"
@@ -162,41 +162,10 @@
                             </div>
                         </div>
 
-                        <!-- Cursos Seleccionados (Vista Previa) -->
-                        <div class="mt-5 pt-4 border-top">
-                            <label class="label-text-title color-heading font-medium font-16 mb-3">
-                                Diplomados Seleccionados 
-                                <span class="badge bg-success selected-count">{{ count($alreadyAddedCourseIds) }}</span>
-                            </label>
-                            <div id="selectedCoursesContainer">
-                                @if(count($alreadyAddedCourseIds) > 0)
-                                    <div class="row">
-                                        @foreach($groupCourses as $course)
-                                            <div class="col-md-6 col-lg-4 mb-3">
-                                                <div class="card selected-course-card bg-light border-success">
-                                                    <div class="card-body d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            <h6 class="card-title mb-1">{{ Str::limit($course->title, 40) }}</h6>
-                                                            <small class="text-muted">{{ @$course->user->name }}</small>
-                                                        </div>
-                                                        <span class="badge bg-success">Añadido</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="alert alert-secondary" role="alert">
-                                        <i class="fas fa-info-circle"></i> Ningún diplomado seleccionado aún
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-
                         <!-- Botones de Acción -->
                         <div class="row mt-5 pt-4 border-top">
-                            <div class="col-md-12 text-right">
-                                <button class="btn btn-primary" id="submitBtn" type="button" onclick="submitForm()">
+                            <div class="col-md-12 text-end">
+                                <button class="btn btn-primary btn-lg" id="submitBtn" type="button" onclick="submitForm()">
                                     <i class="fa fa-check"></i> Finalizar
                                 </button>
                             </div>
@@ -211,7 +180,6 @@
     <input type="hidden" class="addGroupCourseRoute" value="{{ route('admin.group.addCourse') }}">
     <input type="hidden" class="removeGroupCourseRoute" value="{{ route('admin.group.removeCourse') }}">
     <input type="hidden" class="group_id" value="{{ $group->id }}">
-    <input type="hidden" class="group_uuid" value="{{ $group->uuid }}">
 
 @endsection
 
@@ -219,7 +187,7 @@
     <style>
         .course-item {
             transition: all 0.3s ease;
-            border: 2px solid transparent;
+            border: 2px solid #e0e0e0;
         }
         
         .course-item:hover {
@@ -227,8 +195,9 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important;
         }
 
+        /* Clase para items seleccionados */
         .course-item.selected {
-            border-color: #28a745;
+            border: 2px solid #28a745 !important;
             background-color: #f8fff9;
         }
 
@@ -237,8 +206,8 @@
             border-color: #28a745;
         }
 
-        .selected-course-card {
-            border-left: 4px solid #28a745;
+        .form-check-input:checked::after {
+            content: '';
         }
 
         .course-checkbox {
@@ -253,10 +222,6 @@
             padding: 40px 20px;
             background-color: #f8f9fa;
             border-radius: 8px;
-        }
-
-        .selected-count {
-            font-size: 14px;
         }
     </style>
 @endpush
@@ -293,8 +258,6 @@
                     success: function(response) {
                         $card.addClass('selected');
                         toastr.success('Diplomado añadido al grupo');
-                        updateSelectedCount();
-                        addCourseToPreview(courseId, $card);
                     },
                     error: function(xhr) {
                         console.error(xhr);
@@ -316,8 +279,6 @@
                     success: function(response) {
                         $card.removeClass('selected');
                         toastr.success('Diplomado removido del grupo');
-                        updateSelectedCount();
-                        removeCourseFromPreview(courseId);
                     },
                     error: function(xhr) {
                         console.error(xhr);
@@ -327,68 +288,9 @@
                 });
             }
 
-            function updateSelectedCount() {
-                const count = $('.course-checkbox:checked').length;
-                $('.selected-count').text(count);
-            }
-
-            function addCourseToPreview(courseId, $card) {
-                // Obtener información del curso
-                const courseTitle = $card.find('.course-title').text();
-                const instructorName = $card.find('.instructor-info small').text().replace('Instructor: ', '');
-                
-                // Crear HTML de la tarjeta de vista previa
-                const previewHtml = `
-                    <div class="col-md-6 col-lg-4 mb-3" data-course-id="${courseId}">
-                        <div class="card selected-course-card bg-light border-success">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="card-title mb-1">${courseTitle}</h6>
-                                    <small class="text-muted">${instructorName}</small>
-                                </div>
-                                <span class="badge bg-success">Añadido</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // Si la alerta de "Ningún diplomado seleccionado" existe, removerla
-                const emptyAlert = $('#selectedCoursesContainer .alert-secondary');
-                if (emptyAlert.length) {
-                    emptyAlert.closest('.row').remove();
-                }
-
-                // Verificar si existe el contenedor de cursos seleccionados
-                let rowContainer = $('#selectedCoursesContainer .row');
-                if (!rowContainer.length) {
-                    // Crear el contenedor si no existe
-                    $('#selectedCoursesContainer').html('<div class="row"></div>');
-                    rowContainer = $('#selectedCoursesContainer .row');
-                }
-
-                // Verificar si el curso ya existe en la previa
-                if ($(`[data-course-id="${courseId}"]`).length === 0) {
-                    rowContainer.append(previewHtml);
-                }
-            }
-
-            function removeCourseFromPreview(courseId) {
-                // Remover la tarjeta del curso de la vista previa
-                $(`[data-course-id="${courseId}"]`).remove();
-
-                // Si no hay más cursos, mostrar la alerta
-                if ($('#selectedCoursesContainer .row').children().length === 0) {
-                    $('#selectedCoursesContainer').html(`
-                        <div class="alert alert-secondary" role="alert">
-                            <i class="fas fa-info-circle"></i> Ningún diplomado seleccionado aún
-                        </div>
-                    `);
-                }
-            }
         });
 
         function submitForm() {
-            const groupUuid = $('.group_uuid').val();
             const selectedCount = $('.course-checkbox:checked').length;
 
             if (selectedCount === 0) {
@@ -404,10 +306,7 @@
                 confirmButtonText: 'Guardar',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `{{ route('admin.group.index') }}`;
-                    toastr.success('Grupo actualizado correctamente');
-                }
+                window.location.href = "{{ route('admin.group.index') }}";
             });
         }
     </script>
