@@ -1918,6 +1918,9 @@ class CartManagementController extends Controller
         ->select('id', 'name', 'start_date', 'end_date')
         ->get();
 
-        return response()->json(['groups' => $groups]);
+        return response()->json([
+            'groups' => $groups,
+            'count' => $groups->count()
+        ]);
     }
 }

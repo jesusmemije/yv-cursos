@@ -132,8 +132,6 @@
                 showCancelButton: true,
                 confirmButtonText: "Sí, cambiar",
                 cancelButtonText: "Cancelar",
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#d33'
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
@@ -182,17 +180,18 @@
         });
 
         // Eliminar grupo
-        $(document).on('click', '.delete-btn', function(e){
+        $(document).on('click', '.delete-btn', function(e) {
             e.preventDefault();
-            let uuid = $(this).data('uuid');
-            
+            const uuid = $(this).data('uuid');
+            const $row = $(this).closest('tr');
+
             Swal.fire({
                 title: "¿Estás seguro?",
-                text: "¡No podrás recuperar estos datos!",
+                text: "Se eliminará el grupo y toda su información. ¡No podrás recuperar estos datos!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Eliminar",
-                cancelButtonText: "Cancelar"
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
@@ -202,8 +201,33 @@
                             '_token': '{{ csrf_token() }}',
                             'uuid': uuid
                         },
-                        success: function(response){
-                            location.reload();
+                        success: function(response) {
+                            toastr.options.positionClass = 'toast-bottom-right';
+                            if (response.status) {
+                                toastr.success(response.message);
+                                // Eliminar la fila con animación
+                                $row.fadeOut('fast', function() {
+                                    $(this).remove();
+                                });
+                                
+                                // Recargar después de 1 segundo
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            toastr.options.positionClass = 'toast-bottom-right';
+                            let errorMessage = 'Error al eliminar el grupo';
+                            
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                            
+                            toastr.error(errorMessage);
+                            console.error(xhr);
                         }
                     });
                 }

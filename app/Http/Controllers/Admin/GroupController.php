@@ -131,10 +131,38 @@ class GroupController extends Controller
     public function delete(Request $request)
     {
         try {
-            Group::where('uuid', $request->uuid)->firstOrFail()->delete();
-            return response()->json(['success' => true]);
+            $request->validate([
+                'uuid' => 'required|exists:groups,uuid'
+            ]);
+
+            $group = Group::where('uuid', $request->uuid)->firstOrFail();
+
+            // Verificar si hay estudiantes inscritos en este grupo
+            $enrolledStudentsCount = $group->students()->count();
+
+            if ($enrolledStudentsCount > 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => __('No se puede eliminar el grupo porque tiene ' . $enrolledStudentsCount . ' estudiante(s) inscrito(s)')
+                ], 422);
+            }
+
+            // Eliminar todas las relaciones
+            // 1. Desasociar todos los cursos del grupo
+            $group->courses()->detach();
+
+            // 2. Eliminar el grupo
+            $group->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => __('Grupo eliminado correctamente')
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false], 400);
+            return response()->json([
+                'status' => false,
+                'message' => __('Error al eliminar el grupo: ') . $e->getMessage()
+            ], 400);
         }
     }
 }

@@ -47,13 +47,17 @@
     })
 
     // Para diplomados: Manejar el click en "Agregar al carrito"
-    window.handleAddToCartDiploma = function(event, courseId, route) {
+    window.handleAddToCartDiploma = function(event, courseId, route, groupId = null) {
         event.preventDefault();
         
-        const groupSelect = document.getElementById('groupSelect');
+        // Si no se proporciona groupId, obtenerlo del select o del input hidden
+        if (!groupId) {
+            const groupSelect = document.getElementById('groupSelect');
+            groupId = groupSelect ? groupSelect.value : null;
+        }
         
         // Validar que se haya seleccionado un grupo
-        if (!groupSelect || !groupSelect.value) {
+        if (!groupId) {
             toastr.warning("Por favor selecciona un grupo");
             return false;
         }
@@ -65,20 +69,17 @@
             data: {
                 '_token': $('meta[name="csrf-token"]').attr('content'),
                 'course_id': courseId,
-                'group_id': groupSelect.value
+                'group_id': groupId
             },
             success: function(response) {
                 handleAddToCartResponse(response);
             },
-            error: function (error) {
-                toastr.options.positionClass = 'toast-bottom-right';
-                if (error.status == 401){
+            error: function(xhr) {
+                if (xhr.status === 401) {
                     window.location.href = '/login';
+                } else {
+                    toastr.error("Error");
                 }
-                if (error.status == 403){
-                    toastr.error("¡No tienes permiso para agregar curso o producto!")
-                }
-
             }
         });
     };

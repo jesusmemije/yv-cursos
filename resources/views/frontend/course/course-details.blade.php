@@ -244,43 +244,9 @@ $relation = getUserRoleRelation($course->user);
                             @if($course->status == STATUS_APPROVED)
                             {{-- Si es diplomado (category_id = 5), mostrar selector de grupos --}}
                             @if($course->category_id == 5)
-                                <div class="mb-3">
-                                    <label class="form-label">{{ __('Seleccionar Grupo') }} <span class="text-danger">*</span></label>
-                                    <select id="groupSelect" class="form-select" required>
-                                        <option value="">{{ __('Elige un grupo...') }}</option>
-                                        <option value="loading">{{ __('Cargando...') }}</option>
-                                    </select>
-                                    <small class="text-muted d-block mt-2">
-                                        {{ __('Este diplomado está disponible en múltiples grupos. Elige el que deseas.') }}
-                                    </small>
-
-                                    {{-- Información del ciclo (se muestra al seleccionar grupo) --}}
-                                    <div id="groupCycleInfo" class="alert alert-info mt-3 d-none">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <small class="d-block">
-                                                    <strong>{{ __('Inicio del Ciclo') }}:</strong>
-                                                    <span id="cycleStartDate"></span>
-                                                </small>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <small class="d-block">
-                                                    <strong>{{ __('Fin del Ciclo') }}:</strong>
-                                                    <span id="cycleEndDate"></span>
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div id="groupSelectionContainer">
+                                    <!-- Se llenará dinámicamente con JavaScript -->
                                 </div>
-
-                                <button class="theme-btn theme-button1 theme-button3 w-100 mb-30"
-                                        type="button"
-                                        id="addToCartBtn"
-                                        onclick="handleAddToCartDiploma(event, {{ $course->id }}, '{{ route('student.addToCart') }}')">
-                                    <span class="msgInfoChange">
-                                        {{ __('Enroll the Course') }} <i data-feather="arrow-right"></i>
-                                    </span>
-                                </button>
 
                             @else
                                 {{-- Cursos normales sin selector de grupos --}}
@@ -523,11 +489,8 @@ $relation = getUserRoleRelation($course->user);
     <!-- Video Player js -->
     <script src="{{ asset('frontend/assets/vendor/video-player/plyr.js') }}"></script>
     <script>
-        // const zai_player = new Plyr('#player');
-        // const zai_player2 = new Plyr('#youtubePlayer');
         const zai_player1 = new Plyr('#player2');
         const zai_player3 = new Plyr('#youtubePlayer2');
-        // const zai_player4 = new Plyr('#vimeoPlayer');
     </script>
 
     <script>
@@ -576,11 +539,13 @@ $relation = getUserRoleRelation($course->user);
             navigator.clipboard.writeText(copyText.value);
 
         }
+        
         var url = new URL(window.location.href);
         var code = url.searchParams.get("code");
         if(code && code.length>0){
             saveItem(code);
         }
+        
         function saveItem(val) {
             if(val === null){
                 return;
@@ -597,61 +562,186 @@ $relation = getUserRoleRelation($course->user);
                 localStorage.setItem('ref', JSON.stringify(all_ref));
             }
         }
-
     </script>
 
     <script>
         $(document).ready(function() {
             // Cargar grupos al cargar la página si es diplomado
             @if($course->category_id == 5)
-                loadGroups();
+                loadGroupsForDiploma();
             @endif
 
-            function loadGroups() {
+            function loadGroupsForDiploma() {
                 $.ajax({
                     url: '{{ route("student.cart.course.groups", $course->id) }}',
                     type: 'GET',
                     success: function(response) {
-                        const select = $('#groupSelect');
-                        select.find('option[value="loading"]').remove();
-                        
-                        if (response.groups.length === 0) {
-                            select.html('<option value="">{{ __("No hay grupos disponibles") }}</option>');
-                            $('#addToCartBtn').prop('disabled', true);
+                        const groupCount = response.count;
+                        const groups = response.groups;
+
+                        if (groupCount === 0) {
+                            // No hay grupos disponibles
+                            renderNoGroupsAvailable();
+                        } else if (groupCount === 1) {
+                            // Un solo grupo: seleccionarlo automáticamente
+                            renderSingleGroup(groups[0]);
                         } else {
-                            response.groups.forEach(group => {
-                                select.append(`<option value="${group.id}" data-start-date="${group.start_date}" data-end-date="${group.end_date}">${group.name}</option>`);
-                            });
+                            // Múltiples grupos: mostrar selector
+                            renderMultipleGroups(groups);
                         }
                     },
                     error: function() {
-                        $('#groupSelect').find('option[value="loading"]').text('{{ __("Error al cargar grupos") }}');
+                        renderErrorState();
                     }
                 });
             }
 
-            // Mostrar/ocultar información del ciclo al seleccionar grupo
-            $(document).on('change', '#groupSelect', function() {
-                const selectedOption = $(this).find('option:selected');
-                const startDate = selectedOption.data('start-date');
-                const endDate = selectedOption.data('end-date');
+            function renderNoGroupsAvailable() {
+                const html = `
+                    <div class="alert alert-warning d-flex align-items-center mb-30" role="alert">
+                        <div class="me-3">
+                            <i class="fa fa-clock fa-2x text-warning"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading mb-1">{{ __('Próximamente disponible') }}</h5>
+                            <p class="mb-0">{{ __('Este diplomado aún no tiene grupos disponibles para inscripción.') }}</p>
+                        </div>
+                    </div>
+                `;
+                $('#groupSelectionContainer').html(html);
+                feather.replace();
+            }
 
-                if (startDate && endDate) {
-                    const formattedStartDate = formatDate(startDate);
-                    const formattedEndDate = formatDate(endDate);
+            function renderSingleGroup(group) {
+                const startDate = formatDate(group.start_date);
+                const endDate = formatDate(group.end_date);
 
-                    $('#cycleStartDate').text(formattedStartDate);
-                    $('#cycleEndDate').text(formattedEndDate);
-                    $('#groupCycleInfo').removeClass('d-none');
-                } else {
-                    $('#groupCycleInfo').addClass('d-none');
-                }
-            });
+                const html = `
+                    <div class="mb-3">
+                        <div class="alert alert-info mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-2">
+                                        <i class="fa fa-users me-2"></i>
+                                        <strong>${group.name}</strong>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
 
-            // Función para formatear fechas
+                        {{-- Información del ciclo --}}
+                        <div class="alert alert-light border">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="d-block">
+                                        <i class="fa fa-calendar-check text-success me-2"></i>
+                                        <strong>{{ __('Inicio del Ciclo:') }}</strong>
+                                    </small>
+                                    <small class="text-muted">${startDate}</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="d-block">
+                                        <i class="fa fa-calendar-times text-danger me-2"></i>
+                                        <strong>{{ __('Fin del Ciclo:') }}</strong>
+                                    </small>
+                                    <small class="text-muted">${endDate}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="groupSelect" value="${group.id}">
+                    </div>
+
+                    <button class="theme-btn theme-button1 theme-button3 w-100 mb-30"
+                            type="button"
+                            id="addToCartBtn"
+                            onclick="handleAddToCartDiploma(event, {{ $course->id }}, '{{ route('student.addToCart') }}', ${group.id})">
+                        <span class="msgInfoChange">
+                            {{ __('Enroll the Course') }} <i data-feather="arrow-right"></i>
+                        </span>
+                    </button>
+                `;
+                $('#groupSelectionContainer').html(html);
+                feather.replace();
+            }
+
+            function renderMultipleGroups(groups) {
+                const html = `
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Seleccionar Grupo') }} <span class="text-danger">*</span></label>
+                        <select id="groupSelect" class="form-select" required>
+                            <option value="">{{ __('Elige un grupo...') }}</option>
+                            ${groups.map(g => `<option value="${g.id}" data-start-date="${g.start_date}" data-end-date="${g.end_date}">${g.name}</option>`).join('')}
+                        </select>
+                        <small class="text-muted d-block mt-2">
+                            {{ __('Este diplomado está disponible en múltiples grupos. Elige el que deseas.') }}
+                        </small>
+
+                        {{-- Información del ciclo (se muestra al seleccionar grupo) --}}
+                        <div id="groupCycleInfo" class="alert alert-light mt-2 border d-none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="d-block">
+                                        <i class="fa fa-calendar-check text-success me-2"></i>
+                                        <strong>{{ __('Inicio del Ciclo:') }}</strong>
+                                    </small>
+                                    <small id="cycleStartDate" class="text-muted"></small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="d-block">
+                                        <i class="fa fa-calendar-times text-danger me-2"></i>
+                                        <strong>{{ __('Fin del Ciclo:') }}</strong>
+                                    </small>
+                                    <small id="cycleEndDate" class="text-muted"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button class="theme-btn theme-button1 theme-button3 w-100 mb-30"
+                            type="button"
+                            id="addToCartBtn"
+                            onclick="handleAddToCartDiploma(event, {{ $course->id }}, '{{ route('student.addToCart') }}')">
+                        <span class="msgInfoChange">
+                            {{ __('Enroll the Course') }} <i data-feather="arrow-right"></i>
+                        </span>
+                    </button>
+                `;
+                $('#groupSelectionContainer').html(html);
+                feather.replace();
+
+                // Mostrar/ocultar información del ciclo al seleccionar grupo
+                $(document).on('change', '#groupSelect', function() {
+                    const selectedOption = $(this).find('option:selected');
+                    const startDate = selectedOption.data('start-date');
+                    const endDate = selectedOption.data('end-date');
+
+                    if (startDate && endDate) {
+                        const formattedStartDate = formatDate(startDate);
+                        const formattedEndDate = formatDate(endDate);
+
+                        $('#cycleStartDate').text(formattedStartDate);
+                        $('#cycleEndDate').text(formattedEndDate);
+                        $('#groupCycleInfo').removeClass('d-none');
+                    } else {
+                        $('#groupCycleInfo').addClass('d-none');
+                    }
+                });
+            }
+
+            function renderErrorState() {
+                const html = `
+                    <div class="alert alert-danger mb-30">
+                        <i class="fa fa-exclamation-circle me-2"></i>
+                        {{ __('Error al cargar los grupos disponibles') }}
+                    </div>
+                `;
+                $('#groupSelectionContainer').html(html);
+            }
+
             function formatDate(dateString) {
                 const [year, month, day] = dateString.split('-');
-
                 const date = new Date(year, month - 1, day);
 
                 return date.toLocaleDateString('es-MX', {
@@ -660,7 +750,6 @@ $relation = getUserRoleRelation($course->user);
                     day: 'numeric'
                 });
             }
-
         });
     </script>
 @endpush
