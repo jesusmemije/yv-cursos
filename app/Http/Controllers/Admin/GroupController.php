@@ -58,11 +58,10 @@ class GroupController extends Controller
         // Solo obtener cursos que sean diplomados (category_id = 5)
         $data['courses'] = Course::where('category_id', 5)
             ->active()
-            ->paginate(9);
-        
+            ->paginate(6);
+
         $data['groupCourses'] = $data['group']->courses()->get();
         $data['alreadyAddedCourseIds'] = $data['groupCourses']->pluck('id')->toArray();
-        $data['totalCourses'] = $data['group']->courses()->count();
 
         return view('admin.group.create-step-2')->with($data);
     }

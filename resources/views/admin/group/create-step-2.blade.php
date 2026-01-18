@@ -33,10 +33,14 @@
                                 <h2>Asignar Diplomados al Grupo</h2>
                                 <p class="text-muted mt-2">
                                     <strong>Grupo:</strong> {{ $group->name }}<br>
-                                    <strong>Período:</strong> 
+                                    <strong>Ciclo:</strong> 
                                     {{ \Carbon\Carbon::parse($group->start_date)->translatedFormat('d \d\e F \d\e Y') }} 
                                     - 
-                                    {{ \Carbon\Carbon::parse($group->end_date)->translatedFormat('d \d\e F \d\e Y') }}
+                                    {{ \Carbon\Carbon::parse($group->end_date)->translatedFormat('d \d\e F \d\e Y') }}<br>
+                                    <strong>Inscripciones:</strong> 
+                                    {{ \Carbon\Carbon::parse($group->enrollment_start_at)->translatedFormat('d \d\e F \d\e Y') }} 
+                                    - 
+                                    {{ \Carbon\Carbon::parse($group->enrollment_end_at)->translatedFormat('d \d\e F \d\e Y') }}
                                 </p>
                             </div>
                             <a href="{{ route('admin.group.index') }}" class="btn btn-secondary btn-sm">
@@ -47,14 +51,13 @@
                         <!-- Información -->
                         <div class="alert alert-info mb-4" role="alert">
                             <i class="fas fa-info-circle"></i>
-                            <strong>Nota:</strong> Selecciona los diplomados que estarán disponibles para este grupo. Los estudiantes que compren estos diplomados serán inscritos automáticamente en este grupo.
+                            <strong>Nota:</strong> Selecciona los diplomados que estarán disponibles para este grupo. Los estudiantes que compren alguno de estos diplomados y seleccionen este grupo serán inscritos automáticamente.
                         </div>
 
                         <!-- Diplomados Disponibles -->
                         <div class="instructor-panel-bundles-courses-page create-bundles-courses-page bg-white">
                             <label class="label-text-title color-heading font-medium font-16 mb-4">
                                 Diplomados Disponibles 
-                                <span class="badge bg-primary">{{ $totalCourses }}</span>
                             </label>
 
                             <div class="row create-bundles-courses-item-wrap">
@@ -193,11 +196,8 @@
                         <!-- Botones de Acción -->
                         <div class="row mt-5 pt-4 border-top">
                             <div class="col-md-12 text-right">
-                                <a href="{{ route('admin.group.index') }}" class="btn btn-secondary mr-2">
-                                    <i class="fa fa-arrow-left"></i> Cancelar
-                                </a>
                                 <button class="btn btn-primary" id="submitBtn" type="button" onclick="submitForm()">
-                                    <i class="fa fa-check"></i> Guardar y Finalizar
+                                    <i class="fa fa-check"></i> Finalizar
                                 </button>
                             </div>
                         </div>
