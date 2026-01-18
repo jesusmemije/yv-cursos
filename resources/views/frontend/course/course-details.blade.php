@@ -242,10 +242,36 @@ $relation = getUserRoleRelation($course->user);
                             </button>
                         @else
                             @if($course->status == STATUS_APPROVED)
-                            <button class="theme-btn theme-button1 theme-button3 w-100 mb-30 addToCart " data-course_id="{{ $course->id }}"
-                                    data-route="{{ route('student.addToCart') }}" >
-                                <span class="msgInfoChange">{{ __('Enroll the Course') }} <i data-feather="arrow-right"></i></span>
-                            </button>
+                            {{-- Si es diplomado (category_id = 5), mostrar selector de grupos --}}
+                            @if($course->category_id == 5)
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('Seleccionar Grupo') }} <span class="text-danger">*</span></label>
+                                    <select id="groupSelect" class="form-select" required>
+                                        <option value="">{{ __('Elige un grupo...') }}</option>
+                                        <option value="loading">{{ __('Cargando...') }}</option>
+                                    </select>
+                                    <small class="text-muted d-block mt-2">
+                                        {{ __('Este diplomado está disponible en múltiples grupos. Elige el que deseas.') }}
+                                    </small>
+                                </div>
+
+                                <button class="theme-btn theme-button1 theme-button3 w-100 mb-30"
+                                        type="button"
+                                        id="addToCartBtn"
+                                        onclick="handleAddToCartDiploma(event, {{ $course->id }}, '{{ route('student.addToCart') }}')">
+                                    <span class="msgInfoChange">
+                                        {{ __('Enroll the Course') }} <i data-feather="arrow-right"></i>
+                                    </span>
+                                </button>
+
+                            @else
+                                {{-- Cursos normales sin selector de grupos --}}
+                                <button class="theme-btn theme-button1 theme-button3 w-100 mb-30 addToCart" 
+                                        data-course_id="{{ $course->id }}"
+                                        data-route="{{ route('student.addToCart') }}">
+                                    <span class="msgInfoChange">{{ __('Enroll the Course') }} <i data-feather="arrow-right"></i></span>
+                                </button>
+                            @endif
 
                             @if($course->learner_accessibility != 'free' && get_option('cashback_system_mode', 0))
                             <div class="alert alert-success d-flex mb-15">
@@ -556,4 +582,35 @@ $relation = getUserRoleRelation($course->user);
 
     </script>
 
+    <script>
+        $(document).ready(function() {
+            // Cargar grupos al cargar la página si es diplomado
+            @if($course->category_id == 5)
+                loadGroups();
+            @endif
+
+            function loadGroups() {
+                $.ajax({
+                    url: '{{ route("student.cart.course.groups", $course->id) }}',
+                    type: 'GET',
+                    success: function(response) {
+                        const select = $('#groupSelect');
+                        select.find('option[value="loading"]').remove();
+                        
+                        if (response.groups.length === 0) {
+                            select.html('<option value="">{{ __("No hay grupos disponibles") }}</option>');
+                            $('#addToCartBtn').prop('disabled', true);
+                        } else {
+                            response.groups.forEach(group => {
+                                select.append(`<option value="${group.id}">${group.name}</option>`);
+                            });
+                        }
+                    },
+                    error: function() {
+                        $('#groupSelect').find('option[value="loading"]').text('{{ __("Error al cargar grupos") }}');
+                    }
+                });
+            }
+        });
+    </script>
 @endpush

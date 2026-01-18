@@ -83,6 +83,7 @@ Route::group(['as' => 'student.'], function () {
     // Paystack
     Route::post('paystack/payment', [CartManagementController::class, 'paystackPayment'])->name('paystack_payment');
     Route::get('/payment/callback', [CartManagementController::class, 'handlePaystackGatewayCallback'])->name('paystack_payment.callback');
+    Route::get('course/{courseId}/groups', [CartManagementController::class, 'getGroupsForDiploma'])->name('cart.course.groups');
 
     Route::get('wishlist', [WishlistController::class, 'wishlist'])->name('wishlist');
     Route::post('add-to-wishlist', [WishlistController::class, 'addToWishlist'])->name('addToWishlist');

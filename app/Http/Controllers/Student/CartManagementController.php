@@ -444,6 +444,54 @@ class CartManagementController extends Controller
                     DB::rollBack();
                     return response()->json($response);
                 }
+
+                // Si es diplomado, validar que el grupo existe y tiene el curso
+                if ($request->group_id) {
+                    $group = Group::find($request->group_id);
+                    if (!$group || !$group->courses()->where('course_id', $request->course_id)->exists()) {
+                        return response()->json([
+                            'msg' => __("¡Este curso no está disponible para este grupo!"),
+                            'status' => 402
+                        ]);
+                    }
+
+                    // Validar que el grupo está activo y dentro de período de inscripción
+                    $now = now();
+                    if ($group->status != 1 || 
+                        $now->lessThan($group->enrollment_start_at) || 
+                        $now->greaterThan($group->enrollment_end_at)) {
+                        return response()->json([
+                            'msg' => __("¡Este grupo no está disponible para inscripción en este momento!"),
+                            'status' => 403
+                        ]);
+                    }
+
+                    // Evitar duplicados: mismo curso + mismo grupo
+                    $cartExists = CartManagement::where('user_id', Auth::id())
+                        ->where('course_id', $request->course_id)
+                        ->where('group_id', $request->group_id)
+                        ->first();
+
+                    if ($cartExists) {
+                        return response()->json([
+                            'msg' => __("Already added to cart!"),
+                            'status' => 409
+                        ]);
+                    }
+                } else {
+                    // Cursos normales sin grupo
+                    $cartExists = CartManagement::where('user_id', Auth::id())
+                        ->where('course_id', $request->course_id)
+                        ->whereNull('group_id')
+                        ->first();
+
+                    if ($cartExists) {
+                        return response()->json([
+                            'msg' => __("Already added to cart!"),
+                            'status' => 409
+                        ]);
+                    }
+                }
             }
 
             if ($request->product_id) {
@@ -584,6 +632,7 @@ class CartManagementController extends Controller
             $cart->product_id = $request->product_id;
             $cart->quantity = $quantity ?? 0;
             $cart->bundle_id = $request->bundle_id;
+            $cart->group_id = $request->group_id ?? null;
 
             if($request->course_id){
                 $course = Course::findOrFail($request->course_id);
@@ -1687,8 +1736,11 @@ class CartManagementController extends Controller
 
                     $order_item->save();
                     $this->addAffiliateHistory($cart,$order,$order_item);
-                    $this->enrollStudentToGroup($cart->course_id, auth()->id());
-
+                    
+                    // Inscribir en el grupo específico si existe
+                    if ($cart->group_id) {
+                        $this->enrollStudentToGroup($cart->course_id, auth()->id(), $cart->group_id);
+                    }
                 } elseif ($cart->bundle_id) {
                     // $bundleIds = Enrollment::where('user_id', auth()->id())->whereNotIn('course_id', $cart->bundle_course_ids)->whereDate('end_date', '<', now())->select('course_id')->get()->toArray();
                     $courses = Course::whereIn('id', $cart->bundle_course_ids)->get();
@@ -1838,20 +1890,34 @@ class CartManagementController extends Controller
     /**
      * Inscribir automáticamente al estudiante en el grupo asociado al curso
      */
-    private function enrollStudentToGroup($courseId, $userId)
+    private function enrollStudentToGroup($courseId, $userId, $groupId = null)
     {
-        // Encontrar el grupo asociado a este curso
-        $group = Group::whereHas('courses', function ($query) use ($courseId) {
-            $query->where('course_id', $courseId);
-        })->first();
-
-        if ($group) {
-            // Crear una relación entre el usuario y el grupo
-            // Necesitaremos crear una tabla de pivote: group_students
-            $group->students()->syncWithoutDetaching($userId);
-
-            // Log para auditoría
-            Log::info("Usuario {$userId} inscrito al grupo {$group->id} - Curso {$courseId}");
+        if ($groupId) {
+            // Inscribir en el grupo específico
+            $group = Group::find($groupId);
+            
+            if ($group) {
+                $group->students()->syncWithoutDetaching($userId);
+                Log::info("Usuario {$userId} inscrito al grupo {$group->id} - Curso {$courseId}");
+            }
         }
+    }
+
+    // Agregar este método para obtener grupos disponibles de un diplomado
+
+    public function getGroupsForDiploma($courseId)
+    {
+        $now = now();
+        
+        $groups = Group::whereHas('courses', function ($query) use ($courseId) {
+            $query->where('course_id', $courseId);
+        })
+        ->where('status', 1) // Solo grupos activos
+        ->whereDate('enrollment_start_at', '<=', $now)
+        ->whereDate('enrollment_end_at', '>=', $now)
+        ->select('id', 'name')
+        ->get();
+
+        return response()->json(['groups' => $groups]);
     }
 }

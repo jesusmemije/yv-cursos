@@ -122,6 +122,12 @@
                                                         </a>
                                                         @endif
                                                     </h5>
+                                                    {{-- Mostrar grupo solo si existe (diplomado) --}}
+                                                    @if($cart->group_id && $cart->group)
+                                                        <p class="card-text font-medium font-12 text-muted">
+                                                            <i class="fa fa-users"></i> <strong>Grupo:</strong> {{ $cart->group->name }}
+                                                        </p>
+                                                    @endif
                                                     <p class="card-text instructor-name-certificate font-medium">
                                                         @if($cart->course_id)
                                                         {{ @$cart->course->instructor->name }}

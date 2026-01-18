@@ -1,6 +1,17 @@
 (function ($) {
     "use strict";
-    $('.addToCart').on('click', function (){
+
+    // Manejador para cursos normales (no diplomados)
+    $(document).on('click', '.addToCart', function (e) {
+        // Verificar que NO sea un diplomado (que no tenga #groupSelect)
+        const groupSelect = $('#groupSelect');
+        if (groupSelect.length > 0) {
+            // Es un diplomado, el manejador personalizado se encargará
+            return;
+        }
+
+        e.preventDefault();
+
         var course_id = $(this).data('course_id');
         var product_id = $(this).data('product_id');
         var bundle_id = $(this).data('bundle_id');
@@ -11,22 +22,17 @@
         $.ajax({
             type: "POST",
             url: route,
-            data: {'course_id': course_id, 'product_id': product_id, 'bundle_id': bundle_id, 'ref':ref, 'quantity':quantity,  '_token': $('meta[name="csrf-token"]').attr('content')},
+            data: {
+                '_token': $('meta[name="csrf-token"]').attr('content'),
+                'course_id': course_id,
+                'product_id': product_id,
+                'bundle_id': bundle_id,
+                'ref': ref,
+                'quantity': quantity
+            },
             datatype: "json",
             success: function (response) {
-                toastr.options.positionClass = 'toast-bottom-right';
-                if (response.status == 402) {
-                    toastr.error(response.msg)
-                }
-                if (response.status == 401 || response.status == 404 || response.status == 409){
-                    toastr.error(response.msg)
-                } else if(response.status == 200) {
-                    $('.cartQuantity').text(response.quantity)
-                    toastr.success(response.msg)
-                    $('.msgInfoChange').html(response.msgInfoChange)
-                } else if(response.status == 422) {
-                    toastr.error(response.msg)
-                }
+                handleAddToCartResponse(response);
             },
             error: function (error) {
                 toastr.options.positionClass = 'toast-bottom-right';
@@ -34,10 +40,64 @@
                     window.location.href = '/login';
                 }
                 if (error.status == 403){
-                    toastr.error("You don't have permission to add course or product!")
+                    toastr.error("¡No tienes permiso para agregar curso o producto!")
                 }
-
             },
         });
     })
-})(jQuery)
+
+    // Para diplomados: Manejar el click en "Agregar al carrito"
+    window.handleAddToCartDiploma = function(event, courseId, route) {
+        event.preventDefault();
+        
+        const groupSelect = document.getElementById('groupSelect');
+        
+        // Validar que se haya seleccionado un grupo
+        if (!groupSelect || !groupSelect.value) {
+            toastr.warning("Por favor selecciona un grupo");
+            return false;
+        }
+
+        // Si la validación pasó, hacer la petición AJAX
+        $.ajax({
+            url: route,
+            type: 'POST',
+            data: {
+                '_token': $('meta[name="csrf-token"]').attr('content'),
+                'course_id': courseId,
+                'group_id': groupSelect.value
+            },
+            success: function(response) {
+                handleAddToCartResponse(response);
+            },
+            error: function (error) {
+                toastr.options.positionClass = 'toast-bottom-right';
+                if (error.status == 401){
+                    window.location.href = '/login';
+                }
+                if (error.status == 403){
+                    toastr.error("¡No tienes permiso para agregar curso o producto!")
+                }
+
+            }
+        });
+    };
+
+    // Manejar respuesta de agregar al carrito
+    function handleAddToCartResponse(response) {
+        toastr.options.positionClass = 'toast-bottom-right';
+        if (response.status == 402) {
+            toastr.error(response.msg)
+        }
+        if (response.status == 401 || response.status == 404 || response.status == 409){
+            toastr.error(response.msg)
+        } else if(response.status == 200) {
+            $('.cartQuantity').text(response.quantity)
+            toastr.success(response.msg)
+            $('.msgInfoChange').html(response.msgInfoChange)
+        } else if(response.status == 422) {
+            toastr.error(response.msg)
+        }
+    }
+
+})(jQuery);

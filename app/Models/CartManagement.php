@@ -11,6 +11,10 @@ class CartManagement extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'group_id',
+    ];
+
     protected $casts = [
         'receiver_info' => 'array',
         'bundle_course_ids' => 'array',
@@ -40,5 +44,10 @@ class CartManagement extends Model
     public function consultationSlot(): BelongsTo
     {
         return $this->belongsTo(ConsultationSlot::class, 'consultation_slot_id');
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
     }
 }
