@@ -122,12 +122,34 @@
                                                         </a>
                                                         @endif
                                                     </h5>
-                                                    {{-- Mostrar grupo solo si existe (diplomado) --}}
+                                                    
+                                                    {{-- Mostrar grupo y fechas del ciclo solo si existe (diplomado) --}}
                                                     @if($cart->group_id && $cart->group)
-                                                        <p class="card-text font-medium font-12 text-muted">
+                                                        <div class="card-text font-medium font-12 text-muted mb-2">
                                                             <i class="fa fa-users"></i> <strong>Grupo:</strong> {{ $cart->group->name }}
-                                                        </p>
+                                                        </div>
+                                                        
+                                                        {{-- Mostrar fechas del ciclo --}}
+                                                        <div class="card-text font-11 text-muted">
+                                                            <div class="row g-2">
+                                                                <div class="col-6">
+                                                                    <small>
+                                                                        <i class="fa fa-calendar"></i>
+                                                                        <strong>{{ __('Inicio:') }}</strong>
+                                                                        {{ \Carbon\Carbon::parse($cart->group->start_date)->translatedFormat('d M Y') }}
+                                                                    </small>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <small>
+                                                                        <i class="fa fa-calendar"></i>
+                                                                        <strong>{{ __('Fin:') }}</strong>
+                                                                        {{ \Carbon\Carbon::parse($cart->group->end_date)->translatedFormat('d M Y') }}
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     @endif
+                                                    
                                                     <p class="card-text instructor-name-certificate font-medium">
                                                         @if($cart->course_id)
                                                         {{ @$cart->course->instructor->name }}
@@ -162,6 +184,7 @@
                                                         @endif
                                                         @endif
                                                     </p>
+                                                    
                                                     @if($cart->course_id)
                                                     @include('frontend.student.cart.partial.cart-course-rating')
                                                     @elseif($cart->consultation_slot_id)

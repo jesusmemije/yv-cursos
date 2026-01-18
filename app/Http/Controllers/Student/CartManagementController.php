@@ -1915,7 +1915,7 @@ class CartManagementController extends Controller
         ->where('status', 1) // Solo grupos activos
         ->whereDate('enrollment_start_at', '<=', $now)
         ->whereDate('enrollment_end_at', '>=', $now)
-        ->select('id', 'name')
+        ->select('id', 'name', 'start_date', 'end_date')
         ->get();
 
         return response()->json(['groups' => $groups]);

@@ -253,6 +253,24 @@ $relation = getUserRoleRelation($course->user);
                                     <small class="text-muted d-block mt-2">
                                         {{ __('Este diplomado está disponible en múltiples grupos. Elige el que deseas.') }}
                                     </small>
+
+                                    {{-- Información del ciclo (se muestra al seleccionar grupo) --}}
+                                    <div id="groupCycleInfo" class="alert alert-info mt-3 d-none">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small class="d-block">
+                                                    <strong>{{ __('Inicio del Ciclo') }}:</strong>
+                                                    <span id="cycleStartDate"></span>
+                                                </small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="d-block">
+                                                    <strong>{{ __('Fin del Ciclo') }}:</strong>
+                                                    <span id="cycleEndDate"></span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <button class="theme-btn theme-button1 theme-button3 w-100 mb-30"
@@ -602,7 +620,7 @@ $relation = getUserRoleRelation($course->user);
                             $('#addToCartBtn').prop('disabled', true);
                         } else {
                             response.groups.forEach(group => {
-                                select.append(`<option value="${group.id}">${group.name}</option>`);
+                                select.append(`<option value="${group.id}" data-start-date="${group.start_date}" data-end-date="${group.end_date}">${group.name}</option>`);
                             });
                         }
                     },
@@ -611,6 +629,38 @@ $relation = getUserRoleRelation($course->user);
                     }
                 });
             }
+
+            // Mostrar/ocultar información del ciclo al seleccionar grupo
+            $(document).on('change', '#groupSelect', function() {
+                const selectedOption = $(this).find('option:selected');
+                const startDate = selectedOption.data('start-date');
+                const endDate = selectedOption.data('end-date');
+
+                if (startDate && endDate) {
+                    const formattedStartDate = formatDate(startDate);
+                    const formattedEndDate = formatDate(endDate);
+
+                    $('#cycleStartDate').text(formattedStartDate);
+                    $('#cycleEndDate').text(formattedEndDate);
+                    $('#groupCycleInfo').removeClass('d-none');
+                } else {
+                    $('#groupCycleInfo').addClass('d-none');
+                }
+            });
+
+            // Función para formatear fechas
+            function formatDate(dateString) {
+                const [year, month, day] = dateString.split('-');
+
+                const date = new Date(year, month - 1, day);
+
+                return date.toLocaleDateString('es-MX', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+
         });
     </script>
 @endpush
