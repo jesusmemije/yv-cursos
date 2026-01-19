@@ -23,85 +23,106 @@
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-md-12">
-                    <div class="customers__area bg-style mb-30 admin-dashboard-blog-list-page">
+                    <div class="card border-0 shadow-sm customers__area">
                         <div class="item-title d-flex justify-content-between">
-                            <h2>Listado de Grupos</h2>
-                            <a href="{{ route('admin.group.createStepOne') }}" class="btn btn-success btn-sm"> 
-                                <i class="fa fa-plus"></i> Agregar Grupo
-                            </a>
+                            <h2>Listado de grupos</h2>
+                            <a href="{{route('admin.group.createStepOne')}}" class="btn btn-primary btn-sm"> <i class="fa fa-plus"></i> Agregar grupo </a>
                         </div>
-                        <div class="customers__table">
-                            <table id="customers-table" class="row-border data-table-filter table-style">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre del Grupo</th>
-                                        <th>Período del Ciclo</th>
-                                        <th>Período de Inscripción</th>
-                                        <th>Estado</th>
-                                        <th class="text-center">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($groups as $group)
-                                        <tr class="removable-item">
-                                            <td>
-                                                <strong>{{ $group->name }}</strong>
-                                            </td>
-                                            <td>
-                                                <div class="finance-table-inner-item">
-                                                    <i class="fa fa-calendar-plus text-success" title="Fecha de inicio"></i>
-                                                    {{ \Carbon\Carbon::parse($group->start_date)->translatedFormat('d \d\e F \d\e Y') }}
-                                                </div>
-
-                                                <div class="finance-table-inner-item">
-                                                    <i class="fa fa-calendar-times text-danger" title="Fecha de fin"></i>
-                                                    {{ \Carbon\Carbon::parse($group->end_date)->translatedFormat('d \d\e F \d\e Y') }}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="finance-table-inner-item">
-                                                    <i class="fa fa-calendar-check text-success" title="Inicio de inscripción"></i>
-                                                    {{ \Carbon\Carbon::parse($group->enrollment_start_at)->translatedFormat('d \d\e F \d\e Y') }}
-                                                </div>
-
-                                                <div class="finance-table-inner-item">
-                                                    <i class="fa fa-calendar-times text-danger" title="Fin de inscripción"></i>
-                                                    {{ \Carbon\Carbon::parse($group->enrollment_end_at)->translatedFormat('d \d\e F \d\e Y') }}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <select
-                                                    class="status-select badge text-white" data-id="{{ $group->id }}"
-                                                    style="background-color: {{ $group->status == 1 ? '#28a745' : '#dc3545' }};">
-                                                    <option value="1" @selected($group->status == 1)>Activo</option>
-                                                    <option value="0" @selected($group->status == 0)>Inactivo</option>
-                                                </select>
-                                            </td>
-                                            <td class="text-center">
-                                                <a href="javascript:void(0);" class="delete-btn" data-uuid="{{ $group->uuid }}" title="Eliminar">
-                                                    <img src="{{ asset('admin/images/icons/trash-2.svg') }}" alt="eliminar">
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @empty
+                        <div class="card-body p-0">
+                            <div class="customers__table table-responsive">
+                                <table id="customers-table" class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light text-muted uppercase-header">
                                         <tr>
-                                            <td colspan="5" class="text-center">
-                                                <p class="m-0">No hay datos disponibles</p>
-                                            </td>
+                                            <th class="ps-4">Nombre del Grupo</th>
+                                            <th>Período del Ciclo</th>
+                                            <th>Período de Inscripción</th>
+                                            <th>Estado</th>
+                                            <th class="text-center pe-4">Acciones</th>
                                         </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                            <div class="mt-3">
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($groups as $group)
+                                            <tr class="removable-item">
+                                                <td class="ps-4">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-sm bg-primary-light text-primary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(var(--bs-primary-rgb), 0.1);">
+                                                            <i class="fas fa-layer-group"></i>
+                                                        </div>
+                                                        <span class="fw-bold text-dark">{{ $group->name }}</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex flex-column small">
+                                                        <span class="mb-1 text-nowrap">
+                                                            <i class="fa fa-calendar-check text-success me-2 opacity-75"></i>
+                                                            {{ \Carbon\Carbon::parse($group->start_date)->translatedFormat('d M, Y') }}
+                                                        </span>
+                                                        <span class="text-nowrap">
+                                                            <i class="fa fa-calendar-times text-danger me-2 opacity-75"></i>
+                                                            {{ \Carbon\Carbon::parse($group->end_date)->translatedFormat('d M, Y') }}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex flex-column small">
+                                                        <span class="mb-1 text-nowrap">
+                                                            <i class="far fa-clock text-info me-2 opacity-75"></i>
+                                                            {{ \Carbon\Carbon::parse($group->enrollment_start_at)->translatedFormat('d M, Y') }}
+                                                        </span>
+                                                        <span class="text-nowrap">
+                                                            <i class="far fa-clock text-muted me-2 opacity-75"></i>
+                                                            {{ \Carbon\Carbon::parse($group->enrollment_end_at)->translatedFormat('d M, Y') }}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="status-badge-container">
+                                                        <select
+                                                            class="status-select form-select form-select-sm border-0 text-white rounded-pill px-3" 
+                                                            data-id="{{ $group->id }}"
+                                                            style="background-color: {{ $group->status == 1 ? '#28a745' : '#dc3545' }}; min-width: 100px; cursor: pointer;">
+                                                            <option value="1" @selected($group->status == 1)>Activo</option>
+                                                            <option value="0" @selected($group->status == 0)>Inactivo</option>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <div class="d-flex justify-content-center gap-2">
+                                                        <a href="{{route('admin.group.view', [$group->uuid])}}" class="btn btn-sm btn-outline-primary border-0 rounded-circle p-2" title="Ver Detalles">
+                                                            <img src="{{asset('admin/images/icons/eye-2.svg')}}" width="18" alt="eye">
+                                                        </a>
+                                                        <button class="btn btn-sm btn-outline-danger border-0 rounded-circle p-2 delete-btn" data-uuid="{{ $group->uuid }}" title="Eliminar">
+                                                            <img src="{{ asset('admin/images/icons/trash-2.svg') }}" width="18" alt="eliminar">
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center py-5">
+                                                    <div class="text-muted">
+                                                        <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i>
+                                                        <p class="mb-0">No se encontraron grupos disponibles</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="small text-muted mb-0">Mostrando registros actuales</p>
                                 {{ @$groups->links() }}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <!-- Page content area end -->
@@ -109,6 +130,27 @@
 
 @push('style')
     <link rel="stylesheet" href="{{ asset('admin/css/jquery.dataTables.min.css') }}">
+    <style>
+        .table > :not(caption) > * > * {
+            padding: 1rem 0.75rem;
+        }
+        .removable-item:hover {
+            background-color: rgba(0,0,0,0.01);
+        }
+        .status-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 10px 10px;
+        }
+        .btn-outline-primary:hover, .btn-outline-danger:hover {
+            background-color: rgba(0,0,0,0.05);
+            transform: translateY(-1px);
+        }
+    </style>
 @endpush
 
 @push('script')
@@ -144,7 +186,6 @@
                         },
                         success: function (response) {
                             toastr.options.positionClass = 'toast-bottom-right';
-
                             if (response.status) {
                                 const bgColor = status == 1 ? '#28a745' : '#dc3545';
                                 $select.css('background-color', bgColor);
@@ -167,7 +208,6 @@
 
             function revert() {
                 $select.val(previousValue);
-
                 const bgColor = previousValue == 1 ? '#28a745' : '#dc3545';
                 $select.css('background-color', bgColor);
             }
@@ -187,7 +227,7 @@
 
             Swal.fire({
                 title: "¿Estás seguro?",
-                text: "Se eliminará el grupo y toda su información. ¡No podrás recuperar estos datos!",
+                text: "Se eliminará el grupo y toda su información.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Sí, eliminar",
@@ -209,25 +249,10 @@
                                 $row.fadeOut('fast', function() {
                                     $(this).remove();
                                 });
-                                
-                                // Recargar después de 1 segundo
-                                setTimeout(() => {
-                                    location.reload();
-                                }, 1000);
+                                setTimeout(() => { location.reload(); }, 1000);
                             } else {
                                 toastr.error(response.message);
                             }
-                        },
-                        error: function(xhr) {
-                            toastr.options.positionClass = 'toast-bottom-right';
-                            let errorMessage = 'Error al eliminar el grupo';
-                            
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
-                            }
-                            
-                            toastr.error(errorMessage);
-                            console.error(xhr);
                         }
                     });
                 }

@@ -20,6 +20,18 @@ class GroupController extends Controller
         return view('admin.group.index')->with($data);
     }
 
+    public function view($uuid)
+    {
+        $group = Group::where('uuid', $uuid)->with(['courses', 'students'])->firstOrFail();
+        
+        $data['title'] = 'Admin - Detalles del Grupo';
+        $data['group'] = $group;
+        $data['courses'] = $group->courses()->paginate(10);
+        $data['totalStudents'] = $group->students()->count();
+
+        return view('admin.group.view', $data);
+    }
+
     public function createStepOne()
     {
         $data['title'] = 'Admin - Crear Grupo';

@@ -53,8 +53,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('admin.dashboard');
 
 // Grupos
-Route::prefix('groups')->group(function () {     
+Route::prefix('groups')->group(function () {   
     Route::get('/', [GroupController::class, 'index'])->name('admin.group.index');
+    Route::get('view/{uuid}', [GroupController::class, 'view'])->name('admin.group.view');
     Route::get('create-step-one', [GroupController::class, 'createStepOne'])->name('admin.group.createStepOne');
     Route::post('store-step-one', [GroupController::class, 'storeStepOne'])->name('admin.group.storeStepOne');
     Route::get('create-step-two/{uuid}', [GroupController::class, 'createStepTwo'])->name('admin.group.createStepTwo');
