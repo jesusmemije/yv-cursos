@@ -9,14 +9,14 @@
                     <div class="breadcrumb__content">
                         <div class="breadcrumb__content__left">
                             <div class="breadcrumb__title">
-                                <h2>Grupos</h2>
+                                <h2>Ciclos escolares</h2>
                             </div>
                         </div>
                         <div class="breadcrumb__content__right">
                             <nav aria-label="breadcrumb">
                                 <ul class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('admin.group.index') }}">Listado de grupos</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('admin.group.index') }}">Listado de ciclos</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">Asignar Cursos</li>
                                 </ul>
                             </nav>
@@ -30,9 +30,9 @@
                     <div class="customers__area bg-style mb-30">
                         <div class="item-title d-flex justify-content-between align-items-center">
                             <div>
-                                <h2>Asignar Diplomados al Grupo</h2>
+                                <h2>Asignar Diplomados al ciclo escolar</h2>
                                 <p class="text-muted mt-2">
-                                    <strong>Grupo:</strong> {{ $group->name }}<br>
+                                    <strong>Nombre del ciclo escolar:</strong> {{ $group->name }}<br>
                                     <strong>Ciclo:</strong> 
                                     {{ \Carbon\Carbon::parse($group->start_date)->translatedFormat('d \d\e F \d\e Y') }} 
                                     - 
@@ -51,7 +51,7 @@
                         <!-- Información -->
                         <div class="alert alert-info mb-4" role="alert">
                             <i class="fas fa-info-circle"></i>
-                            <strong>Nota:</strong> Selecciona los diplomados que estarán disponibles para este grupo. Los estudiantes que compren alguno de estos diplomados y seleccionen este grupo serán inscritos automáticamente.
+                            <strong>Nota:</strong> Selecciona los diplomados que estarán disponibles para este ciclo escolar. Los estudiantes que compren alguno de estos diplomados y seleccionen este ciclo escolar serán inscritos automáticamente.
                         </div>
 
                         <!-- Diplomados Disponibles -->
@@ -135,7 +135,7 @@
                                                         @if(in_array($course->id, $alreadyAddedCourseIds)) checked @endif
                                                         style="width: 20px; height: 20px; cursor: pointer;">
                                                     <label class="form-check-label ms-2 cursor-pointer" for="course_{{ $course->id }}" style="cursor: pointer;">
-                                                        Incluir en el grupo
+                                                        Incluir al ciclo escolar
                                                     </label>
                                                 </div>
                                             </div>
@@ -148,7 +148,7 @@
                                         <div class="empty-data text-center py-5">
                                             <img src="{{ asset('frontend/assets/img/empty-data-img.png') }}" alt="Sin diplomados" class="img-fluid mb-3" style="max-width: 200px;">
                                             <h5 class="my-3 text-muted">No hay diplomados disponibles</h5>
-                                            <p class="text-muted">Por favor, crea diplomados antes de asignarlos a un grupo.</p>
+                                            <p class="text-muted">Por favor, crea diplomados antes de asignarlos a un ciclo escolar.</p>
                                         </div>
                                     </div>
                                 @endforelse
@@ -257,7 +257,7 @@
                     },
                     success: function(response) {
                         $card.addClass('selected');
-                        toastr.success('Diplomado añadido al grupo');
+                        toastr.success('Diplomado añadido al ciclo escolar');
                     },
                     error: function(xhr) {
                         console.error(xhr);
@@ -278,7 +278,7 @@
                     },
                     success: function(response) {
                         $card.removeClass('selected');
-                        toastr.success('Diplomado removido del grupo');
+                        toastr.success('Diplomado removido del ciclo escolar');
                     },
                     error: function(xhr) {
                         console.error(xhr);
@@ -308,7 +308,7 @@
             
             Swal.fire({
                 title: '¿Confirmar asignación?',
-                text: `Se guardarán ${selectedCount} diplomado(s) para este grupo`,
+                text: `Se guardarán ${selectedCount} diplomado(s) para este ciclo escolar`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Guardar',
@@ -317,7 +317,7 @@
                 cancelButtonColor: '#d33'
             }).then((result) => {
                 if (result.value) {
-                    // Redirigir al listado de grupos
+                    // Redirigir al listado de ciclo escolar
                     window.location.href = '{{ route("admin.group.index") }}';
                 }
             });

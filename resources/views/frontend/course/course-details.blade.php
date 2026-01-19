@@ -242,14 +242,14 @@ $relation = getUserRoleRelation($course->user);
                             </button>
                         @else
                             @if($course->status == STATUS_APPROVED)
-                            {{-- Si es diplomado (category_id = 5), mostrar selector de grupos --}}
+                            {{-- Si es diplomado (category_id = 5), mostrar selector de ciclos escolares --}}
                             @if($course->category_id == 5)
                                 <div id="groupSelectionContainer">
                                     <!-- Se llenará dinámicamente con JavaScript -->
                                 </div>
 
                             @else
-                                {{-- Cursos normales sin selector de grupos --}}
+                                {{-- Cursos normales sin selector de ciclo escolar --}}
                                 <button class="theme-btn theme-button1 theme-button3 w-100 mb-30 addToCart" 
                                         data-course_id="{{ $course->id }}"
                                         data-route="{{ route('student.addToCart') }}">
@@ -566,7 +566,7 @@ $relation = getUserRoleRelation($course->user);
 
     <script>
         $(document).ready(function() {
-            // Cargar grupos al cargar la página si es diplomado
+            // Cargar ciclos escolares al cargar la página si es diplomado
             @if($course->category_id == 5)
                 loadGroupsForDiploma();
             @endif
@@ -580,13 +580,13 @@ $relation = getUserRoleRelation($course->user);
                         const groups = response.groups;
 
                         if (groupCount === 0) {
-                            // No hay grupos disponibles
+                            // No hay ciclos escolares disponibles
                             renderNoGroupsAvailable();
                         } else if (groupCount === 1) {
-                            // Un solo grupo: seleccionarlo automáticamente
+                            // Un solo ciclo escolar: seleccionarlo automáticamente
                             renderSingleGroup(groups[0]);
                         } else {
-                            // Múltiples grupos: mostrar selector
+                            // Múltiples ciclos escolares: mostrar selector
                             renderMultipleGroups(groups);
                         }
                     },
@@ -604,7 +604,7 @@ $relation = getUserRoleRelation($course->user);
                         </div>
                         <div>
                             <h5 class="alert-heading mb-1">{{ __('Próximamente disponible') }}</h5>
-                            <p class="mb-0">{{ __('Este diplomado aún no tiene grupos disponibles para inscripción.') }}</p>
+                            <p class="mb-0">{{ __('Este diplomado aún no tiene ciclos escolares disponibles para inscripción.') }}</p>
                         </div>
                     </div>
                 `;
@@ -668,16 +668,16 @@ $relation = getUserRoleRelation($course->user);
             function renderMultipleGroups(groups) {
                 const html = `
                     <div class="mb-3">
-                        <label class="form-label">{{ __('Seleccionar Grupo') }} <span class="text-danger">*</span></label>
+                        <label class="form-label">{{ __('Seleccionar ciclo escolar') }} <span class="text-danger">*</span></label>
                         <select id="groupSelect" class="form-select" required>
-                            <option value="">{{ __('Elige un grupo...') }}</option>
+                            <option value="">{{ __('Elige un ciclo escolar...') }}</option>
                             ${groups.map(g => `<option value="${g.id}" data-start-date="${g.start_date}" data-end-date="${g.end_date}">${g.name}</option>`).join('')}
                         </select>
                         <small class="text-muted d-block mt-2">
-                            {{ __('Este diplomado está disponible en múltiples grupos. Elige el que deseas.') }}
+                            {{ __('Este diplomado está disponible en múltiples ciclos escolares. Elige el que deseas.') }}
                         </small>
 
-                        {{-- Información del ciclo (se muestra al seleccionar grupo) --}}
+                        {{-- Información del ciclo (se muestra al seleccionar ciclo escolar) --}}
                         <div id="groupCycleInfo" class="alert alert-light mt-2 border d-none">
                             <div class="row">
                                 <div class="col-md-6">
@@ -711,7 +711,7 @@ $relation = getUserRoleRelation($course->user);
                 $('#groupSelectionContainer').html(html);
                 feather.replace();
 
-                // Mostrar/ocultar información del ciclo al seleccionar grupo
+                // Mostrar/ocultar información del ciclo al seleccionar ciclo escolar
                 $(document).on('change', '#groupSelect', function() {
                     const selectedOption = $(this).find('option:selected');
                     const startDate = selectedOption.data('start-date');
@@ -734,7 +734,7 @@ $relation = getUserRoleRelation($course->user);
                 const html = `
                     <div class="alert alert-danger mb-30">
                         <i class="fa fa-exclamation-circle me-2"></i>
-                        {{ __('Error al cargar los grupos disponibles') }}
+                        {{ __('Error al cargar los ciclos escolares disponibles') }}
                     </div>
                 `;
                 $('#groupSelectionContainer').html(html);

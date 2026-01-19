@@ -56,9 +56,9 @@
             groupId = groupSelect ? groupSelect.value : null;
         }
         
-        // Validar que se haya seleccionado un grupo
+        // Validar que se haya seleccionado un ciclo escolar
         if (!groupId) {
-            toastr.warning("Por favor selecciona un grupo");
+            toastr.warning("Por favor selecciona un ciclo escolar");
             return false;
         }
 

@@ -109,19 +109,19 @@ class DashboardController extends Controller
 
     public function groups() 
     {
-        $data['title'] = 'Mis grupos';
+        $data['title'] = 'Mis ciclos escolares';
 
         // Obtener cursos del instructor
         $instructorCourseIds = Course::where('user_id', Auth::id())
             ->pluck('id')
             ->toArray();
 
-        // Obtener grupos relacionados a los cursos del instructor
+        // Obtener ciclos escolares relacionados a los cursos del instructor
         $data['groups'] = Group::whereHas('courses', function ($query) use ($instructorCourseIds) {
             $query->whereIn('course_id', $instructorCourseIds);
         })->with(['students', 'courses'])->get();
 
-        // Agrupar estudiantes por grupo
+        // Agrupar estudiantes por ciclo escolar
         $data['groupsWithStats'] = $data['groups']->map(function ($group) use ($instructorCourseIds) {
             return [
                 'group' => $group,

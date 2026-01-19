@@ -15,7 +15,7 @@ class GroupController extends Controller
 
     public function index()
     {
-        $data['title'] = 'Admin - Listado de Grupos';
+        $data['title'] = 'Admin - Listado de ciclos escolares';
         $data['groups'] = Group::latest()->paginate(10);
         return view('admin.group.index')->with($data);
     }
@@ -24,7 +24,7 @@ class GroupController extends Controller
     {
         $group = Group::where('uuid', $uuid)->with(['courses', 'students'])->firstOrFail();
         
-        $data['title'] = 'Admin - Detalles del Grupo';
+        $data['title'] = 'Admin - Detalles del ciclo escolar';
         $data['group'] = $group;
         $data['courses'] = $group->courses()->paginate(10);
         $data['totalStudents'] = $group->students()->count();
@@ -34,7 +34,7 @@ class GroupController extends Controller
 
     public function createStepOne()
     {
-        $data['title'] = 'Admin - Crear Grupo';
+        $data['title'] = 'Admin - Crear ciclo escolar';
         return view('admin.group.create-step-1')->with($data);
     }
 
@@ -52,12 +52,12 @@ class GroupController extends Controller
             $group->status = 1;
             $group->save();
 
-            $this->showToastrMessage('success', __('Grupo creado exitosamente'));
+            $this->showToastrMessage('success', __('Ciclo escolar creado exitosamente'));
             
             return redirect()->route('admin.group.createStepTwo', ['uuid' => $group->uuid]);
 
         } catch (\Exception $e) {
-            $this->showToastrMessage('error', __('Error al crear el grupo'));
+            $this->showToastrMessage('error', __('Error al crear el ciclo escolar'));
             return redirect()->back()->withInput();
         }
     }
@@ -130,7 +130,7 @@ class GroupController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => __('Estado del grupo actualizado correctamente')
+                'message' => __('Estado del ciclo escolar actualizado correctamente')
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -149,31 +149,31 @@ class GroupController extends Controller
 
             $group = Group::where('uuid', $request->uuid)->firstOrFail();
 
-            // Verificar si hay estudiantes inscritos en este grupo
+            // Verificar si hay estudiantes inscritos en este ciclo escolar
             $enrolledStudentsCount = $group->students()->count();
 
             if ($enrolledStudentsCount > 0) {
                 return response()->json([
                     'status' => false,
-                    'message' => __('No se puede eliminar el grupo porque tiene ' . $enrolledStudentsCount . ' estudiante(s) inscrito(s)')
+                    'message' => __('No se puede eliminar el ciclo escolar porque tiene ' . $enrolledStudentsCount . ' estudiante(s) inscrito(s)')
                 ]);
             }
 
             // Eliminar todas las relaciones
-            // 1. Desasociar todos los cursos del grupo
+            // 1. Desasociar todos los cursos del ciclo escolar
             $group->courses()->detach();
 
-            // 2. Eliminar el grupo
+            // 2. Eliminar el ciclo escolar
             $group->delete();
 
             return response()->json([
                 'status' => true,
-                'message' => __('Grupo eliminado correctamente')
+                'message' => __('Ciclo escolar eliminado correctamente')
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => __('Error al eliminar el grupo: ') . $e->getMessage()
+                'message' => __('Error al eliminar el ciclo escolar: ') . $e->getMessage()
             ]);
         }
     }

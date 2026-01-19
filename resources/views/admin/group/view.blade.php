@@ -7,7 +7,7 @@
             <div class="col-md-6">
                 <div class="breadcrumb__content">
                     <div class="breadcrumb__title">
-                        <h2>Detalles del Grupo</h2>
+                        <h2>Detalles del ciclo escolar</h2>
                     </div>
                 </div>
             </div>

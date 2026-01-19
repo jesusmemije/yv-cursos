@@ -9,14 +9,14 @@
                     <div class="breadcrumb__content">
                         <div class="breadcrumb__content__left">
                             <div class="breadcrumb__title">
-                                <h2>Grupos</h2>
+                                <h2>Ciclos escolares</h2>
                             </div>
                         </div>
                         <div class="breadcrumb__content__right">
                             <nav aria-label="breadcrumb">
                                 <ul class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Grupos</li>
+                                    <li class="breadcrumb-item active" aria-current="page">Ciclos escolares</li>
                                 </ul>
                             </nav>
                         </div>
@@ -28,15 +28,15 @@
                 <div class="col-md-12">
                     <div class="card border-0 shadow-sm customers__area">
                         <div class="item-title d-flex justify-content-between">
-                            <h2>Listado de grupos</h2>
-                            <a href="{{route('admin.group.createStepOne')}}" class="btn btn-primary btn-sm"> <i class="fa fa-plus"></i> Agregar grupo </a>
+                            <h2>Listado de ciclos escolares</h2>
+                            <a href="{{route('admin.group.createStepOne')}}" class="btn btn-primary btn-sm"> <i class="fa fa-plus"></i> Agregar ciclo escolar</a>
                         </div>
                         <div class="card-body p-0">
                             <div class="customers__table table-responsive">
                                 <table id="customers-table" class="table table-hover align-middle mb-0">
                                     <thead class="bg-light text-muted uppercase-header">
                                         <tr>
-                                            <th class="ps-4">Nombre del Grupo</th>
+                                            <th class="ps-4">Nombre del ciclo escolar</th>
                                             <th>Período del Ciclo</th>
                                             <th>Período de Inscripción</th>
                                             <th>Estado</th>
@@ -105,7 +105,7 @@
                                                 <td colspan="5" class="text-center py-5">
                                                     <div class="text-muted">
                                                         <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i>
-                                                        <p class="mb-0">No se encontraron grupos disponibles</p>
+                                                        <p class="mb-0">No se encontraron ciclos escolares disponibles</p>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -159,7 +159,7 @@
     <script>
         'use strict'
 
-        // Cambiar estado del grupo
+        // Cambiar estado del ciclo escolar
         $(document).on('change', '.status-select', function () {
             const $select = $(this);
             const previousValue = $select.data('previous');
@@ -169,7 +169,7 @@
 
             Swal.fire({
                 title: "¡Cambiar estado!",
-                text: `¿Deseas cambiar el estado del grupo a "${statusText}"?`,
+                text: `¿Deseas cambiar el estado del ciclo escolar a "${statusText}"?`,
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Sí, cambiar",
@@ -219,7 +219,7 @@
             });
         });
 
-        // Eliminar grupo
+        // Eliminar ciclo escolar
         $(document).on('click', '.delete-btn', function(e) {
             e.preventDefault();
             const uuid = $(this).data('uuid');
@@ -227,7 +227,7 @@
 
             Swal.fire({
                 title: "¿Estás seguro?",
-                text: "Se eliminará el grupo y toda su información.",
+                text: "Se eliminará el ciclo escolar y toda su información.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Sí, eliminar",

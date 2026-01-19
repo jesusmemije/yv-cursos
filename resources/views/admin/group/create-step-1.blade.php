@@ -9,15 +9,15 @@
                     <div class="breadcrumb__content">
                         <div class="breadcrumb__content__left">
                             <div class="breadcrumb__title">
-                                <h2>Grupos</h2>
+                                <h2>Ciclos escolares</h2>
                             </div>
                         </div>
                         <div class="breadcrumb__content__right">
                             <nav aria-label="breadcrumb">
                                 <ul class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('admin.group.index') }}">Listado de grupos</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Agregar grupo</li>
+                                    <li class="breadcrumb-item"><a href="{{ route('admin.group.index') }}">Listado de ciclos</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Agregar ciclo escolar</li>
                                 </ul>
                             </nav>
                         </div>
@@ -28,7 +28,7 @@
                 <div class="col-md-12">
                     <div class="customers__area bg-style mb-30">
                         <div class="item-title d-flex justify-content-between align-items-center">
-                            <h2>Agregar Grupo</h2>
+                            <h2>Agregar ciclo escolar</h2>
                             <a href="{{ route('admin.group.index') }}" class="btn btn-secondary btn-sm">
                                 <i class="fa fa-arrow-left"></i> Volver
                             </a>
@@ -43,13 +43,13 @@
                         <form action="{{ route('admin.group.storeStepOne') }}" method="post" class="form-horizontal">
                             @csrf
                             
-                            <!-- Nombre del Grupo -->
+                            <!-- Nombre del ciclo escolar -->
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <div class="input__group text-black">
-                                        <label>Nombre del Grupo <span class="text-danger">*</span></label>
+                                        <label>Nombre del ciclo escolar <span class="text-danger">*</span></label>
                                         <input type="text" name="group_name" value="{{ old('group_name') }}"
-                                            placeholder="Ej: Grupo A - Semestre 2024-I" class="form-control @error('group_name') is-invalid @enderror">
+                                            placeholder="Ej: Ciclo escolar Enero-Junio 2026" class="form-control @error('group_name') is-invalid @enderror">
                                         @error('group_name')
                                             <span class="text-danger">
                                                 <i class="fas fa-exclamation-triangle"></i> {{ $message }}

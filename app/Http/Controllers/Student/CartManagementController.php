@@ -445,28 +445,28 @@ class CartManagementController extends Controller
                     return response()->json($response);
                 }
 
-                // Si es diplomado, validar que el grupo existe y tiene el curso
+                // Si es diplomado, validar que el ciclo escolar existe y tiene el curso
                 if ($request->group_id) {
                     $group = Group::find($request->group_id);
                     if (!$group || !$group->courses()->where('course_id', $request->course_id)->exists()) {
                         return response()->json([
-                            'msg' => __("¡Este curso no está disponible para este grupo!"),
+                            'msg' => __("¡Este curso no está disponible para este ciclo escolar!"),
                             'status' => 402
                         ]);
                     }
 
-                    // Validar que el grupo está activo y dentro de período de inscripción
+                    // Validar que el ciclo escolar está activo y dentro de período de inscripción
                     $now = now();
                     if ($group->status != 1 || 
                         $now->lessThan($group->enrollment_start_at) || 
                         $now->greaterThan($group->enrollment_end_at)) {
                         return response()->json([
-                            'msg' => __("¡Este grupo no está disponible para inscripción en este momento!"),
+                            'msg' => __("¡Este ciclo escolar no está disponible para inscripción en este momento!"),
                             'status' => 403
                         ]);
                     }
 
-                    // Evitar duplicados: mismo curso + mismo grupo
+                    // Evitar duplicados: mismo curso + mismo ciclo escolar
                     $cartExists = CartManagement::where('user_id', Auth::id())
                         ->where('course_id', $request->course_id)
                         ->where('group_id', $request->group_id)
@@ -479,7 +479,7 @@ class CartManagementController extends Controller
                         ]);
                     }
                 } else {
-                    // Cursos normales sin grupo
+                    // Cursos normales sin ciclo escolar
                     $cartExists = CartManagement::where('user_id', Auth::id())
                         ->where('course_id', $request->course_id)
                         ->whereNull('group_id')
@@ -1737,7 +1737,7 @@ class CartManagementController extends Controller
                     $order_item->save();
                     $this->addAffiliateHistory($cart,$order,$order_item);
                     
-                    // Inscribir en el grupo específico si existe
+                    // Inscribir en el ciclo escolar específico si existe
                     if ($cart->group_id) {
                         $this->enrollStudentToGroup($cart->course_id, auth()->id(), $cart->group_id);
                     }
@@ -1888,22 +1888,20 @@ class CartManagementController extends Controller
     }
 
     /**
-     * Inscribir automáticamente al estudiante en el grupo asociado al curso
+     * Inscribir automáticamente al estudiante en el ciclo escolar asociado al diplomado
      */
     private function enrollStudentToGroup($courseId, $userId, $groupId = null)
     {
         if ($groupId) {
-            // Inscribir en el grupo específico
+            // Inscribir en el ciclo escolar específico
             $group = Group::find($groupId);
             
             if ($group) {
                 $group->students()->syncWithoutDetaching($userId);
-                Log::info("Usuario {$userId} inscrito al grupo {$group->id} - Curso {$courseId}");
+                Log::info("Usuario {$userId} inscrito al ciclo escolar {$group->id} - Diplomado {$courseId}");
             }
         }
     }
-
-    // Agregar este método para obtener grupos disponibles de un diplomado
 
     public function getGroupsForDiploma($courseId)
     {
@@ -1912,7 +1910,7 @@ class CartManagementController extends Controller
         $groups = Group::whereHas('courses', function ($query) use ($courseId) {
             $query->where('course_id', $courseId);
         })
-        ->where('status', 1) // Solo grupos activos
+        ->where('status', 1) // Solo ciclos escolares activos
         ->whereDate('enrollment_start_at', '<=', $now)
         ->whereDate('enrollment_end_at', '>=', $now)
         ->select('id', 'name', 'start_date', 'end_date')

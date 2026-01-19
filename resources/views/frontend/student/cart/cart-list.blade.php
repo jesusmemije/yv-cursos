@@ -123,10 +123,10 @@
                                                         @endif
                                                     </h5>
                                                     
-                                                    {{-- Mostrar grupo y fechas del ciclo solo si existe (diplomado) --}}
+                                                    {{-- Mostrar ciclo escolar y fechas del ciclo solo si existe (diplomado) --}}
                                                     @if($cart->group_id && $cart->group)
                                                         <div class="card-text font-medium font-12 text-muted mb-2">
-                                                            <i class="fa fa-users"></i> <strong>Grupo:</strong> {{ $cart->group->name }}
+                                                            <i class="fa fa-users"></i> <strong>Ciclo escolar:</strong> {{ $cart->group->name }}
                                                         </div>
                                                         
                                                         {{-- Mostrar fechas del ciclo --}}

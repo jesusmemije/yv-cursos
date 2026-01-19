@@ -2,11 +2,11 @@
 
 @section('breadcrumb')
     <div class="page-banner-content text-center">
-        <h3 class="page-banner-heading text-black pb-15">Mis Grupos</h3>
+        <h3 class="page-banner-heading text-black pb-15">Mis ciclos escolares</h3>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-center">
                 <li class="breadcrumb-item font-14"><a href="{{ route('instructor.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item font-14 active" aria-current="page">Grupos</li>
+                <li class="breadcrumb-item font-14 active" aria-current="page">Ciclos escolares</li>
             </ol>
         </nav>
     </div>
@@ -15,7 +15,7 @@
 @section('content')
     <div class="instructor-profile-right-part">
         <div class="instructor-my-courses-title d-flex justify-content-between align-items-center">
-            <h6>Grupos Disponibles</h6>
+            <h6>Ciclos escolares disponibles</h6>
         </div>
 
         <div class="row">
@@ -82,7 +82,7 @@
                         </div>
                     @empty
                         <div class="alert alert-info" role="alert">
-                            <i class="fas fa-info-circle"></i> No tienes grupos asociados aún
+                            <i class="fas fa-info-circle"></i> No tienes ciclos escolares asociados aún
                         </div>
                     @endforelse
                 </div>

@@ -25,8 +25,8 @@
 
         <li class=" {{ active_if_match('admin/groups') }} ">
             <a href="{{ route('admin.group.index') }}">
-                <span class="iconify" data-icon="bxs:group"></span>
-                <span>Grupos</span>
+                <span class="iconify" data-icon="bx:calendar-event"></span>
+                <span>Ciclos escolares</span>
             </a>
         </li>
 

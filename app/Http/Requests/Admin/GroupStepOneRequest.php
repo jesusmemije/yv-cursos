@@ -47,8 +47,8 @@ class GroupStepOneRequest extends FormRequest
     public function messages()
     {
         return [
-            'group_name.required' => __('El nombre del grupo es obligatorio'),
-            'group_name.unique' => __('Este nombre de grupo ya existe'),
+            'group_name.required' => __('El nombre del ciclo escolar es obligatorio'),
+            'group_name.unique' => __('Este nombre de ciclo escolar ya existe'),
             'group_name.max' => __('El nombre no puede exceder 255 caracteres'),
             'start_date.required' => __('La fecha de inicio del ciclo es obligatoria'),
             'start_date.after_or_equal' => __('La fecha de inicio debe ser hoy o posterior'),

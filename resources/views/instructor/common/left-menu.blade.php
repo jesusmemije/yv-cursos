@@ -2,7 +2,7 @@
     <nav class="account-page-menu">
         <ul>
             <li><a href="{{route('instructor.dashboard')}}" class="{{active_if_full_match('instructor/dashboard')}} {{ @$navDashboardActiveClass }}"><span class="iconify mr-15" data-icon="feather:home"></span>{{__('Dashboard')}}</a></li>
-            <li><a href="{{route('instructor.groups.index')}}" class="{{active_if_full_match('instructor/groups/index')}} {{ @$navCourseActiveClass }}" ><span class="iconify mr-15" data-icon="mdi:account-group"></span>Mis Grupos</a></li>
+            <li><a href="{{route('instructor.groups.index')}}" class="{{active_if_full_match('instructor/groups/index')}} {{ @$navCourseActiveClass }}" ><span class="iconify mr-15" data-icon="bx:calendar-event"></span>Ciclos escolares</a></li>
             <li><a href="{{route('instructor.course.create')}}" class="{{active_if_full_match('instructor/course/create')}} {{ @$navCourseUploadActiveClass }}"><span class="iconify mr-15" data-icon="feather:upload"></span>{{__('Upload Course')}}</a></li>
             <li><a href="{{route('instructor.course')}}" class="{{active_if_full_match('instructor/course')}} {{ @$navCourseActiveClass }}" ><span class="iconify mr-15" data-icon="ion:log-in-outline"></span>{{__('My Courses')}}</a></li>
             @if(@auth()->user()->instructor->organization_id != NULL)
