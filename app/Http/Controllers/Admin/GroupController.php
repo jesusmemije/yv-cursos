@@ -95,7 +95,7 @@ class GroupController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Curso añadido']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -112,7 +112,7 @@ class GroupController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Curso removido']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -136,7 +136,7 @@ class GroupController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => __('Error al actualizar el estado')
-            ], 400);
+            ]);
         }
     }
 
@@ -156,7 +156,7 @@ class GroupController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => __('No se puede eliminar el grupo porque tiene ' . $enrolledStudentsCount . ' estudiante(s) inscrito(s)')
-                ], 422);
+                ]);
             }
 
             // Eliminar todas las relaciones
@@ -174,7 +174,7 @@ class GroupController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => __('Error al eliminar el grupo: ') . $e->getMessage()
-            ], 400);
+            ]);
         }
     }
 }
