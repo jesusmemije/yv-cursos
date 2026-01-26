@@ -106,32 +106,4 @@ class DashboardController extends Controller
         $data['levels'] = RankingLevel::orderBy('serial_no', 'asc')->where('type', RANKING_LEVEL_EARNING)->get();
         return view('instructor.ranking-badge-list', $data);
     }
-
-    public function groups() 
-    {
-        $data['title'] = 'Mis ciclos escolares';
-
-        // Obtener cursos del instructor
-        $instructorCourseIds = Course::where('user_id', Auth::id())
-            ->pluck('id')
-            ->toArray();
-
-        // Obtener ciclos escolares relacionados a los cursos del instructor
-        $data['groups'] = Group::whereHas('courses', function ($query) use ($instructorCourseIds) {
-            $query->whereIn('course_id', $instructorCourseIds);
-        })->with(['students', 'courses'])->get();
-
-        // Agrupar estudiantes por ciclo escolar
-        $data['groupsWithStats'] = $data['groups']->map(function ($group) use ($instructorCourseIds) {
-            return [
-                'group' => $group,
-                'total_students' => $group->students()->count(),
-                'related_courses' => $group->courses()
-                    ->whereIn('courses.id', $instructorCourseIds)
-                    ->count()
-            ];
-        });
-
-        return view('instructor.groups.index', $data);
-    }
 }

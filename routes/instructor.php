@@ -23,11 +23,19 @@ use App\Http\Controllers\Instructor\MultiInstructorController;
 use App\Http\Controllers\Instructor\RefundController;
 use App\Http\Controllers\Instructor\ScormController;
 use App\Http\Controllers\Instructor\ZoomSettingController;
+use App\Http\Controllers\Instructor\CycleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('instructor.dashboard');
 Route::get('ranking-level-list', [DashboardController::class, 'rankingLevelList'])->name('instructor.ranking-level');
-Route::get('groups', [DashboardController::class, 'groups'])->name('instructor.groups.index');
+
+Route::prefix('cycles')->name('instructor.cycles.')->group(function () {
+    Route::get('/', [CycleController::class, 'index'])->name('index');
+    Route::get('{cycleUuid}/courses', [CycleController::class, 'coursesByCycle'])->name('coursesByCycle');
+    Route::get('{cycleUuid}/course/{courseId}/students', [CycleController::class, 'studentsByCourse'])->name('studentsByCourse');
+    Route::get('{cycleUuid}/course/{courseId}/final-project', [CycleController::class, 'registerFinalProject'])->name('registerFinalProject');
+    Route::post('{cycleUuid}/course/{courseId}/final-project', [CycleController::class, 'storeFinalProject'])->name('storeFinalProject');
+});
 
 Route::get('profile', [ProfileController::class, 'profile'])->name('instructor.profile');
 Route::post('save-profile/{uuid}', [ProfileController::class, 'saveProfile'])->name('save.profile');

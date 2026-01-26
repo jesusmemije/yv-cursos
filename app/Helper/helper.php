@@ -388,24 +388,56 @@ function adminNotifications()
     return \App\Models\Notification::where('user_type', 1)->where('is_seen', 'no')->orderBy('created_at', 'DESC')->paginate(5);
 }
 
+/**
+ * Calcular progreso del estudiante en un curso
+ * @param int $course_id
+ * @param int $enrollment_id
+ * @return float Porcentaje de progreso (0-100)
+ */
 function studentCourseProgress($course_id, $enrollment_id)
 {
-    $course = \App\Models\Course::whereId($course_id)->with('scorm_course')->first();
-    if ($course->course_type == COURSE_TYPE_GENERAL) {
-        $number_of_total_lecture = \App\Models\Course_lecture::where('course_id', $course_id)->count();
-        $number_of_total_view_lecture = \App\Models\Course_lecture_views::where('course_id', $course_id)->where('enrollment_id', $enrollment_id)->where('user_id', auth()->user()->id)->count();
-        $result = 0;
-        if ($number_of_total_lecture) {
-            $result = (($number_of_total_view_lecture * 100) / $number_of_total_lecture ?? 1);
+    try {
+        $course = \App\Models\Course::with('lectures')->find($course_id);
+        
+        if (!$course) {
+            return 0;
         }
-    } else {
-        $enrollment = Enrollment::whereId($enrollment_id)->first();
-        $result = ($enrollment) ? ($enrollment->completed_time / $course->scorm_course->duration_in_second) * 100 : 0;
+
+        // Obtener enrollment para validación
+        $enrollment = \App\Models\Enrollment::find($enrollment_id);
+        if (!$enrollment) {
+            return 0;
+        }
+
+        // Contar lecciones totales (solo lecciones activas)
+        $totalLectures = $course->lectures()
+            ->where('course_lectures.lecture_type', '!=', 'quiz')
+            ->where('course_lectures.lecture_type', '!=', 'assignment')
+            ->count();
+
+        // Si no hay lecciones, considerar completado
+        if ($totalLectures == 0) {
+            return 100;
+        }
+
+        // Contar lecciones vistas por este estudiante en este enrollment
+        $viewedLectures = \App\Models\Course_lecture_views::where('course_id', $course_id)
+            ->where('user_id', $enrollment->user_id)
+            ->where('enrollment_id', $enrollment_id)
+            ->distinct('course_lecture_id')
+            ->count();
+
+        // Calcular porcentaje
+        $progress = ($viewedLectures / $totalLectures) * 100;
+        
+        // Asegurar que no exceda 100% y redondear a 2 decimales
+        return min(round($progress, 2), 100);
+
+    } catch (\Exception $e) {
+        \Log::error('Error calculating student progress: ' . $e->getMessage());
+        return 0;
     }
-
-    return min($result, 100);
 }
-
 
 function getLeftDuration($start_date, $end_date)
 {

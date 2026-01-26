@@ -9,6 +9,7 @@ use App\Http\Controllers\Student\ChatController;
 use App\Http\Controllers\Student\DashboardController;
 use App\Http\Controllers\Student\MyCourseController;
 use App\Http\Controllers\Student\WishlistController;
+use App\Http\Controllers\Student\FinalProjectController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['as' => 'student.'], function () {
@@ -113,4 +114,9 @@ Route::group(['as' => 'student.'], function () {
     Route::get('agora-open-class/{uuid}/{type}', [AgoraController::class, 'openLiveClass'])->name('agora-open-class');
 
     Route::post('refund-request', [MyCourseController::class, 'refundRequest'])->name('refund.request');
+
+    Route::prefix('final-project')->group(function () {
+        Route::get('/{enrollmentId}', [FinalProjectController::class, 'show'])->name('final-project.show');
+        Route::post('/store', [FinalProjectController::class, 'store'])->name('final-project.store');
+    });
 });
