@@ -13,6 +13,7 @@ use App\Models\Enrollment;
 use App\Models\Review;
 use App\Models\Subcategory;
 use App\Models\Tag;
+use App\Models\Group;
 use App\Traits\General;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -446,5 +447,24 @@ class CourseController extends Controller
         $response['appendReviews'] = View::make('frontend.course.partial.render-partial-review-list', $data)->render();
         $response['reviews'] = Review::whereCourseId($courseId)->latest()->paginate(3);
         return response()->json($response);
+    }
+
+    public function getGroupsForDiploma($courseId)
+    {
+        $now = now();
+        
+        $groups = Group::whereHas('courses', function ($query) use ($courseId) {
+            $query->where('course_id', $courseId);
+        })
+        ->where('status', 1) // Solo ciclos escolares activos
+        ->whereDate('enrollment_start_at', '<=', $now)
+        ->whereDate('enrollment_end_at', '>=', $now)
+        ->select('id', 'name', 'start_date', 'end_date')
+        ->get();
+
+        return response()->json([
+            'groups' => $groups,
+            'count' => $groups->count()
+        ]);
     }
 }

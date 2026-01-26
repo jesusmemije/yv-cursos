@@ -61,6 +61,7 @@ Route::group(['middleware' => 'private.mode'], function () {
     Route::post('review-paginate/{courseId}', [CourseController::class, 'reviewPaginate'])->name('frontend.reviewPaginate');
 
     Route::get('search-course-list', [CourseController::class, 'searchCourseList'])->name('search-course.list');
+    Route::get('course/{courseId}/groups', [CourseController::class, 'getGroupsForDiploma'])->name('cart.course.groups');
     // End:: Course
 
     //Start:: Bundle

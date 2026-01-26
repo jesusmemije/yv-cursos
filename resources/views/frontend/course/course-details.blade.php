@@ -573,7 +573,7 @@ $relation = getUserRoleRelation($course->user);
 
             function loadGroupsForDiploma() {
                 $.ajax({
-                    url: '{{ route("student.cart.course.groups", $course->id) }}',
+                    url: '{{ route("cart.course.groups", $course->id) }}',
                     type: 'GET',
                     success: function(response) {
                         const groupCount = response.count;
