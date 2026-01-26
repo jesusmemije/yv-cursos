@@ -32,14 +32,12 @@ class GroupStepOneRequest extends FormRequest
             ],
             'enrollment_start_at' => [
                 'required',
-                'date',
-                'before_or_equal:start_date'
+                'date'
             ],
             'enrollment_end_at' => [
                 'required',
                 'date',
-                'after:enrollment_start_at',
-                'before_or_equal:start_date'
+                'after:enrollment_start_at'
             ]
         ];
     }
@@ -55,10 +53,8 @@ class GroupStepOneRequest extends FormRequest
             'end_date.required' => __('La fecha de fin del ciclo es obligatoria'),
             'end_date.after' => __('La fecha de fin debe ser posterior a la fecha de inicio'),
             'enrollment_start_at.required' => __('La fecha de inicio de inscripciones es obligatoria'),
-            'enrollment_start_at.before_or_equal' => __('Las inscripciones no pueden empezar después del ciclo'),
             'enrollment_end_at.required' => __('La fecha de fin de inscripciones es obligatoria'),
-            'enrollment_end_at.after' => __('La fecha de fin debe ser posterior a la fecha de inicio de inscripciones'),
-            'enrollment_end_at.before_or_equal' => __('Las inscripciones deben terminar antes del inicio del ciclo'),
+            'enrollment_end_at.after' => __('La fecha de fin debe ser posterior a la fecha de inicio de inscripciones')
         ];
     }
 }

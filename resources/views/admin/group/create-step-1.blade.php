@@ -9,7 +9,7 @@
                     <div class="breadcrumb__content">
                         <div class="breadcrumb__content__left">
                             <div class="breadcrumb__title">
-                                <h2>Ciclos escolares</h2>
+                                <h2>Ciclos Escolares</h2>
                             </div>
                         </div>
                         <div class="breadcrumb__content__right">
@@ -28,16 +28,10 @@
                 <div class="col-md-12">
                     <div class="customers__area bg-style mb-30">
                         <div class="item-title d-flex justify-content-between align-items-center">
-                            <h2>Agregar ciclo escolar</h2>
+                            <h2>Agregar Ciclo Escolar</h2>
                             <a href="{{ route('admin.group.index') }}" class="btn btn-secondary btn-sm">
                                 <i class="fa fa-arrow-left"></i> Volver
                             </a>
-                        </div>
-                        
-                        <!-- Ayuda informativa -->
-                        <div class="alert alert-info mb-4" role="alert">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Nota:</strong> Las fechas de inscripción deben terminar antes de que inicie el ciclo.
                         </div>
 
                         <form action="{{ route('admin.group.storeStepOne') }}" method="post" class="form-horizontal">
@@ -47,9 +41,9 @@
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <div class="input__group text-black">
-                                        <label>Nombre del ciclo escolar <span class="text-danger">*</span></label>
+                                        <label>Nombre del Ciclo Escolar <span class="text-danger">*</span></label>
                                         <input type="text" name="group_name" value="{{ old('group_name') }}"
-                                            placeholder="Ej: Ciclo escolar Enero-Junio 2026" class="form-control @error('group_name') is-invalid @enderror">
+                                            placeholder="Ej: Ciclo Enero-Junio 2026" class="form-control @error('group_name') is-invalid @enderror">
                                         @error('group_name')
                                             <span class="text-danger">
                                                 <i class="fas fa-exclamation-triangle"></i> {{ $message }}
@@ -60,10 +54,11 @@
                             </div>
 
                             <!-- Período del Ciclo -->
+                            <h5 class="mb-3">Período del Ciclo Escolar</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <div class="input__group text-black">
-                                        <label>Fecha Inicio Ciclo <span class="text-danger">*</span></label>
+                                        <label>Fecha Inicio <span class="text-danger">*</span></label>
                                         <input type="date" name="start_date" value="{{ old('start_date') }}" 
                                             class="form-control @error('start_date') is-invalid @enderror" required>
                                         <small class="form-text text-muted">Cuándo comienza el ciclo académico</small>
@@ -76,7 +71,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <div class="input__group text-black">
-                                        <label>Fecha Fin Ciclo <span class="text-danger">*</span></label>
+                                        <label>Fecha Fin <span class="text-danger">*</span></label>
                                         <input type="date" name="end_date" value="{{ old('end_date') }}" 
                                             class="form-control @error('end_date') is-invalid @enderror" required>
                                         <small class="form-text text-muted">Cuándo termina el ciclo académico</small>
@@ -126,7 +121,7 @@
 
                             <!-- Botones de Acción -->
                             <div class="row mb-3">
-                                <div class="col-md-12 text-right">
+                                <div class="col-md-12 text-end">
                                     <button class="btn btn-primary" type="submit">
                                         <i class="fa fa-arrow-right"></i> Siguiente
                                     </button>
@@ -142,9 +137,6 @@
     </div>
     <!-- Page content area end -->
 @endsection
-
-@push('style')
-@endpush
 
 @push('script')
     <script>
@@ -165,31 +157,11 @@
                 }
             });
 
-            // Validar que enrollment_end_at sea antes que start_date
-            enrollmentEndInput.on('change', function() {
-                if (startDateInput.val() && $(this).val() >= startDateInput.val()) {
-                    $(this).addClass('is-invalid');
-                    showError('Las inscripciones deben terminar antes de que inicie el ciclo');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
-            });
-
             // Validar que enrollment_end_at sea mayor que enrollment_start_at
             enrollmentEndInput.on('change', function() {
                 if (enrollmentStartInput.val() && $(this).val() <= enrollmentStartInput.val()) {
                     $(this).addClass('is-invalid');
-                    showError('Fecha fin de inscripciones debe ser posterior a fecha inicio');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
-            });
-
-            // Validar que enrollment_start_at sea menor que enrollment_end_at
-            enrollmentStartInput.on('change', function() {
-                if (enrollmentEndInput.val() && $(this).val() >= enrollmentEndInput.val()) {
-                    $(this).addClass('is-invalid');
-                    showError('Fecha inicio de inscripciones debe ser anterior a fecha fin');
+                    showError('La fecha fin de inscripciones debe ser posterior a la fecha inicio');
                 } else {
                     $(this).removeClass('is-invalid');
                 }
