@@ -32,16 +32,21 @@ class FinalProjectController extends Controller
             abort(403);
         }
 
-        $groupId = $enrollment->order && $enrollment->order->carts()->first() 
-            ? $enrollment->order->carts()->first()->group_id 
-            : null;
+        $groupId = $enrollment->group_id ?? null;
+        if (!$groupId) {
+            $cartEntry = \App\Models\CartManagement::where('user_id', $enrollment->user_id)
+                ->where('course_id', $enrollment->course_id)
+                ->whereNotNull('group_id')
+                ->latest()
+                ->first();
+            $groupId = $cartEntry->group_id ?? null;
+        }
 
         $finalProject = FinalProject::where('course_id', $enrollment->course_id);
-        
         if ($groupId) {
             $finalProject = $finalProject->where('group_id', $groupId)->first();
         } else {
-            $finalProject = $finalProject->latest()->first();
+            $finalProject = $finalProject->where('is_registered', 1)->latest()->first();
         }
 
         $progress = $this->calculateProgress($enrollment);
@@ -59,7 +64,7 @@ class FinalProjectController extends Controller
             ->where('enrollment_id', $enrollment->id)
             ->first();
 
-        $data['title'] = 'Trabajo Final';
+        $data['pageTitle'] = 'Trabajo Final';
         $data['enrollment'] = $enrollment;
         $data['finalProject'] = $finalProject;
         $data['submission'] = $submission;
@@ -164,17 +169,12 @@ class FinalProjectController extends Controller
     private function sendEmailToInstructor($finalProject, $submission, $enrollment)
     {
         try {
-            $instructor = $finalProject->instructor;
-            $student = $submission->student;
-            $course = $finalProject->course;
-            $cycle = $finalProject->group;
-
             $mailData = [
-                'instructor_name' => $instructor->name,
-                'student_name' => $student->name,
-                'student_email' => $student->email,
-                'course_name' => $course->title,
-                'cycle_name' => $cycle->name,
+                'instructor_name' => $finalProject->instructor->name,
+                'student_name' => $submission->student->name,
+                'student_email' => $submission->student->email,
+                'course_name' => $finalProject->course->title,
+                'cycle_name' => $finalProject->group->name,
                 'project_title' => $submission->title,
                 'project_description' => $submission->description,
                 'file_path' => $submission->file_path,
@@ -182,18 +182,12 @@ class FinalProjectController extends Controller
                 'submitted_date' => $submission->submitted_at->format('d/m/Y H:i')
             ];
 
-            Mail::send('mail.final-project-submission', $mailData, function ($message) use ($instructor, $submission) {
-                $message->to($instructor->email)
-                    ->subject('Nuevo Trabajo Final Enviado');
-                
-                if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
-                    $message->attachFromStorage($submission->file_path, $submission->file_name);
-                }
-            });
+            // Usamos la nueva clase Mailable
+            Mail::to($finalProject->instructor->email)->send(new \App\Mail\FinalProjectSubmittedMail($mailData));
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Error sending final project email: ' . $e->getMessage());
+            Log::error('Error enviando mail: ' . $e->getMessage());
             return false;
         }
     }

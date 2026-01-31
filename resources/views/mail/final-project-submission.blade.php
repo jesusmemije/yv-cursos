@@ -1,32 +1,26 @@
-{{-- filepath: resources/views/mail/final-project-submission.blade.php --}}
 @component('mail::message')
 # Nuevo Trabajo Final Recibido
 
-Hola **{{ $instructor_name }}**,
+Hola **{{ $mailData['instructor_name'] }}**,
 
-El estudiante **{{ $student_name }}** ha enviado su trabajo final para el curso **{{ $course_name }}** en el ciclo escolar **{{ $cycle_name }}**.
+El estudiante **{{ $mailData['student_name'] }}** ha enviado su trabajo final para el curso **{{ $mailData['course_name'] }}** en el ciclo escolar **{{ $mailData['cycle_name'] }}**.
 
+@component('mail::panel')
 ## Detalles del Envío
+**Título del Trabajo:** {{ $mailData['project_title'] }}  
+**Fecha de Envío:** {{ $mailData['submitted_date'] }}  
+**Email del Estudiante:** {{ $mailData['student_email'] }}
+@endcomponent
 
-| Campo | Valor |
-|-------|-------|
-| **Estudiante** | {{ $student_name }} |
-| **Email** | {{ $student_email }} |
-| **Curso** | {{ $course_name }} |
-| **Ciclo Escolar** | {{ $cycle_name }} |
-| **Título del Trabajo** | {{ $project_title }} |
-| **Fecha de Envío** | {{ $submitted_date }} |
-
-## Descripción del Trabajo
-
-{{ $project_description }}
+### Descripción del Trabajo
+{{ $mailData['project_description'] }}
 
 ---
 
-**Archivo Adjunto:** {{ $file_name }}
+**Archivo Adjunto:** {{ $mailData['file_name'] }}
 
-Por favor revisa el trabajo y proporciona retroalimentación al estudiante a través de correo electrónico.
+Por favor, revisa el trabajo y proporciona la retroalimentación correspondiente.
 
 Saludos cordiales,  
-{{ config('app.name') }}
+**{{ config('app.name') }}**
 @endcomponent

@@ -59,7 +59,7 @@
                     </td>
                     <td class="wishlist-price font-15 color-heading">{{@$enrollment->order->order_number}}</td>
                     <td class="font-15 color-heading">{{ (checkIfExpired($enrollment)) ? (checkIfLifetime($enrollment->end_date) ? __('Lifetime') : \Carbon\Carbon::now()->diffInDays($enrollment->end_date, false).' '.__('days left') ) : __('Expired') }}</td>
-
+                    
                     <td class="wishlist-price font-15 color-heading">
                         <div class="review-progress-bar-wrap">
                             <!-- Progress Bar -->
@@ -73,11 +73,58 @@
                             </div>
                         </div>
                     </td>
+
+                    @php
+                        $progress = studentCourseProgress(@$enrollment->course->id, @$enrollment->id);
+
+                        // Obtener group_id de forma segura:
+                        $groupId = $enrollment->group_id ?? null;
+
+                        // Si no hay group en la inscripción, intentar recuperar del carrito más reciente del usuario para ese curso
+                        if (!$groupId) {
+                            $cartEntry = \App\Models\CartManagement::where('user_id', $enrollment->user_id)
+                                ->where('course_id', $enrollment->course_id)
+                                ->whereNotNull('group_id')
+                                ->latest()
+                                ->first();
+                            $groupId = $cartEntry->group_id ?? null;
+                        }
+
+                        // Si aún no hay group, tomar el último FinalProject registrado para el curso (fallback)
+                        $finalProjectQuery = \App\Models\FinalProject::where('course_id', $enrollment->course_id);
+                        if ($groupId) {
+                            $finalProjectQuery->where('group_id', $groupId);
+                        }
+                        $finalProject = $finalProjectQuery->where('is_registered', 1)->first();
+
+                        $submission = null;
+                        if ($finalProject) {
+                            $submission = \App\Models\FinalProjectSubmission::where('final_project_id', $finalProject->id)
+                                ->where('user_id', auth()->id())
+                                ->where('enrollment_id', $enrollment->id)
+                                ->first();
+                        }
+                    @endphp
+
                     <td class="wishlist-add-to-cart-btn">
                         @if(checkIfExpired($enrollment))
                         <a href="{{ route('student.my-course.show', @$enrollment->course->slug) }}" class="theme-button theme-button1 theme-button3 font-13">{{ __('View') }}</a>
                         @else
                         <a href="{{ route('course-details', @$enrollment->course->slug) }}" class="theme-button theme-button1 theme-button3 font-13">{{ __('Renew') }}</a>
+                        @endif
+
+                        <!-- Agregar botón de Trabajo Final en la columna de Estado (o donde prefieras) -->
+                        @if($finalProject)
+                            @if($progress == 100)
+                                <a href="{{ route('student.final-project.show', $enrollment->id) }}" class="btn btn-sm btn-success mt-2">
+                                    <i class="fa fa-paper-plane me-1"></i>
+                                    {{ $submission ? __('Ver / Reenviar trabajo final') : __('Enviar trabajo final') }}
+                                </a>
+                            @else
+                                <button class="btn btn-sm btn-outline-secondary mt-2" disabled title="{{ __('Debes completar 100% para enviar') }}">
+                                    {{ __('Trabajo final disponible al 100%') }}
+                                </button>
+                            @endif
                         @endif
                     </td>
                 </tr>
