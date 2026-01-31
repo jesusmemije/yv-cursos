@@ -26,13 +26,6 @@
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
                 <div class="bg-white p-4 rounded shadow-sm">
-                    {{-- Advertencia importante --}}
-                    <div class="alert alert-danger mb-4" role="alert">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Atención:</strong> Una vez registrado el trabajo final, <strong>NO podrá ser editado ni eliminado</strong>. 
-                        Asegúrate de que la información sea completamente correcta antes de guardar.
-                    </div>
-
                     {{-- Estado del trabajo final --}}
                     @if($existingProject && $existingProject->isRegistered())
                         <div class="alert alert-success mb-4" role="alert">
@@ -41,6 +34,13 @@
                             <hr>
                             <p class="mb-1"><strong>Título:</strong> {{ $existingProject->title }}</p>
                             <p class="mb-1"><strong>Registrado el:</strong> {{ $existingProject->registered_at->format('d/m/Y H:i') }}</p>
+                        </div>
+                    @else
+                        {{-- Advertencia importante --}}
+                        <div class="alert alert-danger mb-4" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Atención:</strong> Una vez registrado el trabajo final, <strong>NO podrá ser editado ni eliminado</strong>. 
+                            Asegúrate de que la información sea completamente correcta antes de guardar.
                         </div>
                     @endif
 
@@ -104,22 +104,20 @@
                             </div>
                         </div>
 
-                        <hr class="my-4">
-
                         <div class="row">
                             <div class="col-md-12">
                                 @if($existingProject && $existingProject->isRegistered())
-                                    <button type="submit" class="btn btn-primary" disabled>
-                                        <i class="fa fa-lock me-2"></i> Trabajo Final Registrado
-                                    </button>
+                                    {{-- Si ya está registrado, no mostramos nada aquí --}}
                                 @else
-                                    <button type="submit" class="theme-btn theme-button1 default-hover-btn">
+                                    <hr class="my-4">
+                                    {{-- Si NO está registrado, mostramos ambos botones --}}
+                                    <a href="{{ route('instructor.cycles.coursesByCycle', $cycle->uuid) }}" class="theme-btn theme-button3 quiz-back-btn">
+                                        <i class="fa fa-times me-2"></i> Cancelar
+                                    </a>
+                                    <button type="submit" class="theme-btn theme-button1">
                                         <i class="fa fa-save me-2"></i> Registrar Trabajo Final
                                     </button>
                                 @endif
-                                <a href="{{ route('instructor.cycles.coursesByCycle', $cycle->uuid) }}" class="theme-btn theme-button1 theme-button3">
-                                    <i class="fa fa-times me-2"></i> Cancelar
-                                </a>
                             </div>
                         </div>
                     </form>

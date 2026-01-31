@@ -46,13 +46,12 @@
                                         </p>
                                     </div>
                                     <div class="col-md-3 text-end">
-                                        {{-- Removido: contador de estudiantes por ciclo --}}
                                         <span class="badge bg-info me-2">
-                                            <i class="fa fa-book"></i> {{ $item['related_courses'] }} curso(s)
+                                            <i class="fa fa-book"></i> {{ $item['related_courses'] }} diploamdo(s)
                                         </span>
                                         <a href="{{ route('instructor.cycles.coursesByCycle', $item['cycle']->uuid) }}" 
                                            class="btn btn-sm btn-primary">
-                                            <i class="fa fa-arrow-right"></i> Ver Cursos
+                                            <i class="fa fa-arrow-right"></i> Ver Diplomados
                                         </a>
                                     </div>
                                 </div>
