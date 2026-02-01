@@ -54,4 +54,13 @@ class FinalProjectSubmission extends Model
     {
         return $this->belongsTo(Group::class);
     }
+
+    // En el modelo Submission
+    public function getStatusNameAttribute()
+    {
+        return [
+            'submitted' => 'Enviado',
+            'reviewed'  => 'Revisado',
+        ][$this->status] ?? 'Pendiente';
+    }
 }

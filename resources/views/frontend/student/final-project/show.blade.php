@@ -23,17 +23,11 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8">
-                        {{-- Validación de progreso --}}
-                        @if($progress < 100)
-                            <div class="alert alert-warning" role="alert">
-                                <i class="fas fa-hourglass-half me-2"></i>
-                                <strong>Curso Incompleto:</strong> Debes completar el 100% del curso para enviar el trabajo final.
-                                <hr>
-                                <div class="progress mt-2" style="height: 25px;">
-                                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $progress }}%; display: flex; align-items: center; justify-content: center; color: white;">
-                                        {{ number_format($progress, 1) }}%
-                                    </div>
-                                </div>
+    
+                        @if($submission && $submission->status == 'submitted')
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Atención:</strong> Tu trabajo final ya fue enviado y no puede ser editado ni reenviado.
                             </div>
                         @else
                             <div class="alert alert-success" role="alert">
@@ -55,25 +49,28 @@
                             </div>
                         </div>
 
-                        {{-- Formulario de envío --}}
-                        @if($progress == 100)
+                        {{-- Mostrar advertencia y resumen si ya enviado --}}
+                        @if($submission && $submission->status == 'submitted')
+                            <div class="course-details-content bg-white p-4 radius-8 mb-4">
+                                <h5>Resumen del envío</h5>
+                                <p class="mt-3"><strong>Título:</strong> {{ $submission->title }}</p>
+                                <p class="mt-2"><strong>Descripción:</strong> {{ Str::limit($submission->description, 300) }}</p>
+                                @if($submission->file_path)
+                                    <a href="{{ route('student.final-project.download', $submission->id) }}" class="btn btn-sm btn-primary mt-2">
+                                        <i class="fa fa-download me-1"></i> Descargar archivo
+                                    </a>
+                                @endif
+                            </div>
+                        @else
+                            {{-- Formulario activo: mantén solo mínimo lógico, confirm dialog JS --}}
                             <div class="course-details-content bg-white p-4 radius-8">
                                 <h5 class="mb-4">Enviar Tu Trabajo Final</h5>
 
-                                <form action="{{ route('student.final-project.store') }}" method="POST" enctype="multipart/form-data">
+                                <form id="finalProjectForm" action="{{ route('student.final-project.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
 
                                     <input type="hidden" name="final_project_id" value="{{ $finalProject->id }}">
                                     <input type="hidden" name="enrollment_id" value="{{ $enrollment->id }}">
-
-                                    {{-- Mostrar estado si ya fue enviado --}}
-                                    @if($submission && $submission->status == 'submitted')
-                                        <div class="alert alert-success mb-4" role="alert">
-                                            <i class="fas fa-check-circle me-2"></i>
-                                            <strong>Trabajo Enviado:</strong> Tu trabajo fue enviado el 
-                                            <strong>{{ $submission->submitted_at->format('d/m/Y H:i') }}</strong>
-                                        </div>
-                                    @endif
 
                                     <div class="row mb-3">
                                         <div class="col-md-12">
@@ -132,10 +129,10 @@
 
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <button type="submit" class="theme-btn theme-button1 theme-button3">
+                                            <button id="submitFinalProjectBtn" type="submit" class="btn btn-lg btn-danger">
                                                 <i class="fa fa-paper-plane me-2"></i> Enviar Trabajo Final
                                             </button>
-                                            <a href="javascript:history.back()" class="btn btn-secondary ms-2">
+                                            <a href="javascript:history.back()" class="btn btn-lg btn-outline-secondary ms-2">
                                                 Cancelar
                                             </a>
                                         </div>
@@ -182,21 +179,13 @@
                                                 @elseif($submission->status == 'reviewed') bg-info 
                                                 @else bg-warning 
                                                 @endif">
-                                                {{ ucfirst(__($submission->status)) }}
+                                                {{ ucfirst(__($submission->status_name)) }}
                                             </span>
                                         </li>
                                         <li>
                                             <strong>Fecha de Envío:</strong> 
                                             <span>{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y H:i') : 'Pendiente' }}</span>
                                         </li>
-                                        @if($submission->file_path)
-                                            <li>
-                                                <strong>Archivo:</strong> 
-                                                <a href="{{ Storage::url($submission->file_path) }}" download class="btn btn-sm btn-primary mt-2">
-                                                    <i class="fa fa-download me-1"></i> Descargar
-                                                </a>
-                                            </li>
-                                        @endif
                                     </ul>
                                 </div>
                             @endif
@@ -207,3 +196,28 @@
         </section>
     </div>
 @endsection
+
+@push('script')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('finalProjectForm');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Confirmar envío',
+                    text: 'Una vez enviado, tu trabajo final NO podrá editarse ni reenviarse. ¿Deseas continuar?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, enviar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.value) {
+                        form.submit();
+                    }
+                });
+            });
+        }
+    });
+</script>
+@endpush

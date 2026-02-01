@@ -117,5 +117,6 @@ Route::group(['as' => 'student.'], function () {
     Route::prefix('final-project')->group(function () {
         Route::get('/{enrollmentId}', [FinalProjectController::class, 'show'])->name('final-project.show');
         Route::post('/store', [FinalProjectController::class, 'store'])->name('final-project.store');
+        Route::get('/download/{submissionId}', [FinalProjectController::class, 'downloadSubmission'])->name('final-project.download');
     });
 });

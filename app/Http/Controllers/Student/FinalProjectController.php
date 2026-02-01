@@ -32,7 +32,10 @@ class FinalProjectController extends Controller
             abort(403);
         }
 
+        // Obtener group_id de forma segura:
         $groupId = $enrollment->group_id ?? null;
+
+        // Si no hay group en la inscripción, intentar recuperar del carrito más reciente del usuario para ese curso
         if (!$groupId) {
             $cartEntry = \App\Models\CartManagement::where('user_id', $enrollment->user_id)
                 ->where('course_id', $enrollment->course_id)
@@ -42,12 +45,12 @@ class FinalProjectController extends Controller
             $groupId = $cartEntry->group_id ?? null;
         }
 
+        // Si aún no hay group, tomar el último FinalProject registrado para el curso (fallback)
         $finalProject = FinalProject::where('course_id', $enrollment->course_id);
         if ($groupId) {
-            $finalProject = $finalProject->where('group_id', $groupId)->first();
-        } else {
-            $finalProject = $finalProject->where('is_registered', 1)->latest()->first();
+            $finalProject->where('group_id', $groupId);
         }
+        $finalProject = $finalProject->where('is_registered', 1)->first();
 
         $progress = $this->calculateProgress($enrollment);
 
@@ -190,5 +193,23 @@ class FinalProjectController extends Controller
             Log::error('Error enviando mail: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Descargar envío (seguro)
+     */
+    public function downloadSubmission($submissionId)
+    {
+        $submission = FinalProjectSubmission::findOrFail($submissionId);
+
+        if ($submission->user_id != Auth::id()) {
+            abort(403);
+        }
+
+        if (!$submission->file_path || !Storage::disk('public')->exists($submission->file_path)) {
+            return redirect()->back()->with('error', 'Archivo no disponible.');
+        }
+
+        return Storage::disk('public')->download($submission->file_path, $submission->file_name ?? 'submission');
     }
 }

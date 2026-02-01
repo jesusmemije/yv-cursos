@@ -7,9 +7,9 @@
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Author')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Price')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Order ID')}}</th>
-                <th scope="col" class="color-gray font-15 font-medium">{{__('Validity')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Progress')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Action')}}</th>
+                <th scope="col" class="color-gray font-15 font-medium">{{__('Validity')}}</th>
             </tr>
             </thead>
             <tbody>
@@ -58,7 +58,6 @@
                         @endif
                     </td>
                     <td class="wishlist-price font-15 color-heading">{{@$enrollment->order->order_number}}</td>
-                    <td class="font-15 color-heading">{{ (checkIfExpired($enrollment)) ? (checkIfLifetime($enrollment->end_date) ? __('Lifetime') : \Carbon\Carbon::now()->diffInDays($enrollment->end_date, false).' '.__('days left') ) : __('Expired') }}</td>
                     
                     <td class="wishlist-price font-15 color-heading">
                         <div class="review-progress-bar-wrap">
@@ -113,20 +112,28 @@
                         <a href="{{ route('course-details', @$enrollment->course->slug) }}" class="theme-button theme-button1 theme-button3 font-13">{{ __('Renew') }}</a>
                         @endif
 
-                        <!-- Agregar botón de Trabajo Final en la columna de Estado (o donde prefieras) -->
+                        {{-- Reemplazar botones de trabajo final: siempre permitir acceso a la pantalla (controlador validará) --}}
                         @if($finalProject)
-                            @if($progress == 100)
+                            @if($submission && $submission->status == 'submitted')
                                 <a href="{{ route('student.final-project.show', $enrollment->id) }}" class="btn btn-sm btn-success mt-2">
-                                    <i class="fa fa-paper-plane me-1"></i>
-                                    {{ $submission ? __('Ver / Reenviar trabajo final') : __('Enviar trabajo final') }}
+                                    <i class="fa fa-file-alt me-1"></i> Ver Trabajo Final Enviado
                                 </a>
                             @else
-                                <button class="btn btn-sm btn-outline-secondary mt-2" disabled title="{{ __('Debes completar 100% para enviar') }}">
-                                    {{ __('Trabajo final disponible al 100%') }}
-                                </button>
+                                @if($progress == 100)
+                                    <a href="{{ route('student.final-project.show', $enrollment->id) }}" class="btn btn-sm btn-danger mt-2">
+                                        <i class="fa fa-paper-plane me-1"></i>
+                                        {{ $submission ? __('Ver / Reenviar trabajo final') : __('Enviar Trabajo Final') }}
+                                    </a>
+                                @else
+                                    <button class="btn btn-sm btn-outline-secondary mt-2" disabled title="{{ __('Falta completar el curso para habilitar el envío') }}">
+                                        {{ __('Completa el 100% para enviar Trabajo Final') }}
+                                    </button>
+                                @endif
                             @endif
                         @endif
                     </td>
+
+                    <td class="font-15 color-heading">{{ (checkIfExpired($enrollment)) ? (checkIfLifetime($enrollment->end_date) ? __('Lifetime') : \Carbon\Carbon::now()->diffInDays($enrollment->end_date, false).' '.__('days left') ) : __('Expired') }}</td>
                 </tr>
                 @endif
             @endforeach

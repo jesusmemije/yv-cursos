@@ -814,9 +814,12 @@ table .course-item {
 .section-btn {
     margin-top: 42px;
 }
+/*--------------------------------------------
+MEMIJE: Se comenta esta línea porque nos pone los botones sin padding
 .btn {
     padding: 0;
 }
+---------------------------------------------*/
 .btn.focus,
 .btn:focus {
     outline: 0;

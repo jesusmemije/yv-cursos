@@ -81,211 +81,211 @@
     <section class="course-single-details-area course-watch-page-area">
         <div class="container-fluid">
             @if($course->course_type == COURSE_TYPE_GENERAL)
-            <div class="row">
-                <div class="col-12 col-md-12 col-lg-12 col-xl-7 col-xxl-8">
-                    @if(@$lecture_type)
-                    <!-- My Code Start -->
-
-                    @if(@$lecture_type == 'youtube')
-                    <div class="video-player-area">
-                        <div class="plyr__video-embed" id="playerVideoYoutube">
-                            <iframe src="https://www.youtube.com/embed/{{ @$youtube_video_src }}" allowfullscreen
-                                allowtransparency allow="autoplay">
-                            </iframe>
-                        </div>
-                    </div>
-                    @elseif(@$lecture_type == 'vimeo')
-                    <div class="video-player-area">
-                        <div class="plyr__video-embed" id="playerVideoVimeo">
-                            <iframe
-                                src="https://player.vimeo.com/video/{{ @$vimeo_video_src }}?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media"
-                                allowfullscreen allowtransparency allow="autoplay"></iframe>
-                        </div>
-                    </div>
-                    @elseif(@$lecture_type == 'video')
-                    <div class="video-player-area">
-                        <video id="player" class="myVideo" playsinline controls controlsList="nodownload">
-                            <source src="{{ getVideoFile(@$video_src) }}" type="video/mp4" >
-                        </video>
-                    </div>
-                    @elseif(@$lecture_type == 'text')
-                    <p>{!! @$text_src !!}</p>
-                    @elseif(@$lecture_type == 'image')
-                    <img src="{{ getImageFile(@$image_src) }}" alt="" class="img-fluid">
-                    @elseif(@$lecture_type == 'pdf')
-                    <embed src=" {{ getVideoFile(@$pdf_src) }}" class="pdf-reader-frame">
-                    @elseif(@$lecture_type == 'slide_document')
-                    <iframe src="{{ @$slide_document_src }}" width="100%" height="400" frameborder="0"
-                        scrolling="no"></iframe>
-                    @elseif(@$lecture_type == 'audio')
-                    <audio id="audioplayer" class="myVideo" controls>
-                        <source src="{{ getVideoFile(@$audio_src) }}" type="audio/mp3" >
-                    </audio>
-                    @endif
-
-                    <!-- My Code End -->
-                    @else
-                    @if($course->intro_video_check == 1 && getVideoFile($course->video))
-                    <div class="video-player-area">
-                        <video id="player1" playsinline controls data-poster="{{ getImageFile($course->image) }}"
-                            controlsList="nodownload">
-                            <source src="{{ getVideoFile(@$course->video) }}" type="video/mp4" >
-                        </video>
-                    </div>
-                    @elseif($course->intro_video_check == 2 && $course->youtube_video_id)
-                    <div class="video-player-area">
-                        <div class="plyr__video-embed" id="youtubePlayer">
-                            <iframe src="https://www.youtube.com/embed/{{ @$course->youtube_video_id }}" allowfullscreen
-                                allowtransparency allow="autoplay">
-                            </iframe>
-                        </div>
-                    </div>
-                    @else
-                    <div class="course-watch-no-video-img">
-                        <img src="{{ getImageFile($course->image) }}" alt="" class="w-100 img-fluid">
-                    </div>
-                    @endif
-                    @endif
-
-                </div>
-
-                <div class="col-12 col-md-12 col-lg-12 col-xl-5 col-xxl-4">
-                    <div class="course-single-details-right-content course-watch-right-content mt-0">
-                        <div class="curriculum-content course-watch-right-side">
-
-                            <div class="review-progress-bar-wrap">
-                                <!-- Progress Bar -->
-                                <div class="barras mb-4">
-                                    <div class="progress-bar-box">
-                                        <div
-                                            class="progress-hint-value font-14 color-heading d-flex justify-content-between">
-                                            <p class="font-20 font-medium color-heading">{{ __('Course Content') }}</p>
-                                            <span class="font-15">{{number_format(studentCourseProgress(@$course->id, @$enrollment->id),
-                                                2)}}% Done</span>
-                                        </div>
-                                        <div class="barra">
-                                            <div class="barra-nivel"
-                                                data-nivel="{{studentCourseProgress(@$course->id, @$enrollment->id)}}%"></div>
-                                        </div>
+                <div class="row">
+                    <div class="col-12 col-md-12 col-lg-12 col-xl-7 col-xxl-8">
+                        @if(@$lecture_type)
+                            <!-- My Code Start -->
+                            @if(@$lecture_type == 'youtube')
+                                <div class="video-player-area">
+                                    <div class="plyr__video-embed" id="playerVideoYoutube">
+                                        <iframe src="https://www.youtube.com/embed/{{ @$youtube_video_src }}" allowfullscreen
+                                            allowtransparency allow="autoplay">
+                                        </iframe>
                                     </div>
                                 </div>
+                            @elseif(@$lecture_type == 'vimeo')
+                                <div class="video-player-area">
+                                    <div class="plyr__video-embed" id="playerVideoVimeo">
+                                        <iframe
+                                            src="https://player.vimeo.com/video/{{ @$vimeo_video_src }}?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media"
+                                            allowfullscreen allowtransparency allow="autoplay"></iframe>
+                                    </div>
+                                </div>
+                            @elseif(@$lecture_type == 'video')
+                                <div class="video-player-area">
+                                    <video id="player" class="myVideo" playsinline controls controlsList="nodownload">
+                                        <source src="{{ getVideoFile(@$video_src) }}" type="video/mp4" >
+                                    </video>
+                                </div>
+                            @elseif(@$lecture_type == 'text')
+                                <p>{!! @$text_src !!}</p>
+                            @elseif(@$lecture_type == 'image')
+                                <img src="{{ getImageFile(@$image_src) }}" alt="" class="img-fluid">
+                            @elseif(@$lecture_type == 'pdf')
+                                <embed src=" {{ getVideoFile(@$pdf_src) }}" class="pdf-reader-frame">
+                            @elseif(@$lecture_type == 'slide_document')
+                                <iframe src="{{ @$slide_document_src }}" width="100%" height="400" frameborder="0"
+                                    scrolling="no"></iframe>
+                            @elseif(@$lecture_type == 'audio')
+                                <audio id="audioplayer" class="myVideo" controls>
+                                    <source src="{{ getVideoFile(@$audio_src) }}" type="audio/mp3" >
+                                </audio>
+                            @endif
 
-                            </div>
+                        <!-- My Code End -->
+                        @else
+                            @if($course->intro_video_check == 1 && getVideoFile($course->video))
+                                <div class="video-player-area">
+                                    <video id="player1" playsinline controls data-poster="{{ getImageFile($course->image) }}"
+                                        controlsList="nodownload">
+                                        <source src="{{ getVideoFile(@$course->video) }}" type="video/mp4" >
+                                    </video>
+                                </div>
+                            @elseif($course->intro_video_check == 2 && $course->youtube_video_id)
+                                <div class="video-player-area">
+                                    <div class="plyr__video-embed" id="youtubePlayer">
+                                        <iframe src="https://www.youtube.com/embed/{{ @$course->youtube_video_id }}" allowfullscreen
+                                            allowtransparency allow="autoplay">
+                                        </iframe>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="course-watch-no-video-img">
+                                    <img src="{{ getImageFile($course->image) }}" alt="" class="w-100 img-fluid">
+                                </div>
+                            @endif
+                        @endif
+                    </div>
+                    
+                    <!-- Important: Parte de las secciones y actividades a realizar -->
+                    <div class="col-12 col-md-12 col-lg-12 col-xl-5 col-xxl-4">
+                        <div class="course-single-details-right-content course-watch-right-content mt-0">
+                            <div class="curriculum-content course-watch-right-side">
 
-                            <div class="course-watch-right-accordion-wrap custom-scrollbar">
-                                <div class="accordion" id="accordionExample1">
-                                    @php
-                                    $lockCount = 0;
-                                    @endphp
-                                    @forelse(@$course->lessons as $key => $lesson)
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading{{ $key }}">
-                                            <button
-                                                class="accordion-button font-medium font-18 d-flex justify-content-between {{ @$lesson_id_check == $lesson->id ?  '' : 'collapsed' }}"
-                                                type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapse{{ $key }}"
-                                                aria-expanded="{{ @$lesson_id_check == $lesson->id ?  true : false }}"
-                                                aria-controls="collapse{{ $key }}">
-                                                <span class="px-2">{{ $lesson->name }}</span>
-
-                                                <span class="watch-course-title-right-btns d-flex">
-                                                    <span class="font-12 color-gray2 mx-2"><span
-                                                            class="iconify font-16 color-orange me-1"
-                                                            data-icon="akar-icons:clock"></span>{{
-                                                        count($lesson->lectures) }} lectures</span>
-                                                    <span class="font-12 color-gray2 mx-2"><span
-                                                            class="iconify font-16 color-orange me-1"
-                                                            data-icon="carbon:video"></span>
-                                                        {{@$lesson->lectures->count() > 0 ?
-                                                        lessonVideoDuration($course->id, $lesson->id) : '0 min'}}
-                                                    </span>
-                                                </span>
-                                            </button>
-                                        </h2>
-                                        <div id="collapse{{ $key }}"
-                                            class="accordion-collapse collapse {{ @$lesson_id_check == $lesson->id ?  'show' : '' }}"
-                                            aria-labelledby="heading{{ $key }}" data-bs-parent="#accordionExample1">
-                                            <div class="accordion-body">
-                                                <div class="play-list">
-
-                                                    @forelse($lesson->lectures as $lecture)
-                                                    <!-- Play List Item Start-->
-                                                    @php
-                                                    $lock = checkStudentCourseIsLock($course_lecture_views, $course, $lecture, $enrollment, $loop->first);
-                                                    @endphp
-                                                    <div
-                                                        class="play-list-item @if(checkStudentCourseView($course_lecture_views, $course->id, $lecture->id)) watchFinishedCourse @elseif($lecture->id == @$lecture_id_check) watchContinuingCourse @endif d-flex align-items-center justify-content-between font-15">
-                                                        <div class="play-list-left d-flex align-items-center">
-                                                            <div>
-                                                                @if($lecture->id == @$lecture_id_check)
-                                                                <span class="iconify font-17"
-                                                                    data-icon="fluent:radio-button-24-filled"></span>
-                                                                @elseif(checkStudentCourseView($course_lecture_views,
-                                                                $course->id,
-                                                                $lecture->id))
-                                                                <span class="iconify font-17"
-                                                                    data-icon="ant-design:check-circle-filled"></span>
-                                                                @else
-                                                                <span class="iconify font-17"
-                                                                    data-icon="fluent:radio-button-24-regular"></span>
-                                                                @endif
-                                                            </div>
-                                                            @if($lock)
-                                                            <span>
-                                                                <p class="ps-2">{{ $lecture->title }}</p>
-                                                            </span>
-                                                            @else
-                                                            <a
-                                                                href="{{ route('student.my-course.show', [$course->slug, 'lecture_uuid' => $lecture->uuid]) }}">
-                                                                <p class="ps-2">{{ $lecture->title }}</p>
-                                                            </a>
-                                                            @endif
-                                                        </div>
-                                                        <div class="play-list-right d-flex">
-                                                            @if($lock)
-                                                            <span class="video-time-count"><span class="iconify me-5"
-                                                                    data-icon="ant-design:lock-outlined"></span>{{
-                                                                $lecture->file_duration }}</span>
-                                                            @else
-                                                            <span class="video-time-count">{{ $lecture->file_duration
-                                                                }}</span>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    <!-- Play List Item End-->
-                                                    @empty
-                                                    <div class="row">
-                                                        <p>{{ __('No Data Found') }}!</p>
-                                                    </div>
-                                                    @endforelse
-
-                                                </div>
+                                <div class="review-progress-bar-wrap">
+                                    <!-- Progress Bar -->
+                                    <div class="barras mb-4">
+                                        <div class="progress-bar-box">
+                                            <div
+                                                class="progress-hint-value font-14 color-heading d-flex justify-content-between">
+                                                <p class="font-20 font-medium color-heading">{{ __('Course Content') }}</p>
+                                                <span class="font-15">{{number_format(studentCourseProgress(@$course->id, @$enrollment->id),
+                                                    2)}}% Realizado</span>
+                                            </div>
+                                            <div class="barra">
+                                                <div class="barra-nivel"
+                                                    data-nivel="{{studentCourseProgress(@$course->id, @$enrollment->id)}}%"></div>
                                             </div>
                                         </div>
                                     </div>
-                                    @empty
-                                    <div class="row">
-                                        <p>{{ __('No Data Found') }}!</p>
-                                    </div>
-                                    @endforelse
 
                                 </div>
-                            </div>
 
+                                <div class="course-watch-right-accordion-wrap custom-scrollbar">
+                                    <div class="accordion" id="accordionExample1">
+                                        @php
+                                        $lockCount = 0;
+                                        @endphp
+                                        @forelse(@$course->lessons as $key => $lesson)
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading{{ $key }}">
+                                                <button
+                                                    class="accordion-button font-medium font-18 d-flex justify-content-between {{ @$lesson_id_check == $lesson->id ?  '' : 'collapsed' }}"
+                                                    type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#collapse{{ $key }}"
+                                                    aria-expanded="{{ @$lesson_id_check == $lesson->id ?  true : false }}"
+                                                    aria-controls="collapse{{ $key }}">
+                                                    <span class="px-2">{{ $lesson->name }}</span>
+
+                                                    <span class="watch-course-title-right-btns d-flex">
+                                                        <span class="font-12 color-gray2 mx-2"><span
+                                                                class="iconify font-16 color-orange me-1"
+                                                                data-icon="akar-icons:clock"></span>{{
+                                                            count($lesson->lectures) }} lectures</span>
+                                                        <span class="font-12 color-gray2 mx-2"><span
+                                                                class="iconify font-16 color-orange me-1"
+                                                                data-icon="carbon:video"></span>
+                                                            {{@$lesson->lectures->count() > 0 ?
+                                                            lessonVideoDuration($course->id, $lesson->id) : '0 min'}}
+                                                        </span>
+                                                    </span>
+                                                </button>
+                                            </h2>
+                                            <div id="collapse{{ $key }}"
+                                                class="accordion-collapse collapse {{ @$lesson_id_check == $lesson->id ?  'show' : '' }}"
+                                                aria-labelledby="heading{{ $key }}" data-bs-parent="#accordionExample1">
+                                                <div class="accordion-body">
+                                                    <div class="play-list">
+
+                                                        @forelse($lesson->lectures as $lecture)
+                                                        <!-- Play List Item Start-->
+                                                        @php
+                                                        $lock = checkStudentCourseIsLock($course_lecture_views, $course, $lecture, $enrollment, $loop->first);
+                                                        @endphp
+                                                        <div
+                                                            class="play-list-item @if(checkStudentCourseView($course_lecture_views, $course->id, $lecture->id)) watchFinishedCourse @elseif($lecture->id == @$lecture_id_check) watchContinuingCourse @endif d-flex align-items-center justify-content-between font-15">
+                                                            <div class="play-list-left d-flex align-items-center">
+                                                                <div>
+                                                                    @if($lecture->id == @$lecture_id_check)
+                                                                    <span class="iconify font-17"
+                                                                        data-icon="fluent:radio-button-24-filled"></span>
+                                                                    @elseif(checkStudentCourseView($course_lecture_views,
+                                                                    $course->id,
+                                                                    $lecture->id))
+                                                                    <span class="iconify font-17"
+                                                                        data-icon="ant-design:check-circle-filled"></span>
+                                                                    @else
+                                                                    <span class="iconify font-17"
+                                                                        data-icon="fluent:radio-button-24-regular"></span>
+                                                                    @endif
+                                                                </div>
+                                                                @if($lock)
+                                                                <span>
+                                                                    <p class="ps-2">{{ $lecture->title }}</p>
+                                                                </span>
+                                                                @else
+                                                                <a
+                                                                    href="{{ route('student.my-course.show', [$course->slug, 'lecture_uuid' => $lecture->uuid]) }}">
+                                                                    <p class="ps-2">{{ $lecture->title }}</p>
+                                                                </a>
+                                                                @endif
+                                                            </div>
+                                                            <div class="play-list-right d-flex">
+                                                                @if($lock)
+                                                                <span class="video-time-count"><span class="iconify me-5"
+                                                                        data-icon="ant-design:lock-outlined"></span>{{
+                                                                    $lecture->file_duration }}</span>
+                                                                @else
+                                                                <span class="video-time-count">{{ $lecture->file_duration
+                                                                    }}</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        <!-- Play List Item End-->
+                                                        @empty
+                                                        <div class="row">
+                                                            <p>{{ __('No Data Found') }}!</p>
+                                                        </div>
+                                                        @endforelse
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @empty
+                                        <div class="row">
+                                            <p>{{ __('No Data Found') }}!</p>
+                                        </div>
+                                        @endforelse
+
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             @else
-
-            <div class="row">
-                <div class="col-12 col-md-12 col-lg-12">
-                    <iframe id="scorm_player" class="scorm-content" frameBorder="0" src="{{ asset("scorm/".$course->scorm_course->uuid.'/'.$course->scorm_course->entry_url)
-                        }}"
-                        width="100%" title="Scorm course"></iframe>
+                <div class="row">
+                    <div class="col-12 col-md-12 col-lg-12">
+                        <iframe id="scorm_player" class="scorm-content" frameBorder="0" src="{{ asset("scorm/".$course->scorm_course->uuid.'/'.$course->scorm_course->entry_url)
+                            }}"
+                            width="100%" title="Scorm course"></iframe>
+                    </div>
                 </div>
-            </div>
             @endif
+            
+            <!-- Parte dede abajo del detalle del cursos -->
             <div class="row">
                 <div
                     class="col-12 col-md-12 col-lg-12 {{ $course->course_type == COURSE_TYPE_GENERAL ? 'col-xl-7 col-xxl-8' : '' }}">
@@ -445,6 +445,7 @@
             </div>
         </div>
     </div>
+    
     <!--Write Review Modal End-->
     <div class="row">
         <div class="col-12">
