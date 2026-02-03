@@ -122,7 +122,7 @@
                                                    accept=".pdf,.doc,.docx"
                                                    required>
                                             <small class="form-text text-muted">
-                                                Formatos aceptados: PDF, Word (.docx, .doc) | Tamaño máximo: 10MB
+                                                Formatos aceptados: PDF, Word (.docx, .doc) | Tamaño máximo: 50MB
                                             </small>
                                             @error('file')
                                                 <span class="text-danger small"><i class="fas fa-exclamation-triangle"></i> {{ $message }}</span>
@@ -132,10 +132,10 @@
 
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <button id="submitFinalProjectBtn" type="submit" class="btn btn-lg btn-danger">
+                                            <button id="submitFinalProjectBtn" type="submit" class="btn btn-danger">
                                                 <i class="fa fa-paper-plane me-2"></i> Enviar Trabajo Final
                                             </button>
-                                            <a href="javascript:history.back()" class="btn btn-lg btn-outline-secondary ms-2">
+                                            <a href="javascript:history.back()" class="btn btn-outline-secondary ms-2">
                                                 Cancelar
                                             </a>
                                         </div>

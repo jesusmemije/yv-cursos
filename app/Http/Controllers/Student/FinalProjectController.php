@@ -86,7 +86,7 @@ class FinalProjectController extends Controller
             'enrollment_id' => 'required|exists:enrollments,id',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'file' => 'required|mimes:pdf,doc,docx|max:10240'
+            'file' => 'required|mimes:pdf,doc,docx|max:51200'
         ]);
 
         $finalProject = FinalProject::findOrFail($request->final_project_id);
