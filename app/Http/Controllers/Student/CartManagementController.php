@@ -456,13 +456,13 @@ class CartManagementController extends Controller
                     }
 
                     // Validar que el ciclo escolar está activo y dentro de período de inscripción
-                    $now = now();
-                    if ($group->status != 1 || 
-                        $now->lessThan($group->enrollment_start_at) || 
-                        $now->greaterThan($group->enrollment_end_at)) {
+                    $start = Carbon::parse($group->enrollment_start_at)->startOfDay();
+                    $end = Carbon::parse($group->enrollment_end_at)->endOfDay();
+
+                    if ($group->status != 1 || !Carbon::now()->between($start, $end)) {
                         return response()->json([
                             'msg' => __("¡Este ciclo escolar no está disponible para inscripción en este momento!"),
-                            'status' => 403
+                            'status' => 402
                         ]);
                     }
 
