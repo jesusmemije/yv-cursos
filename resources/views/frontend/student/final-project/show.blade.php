@@ -25,10 +25,13 @@
                     <div class="col-lg-8">
     
                         @if($submission && $submission->status == 'submitted')
-                            <div class="alert alert-danger" role="alert">
+                            <div class="alert alert-info" role="alert">
                                 <i class="fas fa-exclamation-triangle me-2"></i>
-                                <strong>Atención:</strong> Tu trabajo final ya fue enviado y no puede ser editado ni reenviado.
+                                <strong>Nota:</strong> Tu trabajo final ya fue enviado por correo electrónico a tu instructor <strong>{{ $finalProject->instructor->name }}</strong> y no puede ser editado ni reenviado.
+                                <br>
+                                El seguimiento y la retroalimentación se realizarán por medio de correo electrónico.
                             </div>
+
                         @else
                             <div class="alert alert-success" role="alert">
                                 <i class="fas fa-check-circle me-2"></i>
@@ -41,11 +44,6 @@
                             <h4 class="mb-3">{{ $finalProject->title }}</h4>
                             <div class="alert alert-light border mb-3">
                                 <p>{{ nl2br($finalProject->description) }}</p>
-                            </div>
-
-                            <div class="alert alert-info" role="alert">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <strong>Nota:</strong> Tu trabajo será enviado directamente al instructor <strong>{{ $finalProject->instructor->name }}</strong> por correo electrónico con todos los detalles.
                             </div>
                         </div>
 
@@ -65,6 +63,11 @@
                             {{-- Formulario activo: mantén solo mínimo lógico, confirm dialog JS --}}
                             <div class="course-details-content bg-white p-4 radius-8">
                                 <h5 class="mb-4">Enviar Tu Trabajo Final</h5>
+
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Nota:</strong> Tu trabajo será enviado directamente al instructor <strong>{{ $finalProject->instructor->name }}</strong> por correo electrónico con todos los detalles.
+                                </div>
 
                                 <form id="finalProjectForm" action="{{ route('student.final-project.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf

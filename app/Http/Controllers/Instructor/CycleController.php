@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\FinalProject;
+use App\Models\FinalProjectSubmission;
 use App\Models\Group;
 use App\Models\User;
 use App\Traits\General;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class CycleController extends Controller
 {
@@ -104,13 +106,30 @@ class CycleController extends Controller
             ->with(['user', 'order'])
             ->get();
 
-        $studentsData = $students->map(function ($enrollment) {
+        $finalProject = FinalProject::where('group_id', $cycle->id)
+            ->where('course_id', $course->id)
+            ->where('is_registered', 1)
+            ->first();
+
+        $submissionsByEnrollmentId = collect();
+        if ($finalProject) {
+            $submissionsByEnrollmentId = FinalProjectSubmission::where('final_project_id', $finalProject->id)
+                ->whereIn('enrollment_id', $students->pluck('id'))
+                ->get()
+                ->keyBy('enrollment_id');
+        }
+
+        $studentsData = $students->map(function ($enrollment) use ($finalProject, $submissionsByEnrollmentId) {
+            $submission = $submissionsByEnrollmentId->get($enrollment->id);
+
             return [
                 'student' => $enrollment->user,
                 'enrollment' => $enrollment,
                 'progress' => studentCourseProgress($enrollment->course_id, $enrollment->id),
                 'order_id' => $enrollment->order->id ?? null,
-                'purchase_date' => $enrollment->order->created_at ?? null
+                'purchase_date' => $enrollment->order->created_at ?? null,
+                'final_project_available' => (bool) $finalProject,
+                'submission' => $submission
             ];
         })->values();
 
@@ -118,8 +137,38 @@ class CycleController extends Controller
         $data['cycle'] = $cycle;
         $data['course'] = $course;
         $data['studentsData'] = $studentsData;
+        $data['finalProject'] = $finalProject;
 
         return view('instructor.cycles.students-by-course', $data);
+    }
+
+    public function downloadFinalProjectSubmission($cycleUuid, $courseId, $submissionId)
+    {
+        $cycle = Group::where('uuid', $cycleUuid)->firstOrFail();
+        $course = Course::findOrFail($courseId);
+
+        if ($course->user_id != Auth::id()) {
+            abort(403);
+        }
+
+        if (!$cycle->courses()->where('course_id', $courseId)->exists()) {
+            abort(404);
+        }
+
+        $submission = FinalProjectSubmission::with('finalProject')
+            ->where('id', $submissionId)
+            ->where('group_id', $cycle->id)
+            ->firstOrFail();
+
+        if (!$submission->finalProject || (int) $submission->finalProject->course_id !== (int) $courseId) {
+            abort(404);
+        }
+
+        if (!$submission->file_path || !Storage::disk('public')->exists($submission->file_path)) {
+            return redirect()->back()->with('error', 'Archivo no disponible.');
+        }
+
+        return Storage::disk('public')->download($submission->file_path, $submission->file_name ?? 'submission');
     }
 
     public function registerFinalProject($cycleUuid, $courseId)

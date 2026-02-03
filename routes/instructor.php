@@ -35,6 +35,7 @@ Route::prefix('cycles')->name('instructor.cycles.')->group(function () {
     Route::get('{cycleUuid}/course/{courseId}/students', [CycleController::class, 'studentsByCourse'])->name('studentsByCourse');
     Route::get('{cycleUuid}/course/{courseId}/final-project', [CycleController::class, 'registerFinalProject'])->name('registerFinalProject');
     Route::post('{cycleUuid}/course/{courseId}/final-project', [CycleController::class, 'storeFinalProject'])->name('storeFinalProject');
+    Route::get('{cycleUuid}/course/{courseId}/final-project/submission/{submissionId}/download', [CycleController::class, 'downloadFinalProjectSubmission'])->name('finalProject.download');
 });
 
 Route::get('profile', [ProfileController::class, 'profile'])->name('instructor.profile');
