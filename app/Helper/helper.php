@@ -853,6 +853,9 @@ if (!function_exists('setEnrollment')) {
         $enrollment->bundle_id = $item->bundle_id;
         $enrollment->course_id = $item->course_id;
         $enrollment->consultation_slot_id = $item->consultation_slot_id;
+        if ($item->course_id && $item->course && (int) $item->course->category_id === 5 && !empty($item->group_id)) {
+            $enrollment->group_id = $item->group_id;
+        }
         if ($item->consultation_slot_id != NULL) {
             $consultationSlot =  $item->consultationSlot;
             if (!is_null($consultationSlot)) {

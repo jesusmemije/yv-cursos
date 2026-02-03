@@ -18,6 +18,7 @@ class Order_item extends Model
         'receiver_info',
         'course_id',
         'product_id',
+        'group_id',
         'unit_price',
         'type',
         'delivery_status',

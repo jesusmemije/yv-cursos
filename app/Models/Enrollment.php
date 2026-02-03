@@ -13,6 +13,7 @@ class Enrollment extends Model
         'user_id',
         'owner_user_id',
         'course_id',
+        'group_id',
         'consultation_slot_id',
         'bundle_id',
         'user_package_id',
@@ -41,6 +42,11 @@ class Enrollment extends Model
     public function course()
     {
         return $this->belongsTo(Course::class, 'course_id');
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class, 'group_id');
     }
     
     public function consultation_slot()

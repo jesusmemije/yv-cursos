@@ -65,6 +65,7 @@ class CycleController extends Controller
             $studentCount = $course->enrollments()
                 ->whereHas('order', fn($q) => $q->where('payment_status', 'paid'))
                 ->where('owner_user_id', Auth::id())
+                ->where('group_id', $cycle->id)
                 ->count();
 
             return [
@@ -92,9 +93,14 @@ class CycleController extends Controller
             abort(403);
         }
 
+        if (!$cycle->courses()->where('course_id', $courseId)->exists()) {
+            abort(404);
+        }
+
         $students = $course->enrollments()
             ->where('owner_user_id', Auth::id())
             ->whereHas('order', fn($q) => $q->where('payment_status', 'paid'))
+            ->where('group_id', $cycle->id)
             ->with(['user', 'order'])
             ->get();
 

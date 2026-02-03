@@ -417,6 +417,9 @@ class CartManagementController extends Controller
                     $order_item->receiver_info = $request->receiver_info;
                     $order_item->course_id = $courseExits->id;
                     $order_item->owner_user_id = $courseExits->user_id ?? null;
+                    if ((int) $courseExits->category_id === 5 && $request->group_id) {
+                        $order_item->group_id = $request->group_id;
+                    }
                     $order_item->unit_price = 0;
                     $order_item->admin_commission = 0;
                     $order_item->owner_balance = 0;
@@ -579,6 +582,9 @@ class CartManagementController extends Controller
                     $order_item->user_id = Auth::user()->id;
                     $order_item->course_id = $courseExits->id;
                     $order_item->owner_user_id = $courseExits->user_id ?? null;
+                    if ((int) $courseExits->category_id === 5 && $request->group_id) {
+                        $order_item->group_id = $request->group_id;
+                    }
                     $order_item->unit_price = 0;
                     $order_item->admin_commission = 0;
                     $order_item->owner_balance = 0;
@@ -589,6 +595,9 @@ class CartManagementController extends Controller
                     $enrollment->user_id = auth()->id();
                     $enrollment->course_id = $request->course_id;
                     $enrollment->owner_user_id = $courseExits->user_id ?? null;
+                    if ((int) $courseExits->category_id === 5 && $request->group_id) {
+                        $enrollment->group_id = $request->group_id;
+                    }
                     $enrollment->start_date = now();
                     $enrollment->end_date = ($courseExits->access_period) ? Carbon::now()->addDays($courseExits->access_period) : MAX_EXPIRED_DATE;
                     $enrollment->save();
@@ -1724,6 +1733,9 @@ class CartManagementController extends Controller
                     $order_item->receiver_info = $cart->receiver_info;
                     $order_item->owner_user_id = $cart->course ? $cart->course->user_id : null;
                     $order_item->unit_price = $cart->price;
+                    if ($cart->group_id && $cart->course && (int) $cart->course->category_id === 5) {
+                        $order_item->group_id = $cart->group_id;
+                    }
                     $userPackage =  UserPackage::join('packages', 'packages.id', '=', 'user_packages.package_id')->whereIn('packages.package_type', [PACKAGE_TYPE_SAAS_INSTRUCTOR, PACKAGE_TYPE_SAAS_ORGANIZATION])->where('user_packages.user_id', $order_item->owner_user_id)->where('user_packages.status', PACKAGE_STATUS_ACTIVE)->whereDate('enroll_date', '<=', now())->whereDate('expired_date', '>=', now())->select('user_packages.*')->first();
                     $adminCommission = ($userPackage && $userPackage->admin_commission && get_option('saas_mode')) ? $userPackage->admin_commission : get_option('sell_commission');
                     if ($adminCommission) {
