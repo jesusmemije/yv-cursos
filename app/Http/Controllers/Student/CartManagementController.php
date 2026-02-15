@@ -353,7 +353,18 @@ class CartManagementController extends Controller
         DB::beginTransaction();
         try {
             if ($request->course_id) {
-                $enrollment = Enrollment::where(['course_id' => $request->course_id , 'user_id' => Auth::user()->id, 'status' => ACCESS_PERIOD_ACTIVE])->whereDate('end_date', '>=', now())->first();
+                $courseForValidation = Course::find($request->course_id);
+                $enrollmentQuery = Enrollment::where([
+                    'course_id' => $request->course_id,
+                    'user_id' => Auth::user()->id,
+                    'status' => ACCESS_PERIOD_ACTIVE
+                ])->whereDate('end_date', '>=', now());
+
+                if ($courseForValidation && (int) $courseForValidation->category_id === 5 && $request->filled('group_id')) {
+                    $enrollmentQuery->where('group_id', $request->group_id);
+                }
+
+                $enrollment = $enrollmentQuery->first();
                 if($request->is_gift){
                     $giftUser = User::where('email', $request->receiver_info['receiver_email'])->first();
 

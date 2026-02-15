@@ -163,9 +163,14 @@ class CourseController extends Controller
         $user = Auth::user();
         $data['course_exits'] = 0;
         if ($user) {
+            $isDiploma = (int) $data['course']->category_id === 5;
+            $hasAvailableDiplomaGroups = false;
+            if ($isDiploma) {
+                $hasAvailableDiplomaGroups = $this->getAvailableDiplomaGroupsQuery($data['course']->id, $user->id)->exists();
+            }
 
             $courseIds = Enrollment::where(['user_id' => $user->id, 'course_id' => $data['course']->id, 'status' => ACCESS_PERIOD_ACTIVE])->whereDate('end_date', '>=', now())->pluck('course_id')->count();
-            if ($courseIds) {
+            if ($courseIds && (!$isDiploma || !$hasAvailableDiplomaGroups)) {
                 $data['course_exits'] = 'enrolled';
             }
             // End:: Checking enrolled or not
@@ -451,20 +456,39 @@ class CourseController extends Controller
 
     public function getGroupsForDiploma($courseId)
     {
-        $now = now();
-        
-        $groups = Group::whereHas('courses', function ($query) use ($courseId) {
-            $query->where('course_id', $courseId);
-        })
-        ->where('status', 1) // Solo ciclos escolares activos
-        ->whereDate('enrollment_start_at', '<=', $now)
-        ->whereDate('enrollment_end_at', '>=', $now)
-        ->select('id', 'name', 'start_date', 'end_date')
-        ->get();
+        $groups = $this->getAvailableDiplomaGroupsQuery($courseId, Auth::id())->get();
 
         return response()->json([
             'groups' => $groups,
             'count' => $groups->count()
         ]);
+    }
+
+    private function getAvailableDiplomaGroupsQuery($courseId, $userId = null)
+    {
+        $now = now();
+        $groupsQuery = Group::whereHas('courses', function ($query) use ($courseId) {
+            $query->where('course_id', $courseId);
+        })
+            ->where('status', 1)
+            ->whereDate('enrollment_start_at', '<=', $now)
+            ->whereDate('enrollment_end_at', '>=', $now)
+            ->select('id', 'name', 'start_date', 'end_date');
+
+        if ($userId) {
+            $purchasedGroupIds = Enrollment::where('user_id', $userId)
+                ->where('course_id', $courseId)
+                ->whereNotNull('group_id')
+                ->pluck('group_id')
+                ->unique()
+                ->values()
+                ->toArray();
+
+            if (!empty($purchasedGroupIds)) {
+                $groupsQuery->whereNotIn('id', $purchasedGroupIds);
+            }
+        }
+
+        return $groupsQuery;
     }
 }

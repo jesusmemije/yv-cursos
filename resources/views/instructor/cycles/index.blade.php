@@ -37,7 +37,7 @@
                                         </h5>
                                         <div class="d-flex flex-wrap gap-3">
                                             <div class="small text-muted">
-                                                <strong>PerÃ­odo:</strong>
+                                                <strong>Período:</strong>
                                                 {{ \Carbon\Carbon::parse($item['cycle']->start_date)->translatedFormat('d M Y') }}
                                                 -
                                                 {{ \Carbon\Carbon::parse($item['cycle']->end_date)->translatedFormat('d M Y') }}
@@ -70,7 +70,7 @@
                         </div>
                     @empty
                         <div class="alert alert-info" role="alert">
-                            <i class="fas fa-info-circle"></i> No tienes ciclos escolares asociados aÃºn
+                            <i class="fas fa-info-circle"></i> No tienes ciclos escolares asociados aún.
                         </div>
                     @endforelse
                 </div>
