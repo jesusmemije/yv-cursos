@@ -314,12 +314,7 @@ class MyCourseController extends Controller
                 } elseif ($lecture->type == 'text') {
                     $lecture = Course_lecture::find($lecture->id);
                     if ($lecture) {
-                        if (Course_lecture_views::where('user_id', auth()->id())->where('course_id', $lecture->course_id)->where('course_lecture_id', $lecture->id)->count() == 0) {
-                            $course_lecture_views = new Course_lecture_views();
-                            $course_lecture_views->course_id = $lecture->course_id;
-                            $course_lecture_views->course_lecture_id = $lecture->id;
-                            $course_lecture_views->save();
-                        }
+                        $this->syncLectureViewEnrollment($lecture->course_id, $lecture->id, @$data['enrollment']->id);
                     }
 
                     $certificateData = $this->makePdfCertificate($lecture->course_id, $data['enrollment']->id);
@@ -328,12 +323,7 @@ class MyCourseController extends Controller
                 } elseif ($lecture->type == 'image') {
                     $lecture = Course_lecture::find($lecture->id);
                     if ($lecture) {
-                        if (Course_lecture_views::where('user_id', auth()->id())->where('course_id', $lecture->course_id)->where('course_lecture_id', $lecture->id)->count() == 0) {
-                            $course_lecture_views = new Course_lecture_views();
-                            $course_lecture_views->course_id = $lecture->course_id;
-                            $course_lecture_views->course_lecture_id = $lecture->id;
-                            $course_lecture_views->save();
-                        }
+                        $this->syncLectureViewEnrollment($lecture->course_id, $lecture->id, @$data['enrollment']->id);
                     }
 
                     $certificateData = $this->makePdfCertificate($lecture->course_id, $data['enrollment']->id);
@@ -342,12 +332,7 @@ class MyCourseController extends Controller
                 } elseif ($lecture->type == 'pdf') {
                     $lecture = Course_lecture::find($lecture->id);
                     if ($lecture) {
-                        if (Course_lecture_views::where('user_id', auth()->id())->where('course_id', $lecture->course_id)->where('course_lecture_id', $lecture->id)->count() == 0) {
-                            $course_lecture_views = new Course_lecture_views();
-                            $course_lecture_views->course_id = $lecture->course_id;
-                            $course_lecture_views->course_lecture_id = $lecture->id;
-                            $course_lecture_views->save();
-                        }
+                        $this->syncLectureViewEnrollment($lecture->course_id, $lecture->id, @$data['enrollment']->id);
                     }
 
                     $data['pdf_src'] = $lecture->pdf;
@@ -357,12 +342,7 @@ class MyCourseController extends Controller
                 } elseif ($lecture->type == 'slide_document') {
                     $lecture = Course_lecture::find($lecture->id);
                     if ($lecture) {
-                        if (Course_lecture_views::where('user_id', auth()->id())->where('course_id', $lecture->course_id)->where('course_lecture_id', $lecture->id)->count() == 0) {
-                            $course_lecture_views = new Course_lecture_views();
-                            $course_lecture_views->course_id = $lecture->course_id;
-                            $course_lecture_views->course_lecture_id = $lecture->id;
-                            $course_lecture_views->save();
-                        }
+                        $this->syncLectureViewEnrollment($lecture->course_id, $lecture->id, @$data['enrollment']->id);
                     }
 
                     $data['slide_document_src'] = $lecture->slide_document;
@@ -392,6 +372,28 @@ class MyCourseController extends Controller
         }
 
         return $return;
+    }
+
+    private function syncLectureViewEnrollment($courseId, $lectureId, $enrollmentId = null)
+    {
+        $view = Course_lecture_views::where('user_id', auth()->id())
+            ->where('course_id', $courseId)
+            ->where('course_lecture_id', $lectureId)
+            ->first();
+
+        if (is_null($view)) {
+            $view = new Course_lecture_views();
+            $view->course_id = $courseId;
+            $view->course_lecture_id = $lectureId;
+            $view->enrollment_id = $enrollmentId;
+            $view->save();
+            return;
+        }
+
+        if (is_null($view->enrollment_id) && !is_null($enrollmentId)) {
+            $view->enrollment_id = $enrollmentId;
+            $view->save();
+        }
     }
 
     public function assignmentList(Request $request)
