@@ -35,10 +35,10 @@
                                     <td class="wishlist-course-item">
                                         <div class="card course-item wishlist-item border-0 d-flex align-items-center">
                                             <div class="course-img-wrap flex-shrink-0 overflow-hidden">
-                                                <a href="{{ route('student.my-course.show', @$orderCourse->course->slug) }}"><img src="{{ getImageFile(@$orderCourse->course->image_path) }}" alt="course" class="img-fluid"></a>
+                                                <a href="{{ route('student.my-course.show', [@$orderCourse->course->slug, 'enrollment_id' => @$orderCourse->enrollment_id]) }}"><img src="{{ getImageFile(@$orderCourse->course->image_path) }}" alt="course" class="img-fluid"></a>
                                             </div>
                                             <div class="card-body flex-grow-1">
-                                                <h5 class="card-title course-title"><a href="{{ route('student.my-course.show', @$orderCourse->course->slug) }}">{{ @$orderCourse->course->title }}</a></h5>
+                                                <h5 class="card-title course-title"><a href="{{ route('student.my-course.show', [@$orderCourse->course->slug, 'enrollment_id' => @$orderCourse->enrollment_id]) }}">{{ @$orderCourse->course->title }}</a></h5>
                                                 <p class="card-text instructor-name-certificate font-medium">{{ @$orderCourse->course->instructor->fullname }}
                                                     @if(get_instructor_ranking_level(@$orderCourse->course->user->badges))
                                                         | {{ get_instructor_ranking_level(@$orderCourse->course->user->badges) }}

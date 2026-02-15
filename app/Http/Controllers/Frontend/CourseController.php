@@ -162,12 +162,20 @@ class CourseController extends Controller
         // Start:: Check student enrolled or cart list or nothing
         $user = Auth::user();
         $data['course_exits'] = 0;
+        $data['current_enrollment_id'] = null;
         if ($user) {
             $isDiploma = (int) $data['course']->category_id === 5;
             $hasAvailableDiplomaGroups = false;
             if ($isDiploma) {
                 $hasAvailableDiplomaGroups = $this->getAvailableDiplomaGroupsQuery($data['course']->id, $user->id)->exists();
             }
+
+            $activeEnrollment = Enrollment::where([
+                'user_id' => $user->id,
+                'course_id' => $data['course']->id,
+                'status' => ACCESS_PERIOD_ACTIVE
+            ])->whereDate('end_date', '>=', now())->latest('id')->first();
+            $data['current_enrollment_id'] = optional($activeEnrollment)->id;
 
             $courseIds = Enrollment::where(['user_id' => $user->id, 'course_id' => $data['course']->id, 'status' => ACCESS_PERIOD_ACTIVE])->whereDate('end_date', '>=', now())->pluck('course_id')->count();
             if ($courseIds && (!$isDiploma || !$hasAvailableDiplomaGroups)) {

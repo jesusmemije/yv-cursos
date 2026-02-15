@@ -232,7 +232,7 @@ $relation = getUserRoleRelation($course->user);
                         </div>
 
                         @if($course_exits == 'enrolled')
-                            <a href="{{ route('student.my-course.show', $course->slug) }}" class="theme-btn theme-button1 theme-button3 w-100 mb-30 ">
+                            <a href="{{ route('student.my-course.show', [$course->slug, 'enrollment_id' => $current_enrollment_id]) }}" class="theme-btn theme-button1 theme-button3 w-100 mb-30 ">
                                 {{ __('Go to Course') }}
                                 <i data-feather="arrow-right"></i>
                             </a>

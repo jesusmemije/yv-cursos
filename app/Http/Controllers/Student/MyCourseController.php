@@ -779,6 +779,19 @@ class MyCourseController extends Controller
 
         if ($new_order) {
             $data['orderCourses'] = Order_item::whereOrderId($new_order->id)->whereNotNull('course_id')->get();
+            $courseIds = $data['orderCourses']->pluck('course_id')->filter()->unique()->values()->toArray();
+            $enrollmentByCourse = Enrollment::where('order_id', $new_order->id)
+                ->where('user_id', auth()->id())
+                ->whereIn('course_id', $courseIds)
+                ->where('status', ACCESS_PERIOD_ACTIVE)
+                ->whereDate('end_date', '>=', now())
+                ->latest('id')
+                ->get()
+                ->keyBy('course_id');
+
+            foreach ($data['orderCourses'] as $orderCourse) {
+                $orderCourse->enrollment_id = optional($enrollmentByCourse->get($orderCourse->course_id))->id;
+            }
             $data['orderProducts'] = Order_item::whereOrderId($new_order->id)->whereNotNull('product_id')->get();
             $data['new_consultations'] = Order_item::whereOrderId($new_order->id)->whereNotNull('consultation_slot_id')->get();
         }
