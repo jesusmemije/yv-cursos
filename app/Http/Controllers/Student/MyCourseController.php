@@ -45,7 +45,13 @@ class MyCourseController extends Controller
     public function myLearningCourseList(Request $request)
     {
         $data['pageTitle'] = 'My Learning Courses';
-        $data['enrollments'] = Enrollment::where('enrollments.user_id', auth()->id())->select('enrollments.*', 'order_items.unit_price')->join('orders', 'orders.id', '=', 'enrollments.order_id')->join('order_items', 'order_items.order_id', '=', 'orders.id')->where('enrollments.status', ACCESS_PERIOD_ACTIVE)->groupBy('enrollments.id');
+        $data['enrollments'] = Enrollment::where('enrollments.user_id', auth()->id())
+            ->select('enrollments.*', 'order_items.unit_price')
+            ->join('orders', 'orders.id', '=', 'enrollments.order_id')
+            ->join('order_items', 'order_items.order_id', '=', 'orders.id')
+            ->where('enrollments.status', ACCESS_PERIOD_ACTIVE)
+            ->with(['course.instructor', 'order', 'group'])
+            ->groupBy('enrollments.id');
 
         if ($request->ajax()) {
             $sortByID = $request->sortByID; // 1=newest, 2=Oldest

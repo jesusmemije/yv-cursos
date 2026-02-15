@@ -8,6 +8,7 @@
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Price')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Order ID')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Progress')}}</th>
+                <th scope="col" class="color-gray font-15 font-medium">{{__('Ciclo Escolar')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Action')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Validity')}}</th>
             </tr>
@@ -71,6 +72,13 @@
                                 </div>
                             </div>
                         </div>
+                    </td>
+                    <td class="wishlist-price font-15 color-heading">
+                        @if((int) @$enrollment->course->category_id === 5)
+                            {{ @$enrollment->group?->name ?? __('Sin ciclo escolar') }}
+                        @else
+                            {{ __('No aplica') }}
+                        @endif
                     </td>
 
                     @php
