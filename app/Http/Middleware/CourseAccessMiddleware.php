@@ -6,7 +6,6 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Order_item;
 use App\Traits\ApiStatusTrait;
 
 class CourseAccessMiddleware
@@ -30,8 +29,18 @@ class CourseAccessMiddleware
         if($course->user_id == $user_id){
             return $next($request);
         }
-        
-        $enrollment = Enrollment::where(['user_id' => $user_id, 'course_id' => $course->id, 'status' => ACCESS_PERIOD_ACTIVE])->whereDate('end_date', '>=', now())->count();
+
+        $enrollmentQuery = Enrollment::where([
+            'user_id' => $user_id,
+            'course_id' => $course->id,
+            'status' => ACCESS_PERIOD_ACTIVE
+        ])->whereDate('end_date', '>=', now());
+
+        if ($request->filled('enrollment_id')) {
+            $enrollmentQuery->where('id', $request->enrollment_id);
+        }
+
+        $enrollment = $enrollmentQuery->count();
         
         if(!$enrollment){
             if ($request->wantsJson()) {

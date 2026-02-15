@@ -66,7 +66,7 @@
                                     </div>
                                     @endif
                                     <div class="col-12">
-                                        <a href="{{route('student.my-course.show', [$course->slug, 'start-quiz', $exam->uuid])}}" class="quiz-answer-btn theme-btn theme-button1 default-hover-btn">Next</a>
+                                        <a href="{{route('student.my-course.show', [$course->slug, 'start-quiz', $exam->uuid, 'enrollment_id' => $enrollment->id])}}" class="quiz-answer-btn theme-btn theme-button1 default-hover-btn">Next</a>
                                     </div>
                                 </div>
                                 <!-- Multiple Choice Quiz End -->
@@ -75,6 +75,7 @@
                                     <div class="multiple-quiz-block">
                                         <form method="POST" action="{{route('student.save-exam-answer', [$course->uuid, $question->uuid, $take_exam->id])}}">
                                             @csrf
+                                            <input type="hidden" name="enrollment_id" value="{{ $enrollment->id }}">
                                             <div class="course-watch-quiz-top-bar">
                                                 <div class="course-watch-quiz-title d-flex justify-content-between align-items-center">
                                                     <h5>{{$exam->name}}</h5>
@@ -151,8 +152,8 @@
 
                                     <div class="col-12">
                                         <div class="course-watch-quiz-btn-wrap">
-                                            <a href="{{route('student.my-course.show', [$course->slug, 'quiz-list'])}}" class="quiz-answer-btn theme-btn theme-button3 quiz-back-btn default-hover-btn">Back</a>
-                                            <a href="{{route('student.my-course.show', [$course->slug, 'leaderboard', $exam->uuid])}}" class="quiz-answer-btn theme-btn theme-button1 default-hover-btn">Next</a>
+                                            <a href="{{ route('student.my-course.show', ['slug' => $course->slug, 'action_type' => 'quiz-list', 'enrollment_id' => $enrollment->id]) }}" class="quiz-answer-btn theme-btn theme-button3 quiz-back-btn default-hover-btn">Back</a>
+                                            <a href="{{route('student.my-course.show', [$course->slug, 'leaderboard', $exam->uuid, 'enrollment_id' => $enrollment->id])}}" class="quiz-answer-btn theme-btn theme-button1 default-hover-btn">Next</a>
                                         </div>
                                     </div>
                                 </div>
@@ -162,7 +163,7 @@
                         @if($action_type == 'leaderboard')
                             <!-- Course Watch Quiz Leatherboard Area Start -->
                             <div class="go-back-btn mb-30">
-                                <a href="{{route('student.my-course.show', [$course->slug, 'quiz-list'])}}" class="theme-btn quiz-back-btn theme-button1 default-hover-btn">Back to Quiz</a>
+                                <a href="{{ route('student.my-course.show', ['slug' => $course->slug, 'action_type' => 'quiz-list', 'enrollment_id' => $enrollment->id]) }}" class="theme-btn quiz-back-btn theme-button1 default-hover-btn">Back to Quiz</a>
                             </div>
                             <div class="all-leatherboard-wrap">
                                 <!--student-own Leatherboard start-->

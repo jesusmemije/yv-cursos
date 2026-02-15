@@ -29,10 +29,10 @@
                                         {{ @$special }}
                                     </span>
                                 @endif
-                                <a href="{{ route('student.my-course.show', @$enrollment->course->slug) }}"><img src="{{ getImageFile(@$enrollment->course->image_path) }}" alt="course" class="img-fluid"></a>
+                                <a href="{{ route('student.my-course.show', [@$enrollment->course->slug, 'enrollment_id' => $enrollment->id]) }}"><img src="{{ getImageFile(@$enrollment->course->image_path) }}" alt="course" class="img-fluid"></a>
                             </div>
                             <div class="card-body flex-grow-1">
-                                <h5 class="card-title course-title"><a href="{{ route('student.my-course.show', @$enrollment->course->slug) }}">{{ @$enrollment->course->title }}</a></h5>
+                                <h5 class="card-title course-title"><a href="{{ route('student.my-course.show', [@$enrollment->course->slug, 'enrollment_id' => $enrollment->id]) }}">{{ @$enrollment->course->title }}</a></h5>
                                 @if(get_option('refund_system_mode', false))
                                     <div class="card-text font-medium font-11 mb-1">
                                         @if($enrollment->unit_price > 0 && $enrollment->user_id == $enrollment->order->user_id)
@@ -115,7 +115,7 @@
 
                     <td class="wishlist-add-to-cart-btn">
                         @if(checkIfExpired($enrollment))
-                        <a href="{{ route('student.my-course.show', @$enrollment->course->slug) }}" class="theme-button theme-button1 theme-button3 font-13">{{ __('View') }}</a>
+                        <a href="{{ route('student.my-course.show', [@$enrollment->course->slug, 'enrollment_id' => $enrollment->id]) }}" class="theme-button theme-button1 theme-button3 font-13">{{ __('View') }}</a>
                         @else
                         <a href="{{ route('course-details', @$enrollment->course->slug) }}" class="theme-button theme-button1 theme-button3 font-13">{{ __('Renew') }}</a>
                         @endif

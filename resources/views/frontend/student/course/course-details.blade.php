@@ -235,7 +235,7 @@
                                                                 </span>
                                                                 @else
                                                                 <a
-                                                                    href="{{ route('student.my-course.show', [$course->slug, 'lecture_uuid' => $lecture->uuid]) }}">
+                                                                    href="{{ route('student.my-course.show', [$course->slug, 'lecture_uuid' => $lecture->uuid, 'enrollment_id' => $enrollment->id]) }}">
                                                                     <p class="ps-2">{{ $lecture->title }}</p>
                                                                 </a>
                                                                 @endif
@@ -467,12 +467,12 @@
 <input type="hidden" class="youTubeVideoSource" value="{{ @$youtube_video_src }}">
 <input type="hidden" class="vimeoVideoSource" value="{{ @$vimeo_video_src }}">
 <input type="hidden" class="lecture_id" value="{{ @$lecture_id_check }}">
-<input type="hidden" class="enrollment_id" value="{{ @@$enrollment->id }}">
+<input type="hidden" class="enrollment_id" value="{{ @$enrollment->id }}">
 <input type="hidden" class="videoCompletedRoute" value="{{  route('student.video.completed') }}">
 <input type="hidden" class="certificateSaveRoute" value="{{  route('student.save-certificate') }}">
 @if(@$nextLectureUuid)
 <input type="hidden" class="nextLectureRoute"
-    value="{{  route('student.my-course.show', [$course->slug, 'lecture_uuid' => $nextLectureUuid]) }}">
+    value="{{  route('student.my-course.show', [$course->slug, 'lecture_uuid' => $nextLectureUuid, 'enrollment_id' => $enrollment->id]) }}">
 @endif
 <input type="hidden" class="nextLectureId" value="{{  @$nextLectureId }}">
 
@@ -544,7 +544,7 @@
         function timerHandler() {
             duration++;
             if(duration > 30){
-                $.post("{{ route('student.my-course.completed_duration', $course->id) }}", {duration : duration, _token: $('meta[name="csrf-token"]').attr('content')}).then(resData => {
+                $.post("{{ route('student.my-course.completed_duration', $course->id) }}", {duration : duration, enrollment_id : enrollment_id, _token: $('meta[name="csrf-token"]').attr('content')}).then(resData => {
                     if(typeof resData.data.html != 'undefined' && resData.data.html != null ){
                         $('#demo-certificate').html(resData.data.html).promise().then(function(){
                             saveToServer(resData.data.certificate_number);
@@ -659,10 +659,12 @@
 	  };
 
         @if(isset($certificateData) && isset($certificateData['html']))
-            saveToServer({{ $certificateData['certificate_number'] }});
+            saveToServer(@json($certificateData['certificate_number']));
         @endif
 	});
 	//End for Scorm course body
 </script>
 
 @endpush
+
+

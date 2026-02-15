@@ -143,7 +143,27 @@ class MyCourseController extends Controller
 
     public function myCourseCompleteDuration(Request $request, $course_id)
     {
-        $enrollment = Enrollment::where('course_id', $course_id)->where('user_id', auth()->id())->whereDate('end_date', '>=', now())->first();
+        $enrollment = null;
+        if ($request->filled('enrollment_id')) {
+            $enrollment = Enrollment::where('id', $request->enrollment_id)
+                ->where('course_id', $course_id)
+                ->where('user_id', auth()->id())
+                ->where('status', ACCESS_PERIOD_ACTIVE)
+                ->whereDate('end_date', '>=', now())
+                ->first();
+        }
+        if (is_null($enrollment)) {
+            $enrollment = Enrollment::where('course_id', $course_id)
+                ->where('user_id', auth()->id())
+                ->where('status', ACCESS_PERIOD_ACTIVE)
+                ->whereDate('end_date', '>=', now())
+                ->latest('id')
+                ->first();
+        }
+        if (is_null($enrollment)) {
+            return response()->json(['success' => 'failed'], 403);
+        }
+
         $scorm = ScormModel::where('course_id', $course_id)->select('duration_in_second')->first();
         if ($enrollment && $enrollment->completed_time < $scorm->duration_in_second) {
             $enrollment->completed_time += $request->duration;
@@ -166,8 +186,19 @@ class MyCourseController extends Controller
     {
         $data['pageTitle'] = "Course Details";
         $data['course'] = Course::whereSlug($slug)->firstOrfail();
-        $data['course_lecture_views'] = Course_lecture_views::where('course_id', $data['course']->id)->where('user_id', auth()->id())->get();
-        $data['enrollment'] = Enrollment::where(['course_id' => $data['course']->id, 'user_id' => auth()->id(), 'status' => ACCESS_PERIOD_ACTIVE])->whereDate('end_date', '>=', now())->first();
+        $data['enrollment'] = $this->resolveActiveEnrollment($data['course']->id, $request);
+        if (is_null($data['enrollment'])) {
+            abort(403);
+        }
+        $data['course_lecture_views'] = Course_lecture_views::where('course_id', $data['course']->id)
+            ->where('user_id', auth()->id())
+            ->where('enrollment_id', $data['enrollment']->id)
+            ->get();
+        $data['studentCertificate'] = Student_certificate::where('course_id', $data['course']->id)
+            ->where('user_id', auth()->id())
+            ->where('certificate_number', 'like', $data['enrollment']->id . '-%')
+            ->latest('id')
+            ->first();
 
         // End:: Checking enrolled or not
 
@@ -271,7 +302,12 @@ class MyCourseController extends Controller
                 $expend_second = $now->diffInSeconds($data['take_exam']->created_at);
 
                 if (Carbon::parse($data['exam']->duration * 60)->subSecond($expend_second)->format('H:i:s') > Carbon::parse($data['exam']->duration * 60)->format('H:i:s')) {
-                    return redirect(route('student.my-course.show', [$data['course']->slug, 'quiz-result', $data['exam']->uuid]));
+                    return redirect(route('student.my-course.show', [
+                        $data['course']->slug,
+                        'quiz-result',
+                        $data['exam']->uuid,
+                        'enrollment_id' => $data['enrollment']->id
+                    ]));
                 }
             }
 
@@ -376,10 +412,12 @@ class MyCourseController extends Controller
 
     private function syncLectureViewEnrollment($courseId, $lectureId, $enrollmentId = null)
     {
-        $view = Course_lecture_views::where('user_id', auth()->id())
+        $baseQuery = Course_lecture_views::where('user_id', auth()->id())
             ->where('course_id', $courseId)
-            ->where('course_lecture_id', $lectureId)
-            ->first();
+            ->where('course_lecture_id', $lectureId);
+        $view = is_null($enrollmentId)
+            ? $baseQuery->whereNull('enrollment_id')->first()
+            : $baseQuery->where('enrollment_id', $enrollmentId)->first();
 
         if (is_null($view)) {
             $view = new Course_lecture_views();
@@ -491,10 +529,22 @@ class MyCourseController extends Controller
 
         $question_ids = Answer::whereUserId(auth()->user()->id)->whereExamId($question->exam_id)->pluck('question_id')->toArray();
 
+        $enrollmentId = $request->input('enrollment_id');
         if (Question::whereExamId($question->exam_id)->whereNotIn('id', $question_ids)->count() > 0) {
-            return redirect(route('student.my-course.show', [$course->slug, 'start-quiz', $question->exam->uuid, $answer->id]));
+            return redirect(route('student.my-course.show', [
+                $course->slug,
+                'start-quiz',
+                $question->exam->uuid,
+                $answer->id,
+                'enrollment_id' => $enrollmentId
+            ]));
         } else {
-            return redirect(route('student.my-course.show', [$course->slug, 'quiz-result', $question->exam->uuid]));
+            return redirect(route('student.my-course.show', [
+                $course->slug,
+                'quiz-result',
+                $question->exam->uuid,
+                'enrollment_id' => $enrollmentId
+            ]));
         }
     }
 
@@ -599,7 +649,13 @@ class MyCourseController extends Controller
         /** === make pdf certificate ===== */
         $course = Course::find($course_id);
         if (studentCourseProgress($course->id, $enrollment_id) == 100) {
-            if (Certificate_by_instructor::where('course_id', $course->id)->count() > 0 && Student_certificate::where('course_id', $course->id)->where('user_id', auth()->id())->count() == 0) {
+            if (
+                Certificate_by_instructor::where('course_id', $course->id)->count() > 0 &&
+                Student_certificate::where('course_id', $course->id)
+                    ->where('user_id', auth()->id())
+                    ->where('certificate_number', 'like', $enrollment_id . '-%')
+                    ->count() == 0
+            ) {
                 $certificate_by_instructor = Certificate_by_instructor::where('course_id', $course->id)->orderBy('id', 'DESC')->first();
                 $certificate = Certificate::find($certificate_by_instructor->certificate_id);
                 if ($certificate) {
@@ -634,6 +690,7 @@ class MyCourseController extends Controller
                 Certificate_by_instructor::where('course_id', $course->id)->count() > 0 &&
                 Student_certificate::where('course_id', $course->id)
                     ->where('user_id', auth()->id())
+                    ->where('certificate_number', 'like', $request->enrollment_id . '-%')
                     ->count() == 0
             ) {
 
@@ -645,7 +702,7 @@ class MyCourseController extends Controller
 
                 if ($certificate) {
 
-                    $certificate_name = 'certificate-' . $course->uuid . '.png';
+                    $certificate_name = 'certificate-' . $course->uuid . '-' . $request->enrollment_id . '.png';
 
                     // === RUTA ===
                     $folderPath = public_path('uploads/certificate/student');
@@ -686,14 +743,7 @@ class MyCourseController extends Controller
     public function videoCompleted(Request $request)
     {
         $lecture = Course_lecture::find($request->lecture_id);
-
-        if (Course_lecture_views::where('user_id', auth()->id())->where('course_id', $lecture->course_id)->where('course_lecture_id', $lecture->id)->count() == 0) {
-            $course_lecture_views = new Course_lecture_views();
-            $course_lecture_views->course_id = $lecture->course_id;
-            $course_lecture_views->course_lecture_id = $lecture->id;
-            $course_lecture_views->enrollment_id = $request->enrollment_id;
-            $course_lecture_views->save();
-        }
+        $this->syncLectureViewEnrollment($lecture->course_id, $lecture->id, $request->enrollment_id);
 
         
         $data = [
@@ -705,6 +755,21 @@ class MyCourseController extends Controller
         /** ------- end save certificate ----------- */
 
         return response()->json($data);
+    }
+
+    private function resolveActiveEnrollment($courseId, Request $request)
+    {
+        $query = Enrollment::where([
+            'course_id' => $courseId,
+            'user_id' => auth()->id(),
+            'status' => ACCESS_PERIOD_ACTIVE
+        ])->whereDate('end_date', '>=', now());
+
+        if ($request->filled('enrollment_id')) {
+            return (clone $query)->where('id', $request->enrollment_id)->first();
+        }
+
+        return $query->latest('id')->first();
     }
 
     public function thankYou()
