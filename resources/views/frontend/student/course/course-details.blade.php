@@ -112,7 +112,7 @@
                             @elseif(@$lecture_type == 'image')
                                 <img src="{{ getImageFile(@$image_src) }}" alt="" class="img-fluid">
                             @elseif(@$lecture_type == 'pdf')
-                                <embed src=" {{ getVideoFile(@$pdf_src) }}" class="pdf-reader-frame">
+                                <embed src="{{ getVideoFile(@$pdf_src) }}" class="pdf-reader-frame">
                             @elseif(@$lecture_type == 'slide_document')
                                 <iframe src="{{ @$slide_document_src }}" width="100%" height="400" frameborder="0"
                                     scrolling="no"></iframe>
@@ -462,6 +462,13 @@
     </div>
 </div>
 
+<div id="course-transition-loader" class="course-transition-loader d-none" aria-live="polite" aria-busy="true">
+    <div class="course-transition-loader__box">
+        <div class="spinner-border text-light" role="status"></div>
+        <p class="mb-0 mt-3 text-white">{{ __('Preparando el contenido... Por favor, espere un momento.') }}</p>
+    </div>
+</div>
+
 <input type="hidden" class="course_id" value="{{ @$course->id}}">
 <input type="hidden" class="normalVideoSource" value="{{ @$video_src }}">
 <input type="hidden" class="youTubeVideoSource" value="{{ @$youtube_video_src }}">
@@ -472,7 +479,7 @@
 <input type="hidden" class="certificateSaveRoute" value="{{  route('student.save-certificate') }}">
 @if(@$nextLectureUuid)
 <input type="hidden" class="nextLectureRoute"
-    value="{{  route('student.my-course.show', [$course->slug, 'lecture_uuid' => $nextLectureUuid, 'enrollment_id' => $enrollment->id]) }}">
+    value="{{ route('student.my-course.show', ['slug' => $course->slug, 'lecture_uuid' => $nextLectureUuid, 'enrollment_id' => $enrollment->id]) }}">
 @endif
 <input type="hidden" class="nextLectureId" value="{{  @$nextLectureId }}">
 
@@ -484,6 +491,26 @@
 @push('style')
 <!-- Video Player css -->
 <link rel="stylesheet" href="{{ asset('frontend/assets/vendor/video-player/plyr.css') }}">
+<style>
+    .course-transition-loader {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.7);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(2px);
+    }
+    .course-transition-loader__box {
+        text-align: center;
+        color: #fff!important;
+        padding: 24px 28px;
+    }
+    body.course-loader-active {
+        overflow: hidden;
+    }
+</style>
 @endpush
 
 @push('script')
@@ -505,6 +532,28 @@
         var certificateSaveRoute = $('.certificateSaveRoute').val();
         var nextLectureRoute = $('.nextLectureRoute').val();
         var youTubeVideoSource = $('.youTubeVideoSource').val()
+
+        window.showCourseLoader = function() {
+            $('#course-transition-loader').removeClass('d-none');
+            $('body').addClass('course-loader-active');
+        };
+
+        window.hideCourseLoader = function() {
+            $('#course-transition-loader').addClass('d-none');
+            $('body').removeClass('course-loader-active');
+        };
+
+        $(window).on('load pageshow', function () {
+            hideCourseLoader();
+        });
+
+        $(document).on('click', '.course-watch-page-area a[href]', function () {
+            var href = $(this).attr('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:') || $(this).attr('target') === '_blank') {
+                return;
+            }
+            showCourseLoader();
+        });
 
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
