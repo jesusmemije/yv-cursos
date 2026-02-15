@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use JoisarJignesh\Bigbluebutton\Facades\Bigbluebutton;
 use Peopleaps\Scorm\Model\ScormModel;
-use Stripe\OrderItem;
+use Illuminate\Support\Facades\File;
 
 class MyCourseController extends Controller
 {
@@ -623,23 +623,51 @@ class MyCourseController extends Controller
     {
         /** === make pdf certificate ===== */
         $course = Course::find($request->course_id);
+
+        if (!$course) {
+            return response()->json(['status' => 404]);
+        }
+
         if (studentCourseProgress($course->id, $request->enrollment_id) == 100) {
-            if (Certificate_by_instructor::where('course_id', $course->id)->count() > 0 && Student_certificate::where('course_id', $course->id)->where('user_id', auth()->id())->count() == 0) {
-                $certificate_by_instructor = Certificate_by_instructor::where('course_id', $course->id)->orderBy('id', 'DESC')->first();
+
+            if (
+                Certificate_by_instructor::where('course_id', $course->id)->count() > 0 &&
+                Student_certificate::where('course_id', $course->id)
+                    ->where('user_id', auth()->id())
+                    ->count() == 0
+            ) {
+
+                $certificate_by_instructor = Certificate_by_instructor::where('course_id', $course->id)
+                    ->orderBy('id', 'DESC')
+                    ->first();
+
                 $certificate = Certificate::find($certificate_by_instructor->certificate_id);
+
                 if ($certificate) {
+
                     $certificate_name = 'certificate-' . $course->uuid . '.png';
-                    
-                    $certificateFile = $request->file;  // your base64 encoded
+
+                    // === RUTA ===
+                    $folderPath = public_path('uploads/certificate/student');
+
+                    // === CREAR CARPETA SI NO EXISTE ===
+                    if (!File::exists($folderPath)) {
+                        File::makeDirectory($folderPath, 0777, true, true);
+                    }
+
+                    // === BASE64 ===
+                    $certificateFile = $request->file;
                     $certificateFile = str_replace('data:image/png;base64,', '', $certificateFile);
                     $certificateFile = str_replace(' ', '+', $certificateFile);
-                    \File::put(public_path('/uploads/certificate/student'). '/' . $certificate_name, base64_decode($certificateFile));
+
+                    // === GUARDAR ===
+                    File::put($folderPath . '/' . $certificate_name, base64_decode($certificateFile));
 
                     $student_certificate = new Student_certificate();
-                    // $student_certificate->path = $this->saveImage('',  base64_decode($image), 'null', 'null');
                     $student_certificate->course_id = $course->id;
+                    $student_certificate->user_id = auth()->id(); // IMPORTANTE
                     $student_certificate->certificate_number = $request->certificate_number;
-                    $student_certificate->path = "/uploads/certificate/student/$certificate_name";
+                    $student_certificate->path = "uploads/certificate/student/$certificate_name";
                     $student_certificate->save();
 
                     return response()->json([
