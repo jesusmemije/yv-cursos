@@ -301,9 +301,15 @@ class CourseController extends Controller
             $video = $course->video;
         }
 
+        $categoryId = $request->filled('category_id') ? $request->category_id : null;
+        $subcategoryId = $request->filled('subcategory_id') ? $request->subcategory_id : null;
+        if (is_null($categoryId)) {
+            $subcategoryId = null;
+        }
+
         $data = [
-            'category_id' => $request->category_id,
-            'subcategory_id' => $request->subcategory_id,
+            'category_id' => $categoryId,
+            'subcategory_id' => $subcategoryId,
             'price' => $request->price,
             'old_price' => $request->old_price,
             'drip_content' => $request->drip_content,

@@ -29,7 +29,7 @@
         var base_url = $("#base_url").val();
         $('#subcategory_id').empty().append($('<option>', {
             value: '',
-            text: 'Select sub category'
+            text: 'Seleccionar subcategoría'
         }));
 
         $.ajax({

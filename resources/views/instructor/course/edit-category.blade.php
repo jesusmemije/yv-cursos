@@ -48,9 +48,9 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Course Category') }}
+                                                    <span class="text-danger">*</span>
                                                 </label>
-                                                <select name="category_id" id="category_id" class="form-select"
-                                                    required>
+                                                <select name="category_id" id="category_id" class="form-select" required>
                                                     <option value="">{{ __('Select Category') }}</option>
                                                     @foreach($categories as $category)
                                                     <option value="{{$category->id}}" @if(old('category_id'))
@@ -73,8 +73,7 @@
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Course Subcategory') }}
                                                 </label>
-                                                <select name="subcategory_id" id="subcategory_id" class="form-select"
-                                                    required>
+                                                <select name="subcategory_id" id="subcategory_id" class="form-select">
                                                     <option value="">{{ __('Select Subcategory') }}</option>
                                                     @foreach($subcategories as $subcategory)
                                                     <option value="{{$subcategory->id}}" {{$subcategory->id ==
@@ -119,6 +118,7 @@
                                         <div class="row">
                                             <div class="col-md-12 mb-30">
                                                 <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Request course as') }}
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <select name="status" class="form-select status" required>
                                                     @php
@@ -139,6 +139,7 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Drip Content') }}
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <select name="drip_content" class="form-select drip_content" required>
                                                     <option value="{{ DRIP_SHOW_ALL }}" {{ (old('drip_content',
@@ -203,12 +204,7 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Learners Accessibility') }}
-                                                    <span
-                                                        class="cursor tooltip-show-btn share-referral-big-btn primary-btn get-referral-btn border-0"
-                                                        data-toggle="popover" data-bs-placement="bottom"
-                                                        data-bs-content="">
-                                                        !
-                                                    </span>
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <select name="learner_accessibility"
                                                     class="form-select learner_accessibility" required>
@@ -230,16 +226,11 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Course Price') }}
-                                                    <span
-                                                        class="cursor tooltip-show-btn share-referral-big-btn primary-btn get-referral-btn border-0"
-                                                        data-toggle="popover" data-bs-placement="bottom"
-                                                        data-bs-content="">
-                                                        !
-                                                    </span>
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <input type="number" name="price"
-                                                    value="{{$course->price == '0' ? '' : $course->price}}" min="1"
-                                                    maxlength="11" class="form-control price" placeholder="price"
+                                                    value="{{ old('price', $course->price == '0' ? '' : $course->price) }}"
+                                                    maxlength="11" class="form-control price" placeholder="Precio"
                                                     required="required">
 
                                                 @if ($errors->has('price'))
@@ -252,16 +243,11 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Old Price') }}
-                                                    <span
-                                                        class="cursor tooltip-show-btn share-referral-big-btn primary-btn get-referral-btn border-0"
-                                                        data-toggle="popover" data-bs-placement="bottom"
-                                                        data-bs-content="">
-                                                        !
-                                                    </span>
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <input type="number" name="old_price"
-                                                    value="{{$course->old_price == '0' ? '' : $course->old_price}}" min="1"
-                                                    maxlength="11" class="form-control old_price" placeholder="Old Price"
+                                                    value="{{ old('old_price', $course->old_price == '0' ? '' : $course->old_price) }}"
+                                                    maxlength="11" class="form-control old_price" placeholder="Precio anterior"
                                                     required="required">
 
                                                 @if ($errors->has('old_price'))
@@ -276,16 +262,11 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Language') }}
-                                                    <span
-                                                        class="cursor tooltip-show-btn share-referral-big-btn primary-btn get-referral-btn border-0"
-                                                        data-toggle="popover" data-bs-placement="bottom"
-                                                        data-bs-content="">
-                                                        !
-                                                    </span>
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <select name="course_language_id" id="course_language_id"
                                                     class="form-select" required>
-                                                    <option value="">Select Language</option>
+                                                    <option value="">{{ __('Selecciona idioma') }}</option>
                                                     @foreach($course_languages as $course_language)
                                                     <option value="{{$course_language->id}}"
                                                         @if(old('course_language_id'))
@@ -306,12 +287,7 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Difficulty Level') }}
-                                                    <span
-                                                        class="cursor tooltip-show-btn share-referral-big-btn primary-btn get-referral-btn border-0"
-                                                        data-toggle="popover" data-bs-placement="bottom"
-                                                        data-bs-content="">
-                                                        !
-                                                    </span>
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <select name="difficulty_level_id" id="difficulty_level_id"
                                                     class="form-select" required>
@@ -338,12 +314,9 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Course Thumbnail') }}
-                                                    <span
-                                                        class="cursor tooltip-show-btn share-referral-big-btn primary-btn get-referral-btn border-0"
-                                                        data-toggle="popover" data-bs-placement="bottom"
-                                                        data-bs-content="">
-                                                        !
-                                                    </span>
+                                                    @if(!$course->image)
+                                                    <span class="text-danger">*</span>
+                                                    @endif
                                                 </label>
                                             </div>
                                             <div class="col-md-6 mb-30">
@@ -354,7 +327,7 @@
                                                     <img src="">
                                                     @endif
                                                     <input type="file" name="image" id="image" accept="image/*"
-                                                        onchange="previewFile(this)" @if(!$course->image) required
+                                                        onchange="previewFile(this)" @if(!$course->image)
                                                     @endif>
                                                     <div class="upload-img-box-icon">
                                                         <i class="fa fa-camera"></i>

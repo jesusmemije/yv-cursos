@@ -328,10 +328,19 @@ class CourseController extends Controller
             }
         }
 
-        if ($request->image) {
-            $request->validate([
-                'image' => 'mimes:jpg,png,jpeg,gif,svg'
-            ]);
+        $imageRules = ['nullable', 'mimes:jpg,png,jpeg,gif,svg'];
+        if (empty($course->image)) {
+            $imageRules[0] = 'required';
+        }
+
+        $request->validate([
+            'image' => $imageRules,
+        ], [
+            'image.required' => __('La miniatura del curso es obligatoria'),
+            'image.mimes' => __('La miniatura debe ser un archivo de tipo: jpg, png, jpeg, gif, svg'),
+        ]);
+
+        if ($request->hasFile('image')) {
             $this->deleteFile($course->image); // delete file from server
             $image = $this->saveImage('course', $request->image, null, null); // new file upload into server
         } else {
@@ -351,9 +360,15 @@ class CourseController extends Controller
             $video = $course->video;
         }
 
+        $categoryId = $request->filled('category_id') ? $request->category_id : null;
+        $subcategoryId = $request->filled('subcategory_id') ? $request->subcategory_id : null;
+        if (is_null($categoryId)) {
+            $subcategoryId = null;
+        }
+
         $data = [
-            'category_id' => $request->category_id,
-            'subcategory_id' => $request->subcategory_id,
+            'category_id' => $categoryId,
+            'subcategory_id' => $subcategoryId,
             'price' => $request->price,
             'old_price' => $request->old_price,
             'drip_content' => $request->drip_content,

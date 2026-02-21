@@ -48,6 +48,7 @@
                                                 <label
                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{
                                                     __('Course Category') }}
+                                                    <span class="text-danger">*</span>
                                                     <span
                                                         class="cursor tooltip-show-btn share-referral-big-btn primary-btn get-referral-btn border-0"
                                                         data-toggle="popover" data-bs-placement="bottom"
@@ -55,8 +56,7 @@
                                                         !
                                                     </span>
                                                 </label>
-                                                <select name="category_id" id="category_id" class="form-select"
-                                                    required>
+                                                <select name="category_id" id="category_id" class="form-select" required>
                                                     <option value="">{{ __('Select Category') }}</option>
                                                     @foreach($categories as $category)
                                                     <option value="{{$category->id}}" @if(old('category_id'))
@@ -85,8 +85,7 @@
                                                         !
                                                     </span>
                                                 </label>
-                                                <select name="subcategory_id" id="subcategory_id" class="form-select"
-                                                    required>
+                                                <select name="subcategory_id" id="subcategory_id" class="form-select">
                                                     <option value="">{{ __('Select Subcategory') }}</option>
                                                     @foreach($subcategories as $subcategory)
                                                     <option value="{{$subcategory->id}}" {{$subcategory->id ==
