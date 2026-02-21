@@ -20,7 +20,7 @@
     <div class="instructor-profile-right-part">
         <div class="instructor-add-question-page bg-white">
             <div class="instructor-my-courses-title d-flex justify-content-between align-items-center">
-                <h6>Question for {{$exam->name}}</h6>
+                <h6>{{ __('Pregunta para') }} {{$exam->name}}</h6>
                 <p>{{ @$exam->course->title }}</p>
                 <a href="javascript:void (0);"  data-bs-toggle="modal" data-bs-target="#bulkUpload" class="theme-btn theme-button1 add-question-form-btn">{{__('Bulk Upload')}}</a>
             </div>
@@ -33,7 +33,7 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-30">
-                                <label class="label-text-title color-heading font-medium font-16 mb-3">Question {{$exam->questions->count() + 1}} </label>
+                                <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Pregunta') }} {{$exam->questions->count() + 1}} </label>
                                 <input type="text" name="name" required class="form-control" placeholder="{{ __('Enter your question') }}">
                             </div>
                         </div>

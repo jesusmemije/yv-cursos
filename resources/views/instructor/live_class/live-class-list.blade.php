@@ -67,7 +67,7 @@
                                     <tr>
                                         <td>{{ Str::limit($upcoming_live_class->class_topic, 50) }}</td>
                                         <td>{{ $upcoming_live_class->date .' '. $upcoming_live_class->time }}</td>
-                                        <td>{{ $upcoming_live_class->duration }} minutes</td>
+                                        <td>{{ $upcoming_live_class->duration }} {{ __('minutos') }}</td>
                                         <td>
                                             @if($upcoming_live_class->meeting_host_name == 'zoom')
                                             Zoom
@@ -78,7 +78,7 @@
                                             @elseif($upcoming_live_class->meeting_host_name == 'gmeet')
                                             Gmeet
                                             @elseif($upcoming_live_class->meeting_host_name == 'agora')
-                                            Agora In App Live
+                                            {{ __('Agora en vivo en la app') }}
                                             @endif
                                         </td>
 
@@ -125,7 +125,7 @@
                                     <tr>
                                         <td>{{ Str::limit($current_live_class->class_topic, 50) }}</td>
                                         <td>{{ $current_live_class->date .' '. $current_live_class->time }}</td>
-                                        <td>{{ $current_live_class->duration }} minutes</td>
+                                        <td>{{ $current_live_class->duration }} {{ __('minutos') }}</td>
                                         <td>
                                             @if($current_live_class->meeting_host_name == 'zoom')
                                             Zoom
@@ -158,7 +158,7 @@
                                                 {{ __('View') }}
                                             </button>
                                             @elseif($current_live_class->meeting_host_name == 'agora')
-                                            Agora In App Live
+                                            {{ __('Agora en vivo en la app') }}
                                             <button class="theme-btn theme-button1 green-theme-btn default-hover-btn viewGmeetMeetingLink"
                                                 data-url="{{ $current_live_class->join_url }}">
                                                 {{ __('View') }}
@@ -211,7 +211,7 @@
                                     <tr>
                                         <td>{{ Str::limit($past_live_class->class_topic, 50) }}</td>
                                         <td>{{ $past_live_class->date .' '. $past_live_class->time }}</td>
-                                        <td>{{ $past_live_class->duration }} minutes</td>
+                                        <td>{{ $past_live_class->duration }} {{ __('minutos') }}</td>
                                         <td>
                                             @if($past_live_class->meeting_host_name == 'zoom')
                                             Zoom
@@ -222,7 +222,7 @@
                                             @elseif($past_live_class->meeting_host_name == 'gmeet')
                                             Gmeet
                                             @elseif($past_live_class->meeting_host_name == 'agora')
-                                            Agora In App Live
+                                            {{ __('Agora en vivo en la app') }}
                                             @endif
                                         </td>
 

@@ -11,7 +11,7 @@
                     <div class="comment-content-part-top">
                         <h6 class="font-18 mb-15">{{@$discussion->user->name}}
                             @if($discussion->comment_as == 1)
-                                <span class="teacher-badge bg-light-purple color-hover font-14 font-medium radius-4 px-2 py-1">Instructor</span>
+                                <span class="teacher-badge bg-light-purple color-hover font-14 font-medium radius-4 px-2 py-1">{{ __('Docente') }}</span>
                             @endif
                         </h6>
                         <p class="font-15">
@@ -40,7 +40,7 @@
                         <div class="comment-content-part-top">
                             <h6 class="font-18 mb-15">{{ @$reply->user->name }}
                                 @if($reply->comment_as == 1)
-                                    <span class="teacher-badge bg-light-purple color-hover font-14 font-medium radius-4 px-2 py-1">Instructor</span>
+                                    <span class="teacher-badge bg-light-purple color-hover font-14 font-medium radius-4 px-2 py-1">{{ __('Docente') }}</span>
                                 @endif
                                 <p class="font-15">{!! $reply->comment !!}</p>
                         </div>

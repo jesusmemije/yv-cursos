@@ -73,9 +73,9 @@
 
                                 <div class="instructor-courses-info-duration-wrap">
                                     <ul class="d-flex align-items-center justify-content-between">
-                                        <li class="font-medium font-12"><span class="iconify" data-icon="octicon:device-desktop-24"></span>Video<span class="instructor-courses-info-duration-wrap-text font-medium color-heading">({{ @$course->lectures->count() }})</span></li>
-                                        <li class="font-medium font-12"><span class="iconify" data-icon="ant-design:clock-circle-outlined"></span>Duration<span class="instructor-courses-info-duration-wrap-text font-medium color-heading">({{ @$course->VideoDuration }})</span></li>
-                                        <li class="font-medium font-12"><span class="iconify" data-icon="carbon:user-multiple"></span>Enrolled<span class="instructor-courses-info-duration-wrap-text font-medium color-heading">({{  courseStudents($course->id) }})</span></li>
+                                        <li class="font-medium font-12"><span class="iconify" data-icon="octicon:device-desktop-24"></span>{{ __('Video') }}<span class="instructor-courses-info-duration-wrap-text font-medium color-heading">({{ @$course->lectures->count() }})</span></li>
+                                        <li class="font-medium font-12"><span class="iconify" data-icon="ant-design:clock-circle-outlined"></span>{{ __('Duración') }}<span class="instructor-courses-info-duration-wrap-text font-medium color-heading">({{ @$course->VideoDuration }})</span></li>
+                                        <li class="font-medium font-12"><span class="iconify" data-icon="carbon:user-multiple"></span>{{ __('Inscritos') }}<span class="instructor-courses-info-duration-wrap-text font-medium color-heading">({{  courseStudents($course->id) }})</span></li>
                                     </ul>
                                 </div>
 

@@ -42,16 +42,16 @@
                                                 <div class="row mb-30">
                                                     <div class="col-md-12">
                                                         <div class="d-flex">
-                                                            <div class="label-text-title color-heading font-medium font-16 mb-3 mr-15">Type: </div>
+                                                            <div class="label-text-title color-heading font-medium font-16 mb-3 mr-15">{{ __('Tipo') }}: </div>
                                                             <div>
-                                                                <label class="mr-15"><input type="radio" name="type" value="video" {{$lecture->type == 'video' ? 'checked' : '' }}  class="lecture-type"> Upload Video</label>
-                                                                <label class="mr-15"><input type="radio" name="type" value="youtube" {{$lecture->type == 'youtube' ? 'checked' : '' }} class="lecture-type"> Youtube </label>
-                                                                <label class="mr-15"><input type="radio" name="type" value="vimeo" {{$lecture->type == 'vimeo' ? 'checked' : '' }} class="lecture-type">  Vimeo</label>
-                                                                <label class="mr-15"><input type="radio" name="type" value="text" {{$lecture->type == 'text' ? 'checked' : '' }} class="lecture-type" id="lectureTypeText"> Text </label>
-                                                                <label class="mr-15"><input type="radio" name="type" value="image" {{$lecture->type == 'image' ? 'checked' : '' }} class="lecture-type" id="lectureTypeImage"> Image </label>
+                                                                <label class="mr-15"><input type="radio" name="type" value="video" {{$lecture->type == 'video' ? 'checked' : '' }}  class="lecture-type"> {{ __('Subir video') }}</label>
+                                                                <label class="mr-15"><input type="radio" name="type" value="youtube" {{$lecture->type == 'youtube' ? 'checked' : '' }} class="lecture-type"> {{ __('YouTube') }} </label>
+                                                                <label class="mr-15"><input type="radio" name="type" value="vimeo" {{$lecture->type == 'vimeo' ? 'checked' : '' }} class="lecture-type"> {{ __('Vimeo') }}</label>
+                                                                <label class="mr-15"><input type="radio" name="type" value="text" {{$lecture->type == 'text' ? 'checked' : '' }} class="lecture-type" id="lectureTypeText"> {{ __('Texto') }} </label>
+                                                                <label class="mr-15"><input type="radio" name="type" value="image" {{$lecture->type == 'image' ? 'checked' : '' }} class="lecture-type" id="lectureTypeImage"> {{ __('Imagen') }} </label>
                                                                 <label class="mr-15"><input type="radio" name="type" value="pdf" {{$lecture->type == 'pdf' ? 'checked' : '' }} class="lecture-type" id="lectureTypePDF"> PDF </label>
-                                                                <label class="mr-15"><input type="radio" name="type" value="slide_document" {{$lecture->type == 'slide_document' ? 'checked' : '' }} class="lecture-type" id="lectureTypeSlideDocument"> Slide Document </label>
-                                                                <label class="mr-15"><input type="radio" name="type" value="audio" {{$lecture->type == 'audio' ? 'checked' : '' }} class="lecture-type" id="lectureTypeAudio"> Audio </label>
+                                                                <label class="mr-15"><input type="radio" name="type" value="slide_document" {{$lecture->type == 'slide_document' ? 'checked' : '' }} class="lecture-type" id="lectureTypeSlideDocument"> {{ __('Documento de diapositivas') }} </label>
+                                                                <label class="mr-15"><input type="radio" name="type" value="audio" {{$lecture->type == 'audio' ? 'checked' : '' }} class="lecture-type" id="lectureTypeAudio"> {{ __('Audio') }} </label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -73,7 +73,7 @@
                                                 </div>
 
                                                 <div id="youtube" class="{{$lecture->type == 'youtube' ? '' : 'd-none' }}">
-                                                    <input type="text" name="youtube_url_path" id="youtube_url_path"  value="{{$lecture->type == 'youtube' ? $lecture->url_path : ''}}" class="form-control youtube-url" placeholder="Type Your Youtube Video ID">
+                                                    <input type="text" name="youtube_url_path" id="youtube_url_path"  value="{{$lecture->type == 'youtube' ? $lecture->url_path : ''}}" class="form-control youtube-url" placeholder="{{ __('Escribe el ID de tu video de YouTube') }}">
                                                     @if ($errors->has('youtube_url_path'))
                                                         <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('youtube_url_path') }}</span>
                                                     @endif
@@ -120,7 +120,7 @@
                                                         <div class="row mb-30">
                                                             <div class="col-md-12">
                                                                 <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson File Duration') }} (00:00) <span class="text-danger">*</span></label>
-                                                                <input type="text" name="vimeo_file_duration" value="{{ $lecture->file_duration }}" class="form-control customVimeoFileDuration" placeholder="Type file duration" >
+                                                                <input type="text" name="vimeo_file_duration" value="{{ $lecture->file_duration }}" class="form-control customVimeoFileDuration" placeholder="{{ __('Escribe la duración del archivo') }}" >
                                                                 @if ($errors->has('vimeo_file_duration'))
                                                                     <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('vimeo_file_duration') }}</span>
                                                                 @endif
@@ -231,7 +231,7 @@
                                                             <div class="row mb-30 d-none" id="fileDuration">
                                                                 <div class="col-md-12">
                                                                     <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson File Duration') }} (00:00)</label>
-                                                                    <input type="text" name="youtube_file_duration" value="{{$lecture->file_duration}}" class="form-control customFileDuration" placeholder="First file duration">
+                                                            <input type="text" name="youtube_file_duration" value="{{$lecture->file_duration}}" class="form-control customFileDuration" placeholder="{{ __('Primera duración del archivo') }}">
                                                                     @if ($errors->has('youtube_file_duration'))
                                                                         <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('youtube_file_duration') }}</span>
                                                                     @endif

@@ -19,7 +19,7 @@
     <div class="instructor-profile-right-part">
         <div class="instructor-quiz-list-page instructor-create-live-class-page">
             <div class="instructor-my-courses-title d-flex justify-content-between align-items-center">
-                <h6>Create Live Class</h6>
+                <h6>{{ __('Crear clase en vivo') }}</h6>
             </div>
 
             <div class="row">
@@ -47,7 +47,7 @@
                         <div class="row mb-30">
                             <div class="col-md-12">
                                 <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Time Duration (Write minutes)') }}</label>
-                                <input type="number" name="duration" class="form-control duration" placeholder="Type duration in minutes" required>
+                                <input type="number" name="duration" class="form-control duration" placeholder="{{ __('Escribe la duración en minutos') }}" required>
                                 @if ($errors->has('duration'))
                                     <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('duration') }}</span>
                                 @endif
@@ -67,7 +67,7 @@
                                     @if(get_option('bbb_status') == 1) <option value="bbb">BigBlueButton</option> @endif
                                     @if(get_option('jitsi_status') == 1) <option value="jitsi">Jitsi</option> @endif
                                     @if(get_option('gmeet_status') == 1 && $gmeet) <option value="gmeet">Google Meet</option> @endif
-                                    @if(get_option('agora_status') == 1) <option value="agora">Agora In App Live</option> @endif
+                                    @if(get_option('agora_status') == 1) <option value="agora">{{ __('Agora en vivo en la app') }}</option> @endif
                                 </select>
 
                                 @if ($errors->has('meeting_host_name'))

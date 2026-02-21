@@ -20,7 +20,7 @@
     <div class="instructor-profile-right-part">
         <div class="instructor-add-question-page instructor-add-true-false-question bg-white">
             <div class="instructor-my-courses-title d-flex justify-content-between align-items-center">
-                <h6>Question for {{$exam->name}}</h6>
+                <h6>{{ __('Pregunta para') }} {{$exam->name}}</h6>
                 <p>{{ @$exam->course->title }}</p>
             </div>
             <div class="row">

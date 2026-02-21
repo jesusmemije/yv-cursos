@@ -76,7 +76,7 @@
                                 <input type="text" placeholder="enter your text" id="chat-message" class="form-control">
                                 <button type="submit" id="chat-send"
                                     class="d-flex ms-3 my-3 align-items-center btn btn-success p-2">
-                                    <span>send</span>
+                                    <span>{{ __('Enviar') }}</span>
                                     <i class="ri-send-plane-line ms-1"></i>
                                 </button>
                             </form>

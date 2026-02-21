@@ -61,11 +61,11 @@
                                             </td>
                                             <td>
                                                @if($refund->status == STATUS_PENDING)
-                                               <span class="pending status">Pending</span>
+                                               <span class="pending status">{{ __('Pendiente') }}</span>
                                                @elseif($refund->status == STATUS_APPROVED)
-                                               <span class="active status">Approved</span>
+                                               <span class="active status">{{ __('Aprobado') }}</span>
                                                @else
-                                               <span class="blocked status">Rejected</span>
+                                               <span class="blocked status">{{ __('Rechazado') }}</span>
                                                @endif
                                             </td>
                                             <td>

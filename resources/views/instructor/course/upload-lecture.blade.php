@@ -286,7 +286,7 @@
                                                                         class="text-danger">*</span></label>
                                                                 <select name="lecture_type" class="form-select"
                                                                     required>
-                                                                    <option value="">--Select Option--</option>
+                                                                    <option value="">--{{ __('Selecciona una opción') }}--</option>
                                                                     <option value="1" @if(old('lecture_type')==1)
                                                                         selected @endif>{{ __('Show') }}</option>
                                                                     <option value="2" @if(old('lecture_type')==2)

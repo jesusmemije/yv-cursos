@@ -37,7 +37,7 @@
                                     <div class="upload-course-item-block course-overview-step1 radius-8 mb-0 pb-0">
                                         <div class="form-last-step">
                                             <div class="last-step-content-wrap">
-                                                <h4 class="mb-3">Finish!</h4>
+                                                <h4 class="mb-3">{{ __('¡Terminado!') }}</h4>
                                                 <div class="stepper-action-btns">
                                                     <a href="{{route('instructor.course')}}" class="theme-btn theme-button3">{{__('Cancel')}}</a>
                                                     @if($course->status == 1)

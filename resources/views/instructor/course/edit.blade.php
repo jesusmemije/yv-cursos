@@ -160,7 +160,7 @@
                                                                 <input type="text" name="name"
                                                                     id="name_{{ $keyPoint['id'] }}"
                                                                     value="{{ $keyPoint['name'] }}" class="form-control"
-                                                                    placeholder="Type key point name" required>
+                                                                    placeholder="Escribe el nombre del punto clave" required>
                                                             </div>
 
                                                             <div class="col mb-3">
@@ -180,7 +180,7 @@
                                                                     __('Name') }} </label>
                                                                 <input type="text" name="name" id="name" value=""
                                                                     class="form-control"
-                                                                    placeholder="Type key point name" required>
+                                                                    placeholder="Escribe el nombre del punto clave" required>
                                                             </div>
 
                                                             <div class="col mb-3">
@@ -213,7 +213,7 @@
                                                 </div>
                                                 <textarea class="form-control" name="description" cols="30" rows="10"
                                                     required
-                                                    placeholder="Course description in 250 characters">{{$course->description}}</textarea>
+                                                    placeholder="{{ __('Descripción del curso en 250 caracteres') }}">{{$course->description}}</textarea>
                                                 @if ($errors->has('description'))
                                                 <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{
                                                     $errors->first('description') }}</span>

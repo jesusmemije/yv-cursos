@@ -279,9 +279,9 @@
                                                                     <h6 class="font-16">{{$lesson->name}}</h6>
                                                                     <div class="d-flex upload-course-video-6-duration-count">
                                                                         <div class="upload-course-duration-text font-14 color-para font-medium">
-                                                                            <span class="iconify" data-icon="octicon:device-desktop-24"></span>Video<span class="color-heading">(0)</span></div>
+                                                                            <span class="iconify" data-icon="octicon:device-desktop-24"></span>{{ __('Video') }}<span class="color-heading">(0)</span></div>
                                                                         <div class="upload-course-duration-text font-14 color-para font-medium">
-                                                                            <span class="iconify" data-icon="ant-design:clock-circle-outlined"></span>Duration<span class="color-heading">(0)</span></div>
+                                                                            <span class="iconify" data-icon="ant-design:clock-circle-outlined"></span>{{ __('Duración') }}<span class="color-heading">(0)</span></div>
                                                                     </div>
                                                                 </div>
 

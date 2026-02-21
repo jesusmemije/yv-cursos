@@ -63,13 +63,13 @@
         <tr>
             <td style="padding: 24px 16px;">
                 <div style="border-top: 1px dotted; border-bottom: 1px dotted; border-color: #dddddd; padding: 16px 4px; margin-bottom: 24px">
-                    <h4 style="margin: 0 0 8px 0; color: #666666;">Note</h4>
+                    <h4 style="margin: 0 0 8px 0; color: #666666;">{{ __('Nota') }}</h4>
                     <p style="color: #666666; margin: 0; font-size: 14px">{!! $withdraw->note !!}.</p>
                 </div>
 
                 <p style="margin-bottom: 12px; margin-top: 0; text-align: center; color: #666666">{{ __('We thank you for your business and continued use of') }} {{get_option('app_name')}}</p>
                 <h2 style="text-align: center; color: #666666; font-weight: 600; margin-top: 0; margin-bottom: 0">{{ __('Thank you from') }} {{get_option('app_name')}} {{ __('family') }}</h2>
-                <button style="" type="button" onclick="" class="btn btn-warning btn-icon icon-left float-end print-button"><i class="fas fa-print"></i> Print</button>
+                <button style="" type="button" onclick="" class="btn btn-warning btn-icon icon-left float-end print-button"><i class="fas fa-print"></i> {{ __('Imprimir') }}</button>
             </td>
 
         </tr>

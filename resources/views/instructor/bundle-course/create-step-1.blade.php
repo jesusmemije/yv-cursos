@@ -97,7 +97,7 @@
                         </div>
 
                         <div class="col-md-6 mb-30">
-                            <label class="label-text-title color-heading font-medium font-16 mb-3">Status <span
+                            <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Estado') }} <span
                                     class="text-danger">*</span></label>
                             <select name="status" class="form-control">
                                 <option value="">{{ __('Select Option') }}</option>
