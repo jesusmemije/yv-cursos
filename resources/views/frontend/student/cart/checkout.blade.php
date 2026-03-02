@@ -383,7 +383,7 @@
                                             </label>
                                         </div>
                                     @endif
-                                   
+                                    @if (get_option('mercado_status') == 1)
                                         <div class="form-check payment-method-card-box other-payment-box pb-0 mt-30">
                                             <input class="form-check-input" type="radio" name="payment_method"
                                                 value="mercadopago"
@@ -393,7 +393,7 @@
                                                 <span class="font-16 color-heading font-medium">Mercado Pago</span>
                                             </label>
                                         </div>
-                                   
+                                    @endif
                                     @if (get_option('flutterwave_status') == 1)
                                         <div class="form-check payment-method-card-box other-payment-box pb-0 mt-30">
                                             <input class="form-check-input" type="radio" name="payment_method"
