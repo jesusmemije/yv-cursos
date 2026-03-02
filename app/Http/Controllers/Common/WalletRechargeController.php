@@ -222,7 +222,8 @@ class WalletRechargeController extends Controller
             $currency = get_option('paystack_currency');
         }
         if ($request->payment_method == MERCADOPAGO) {
-            if (empty(env('MERCADO_PAGO_CLIENT_ID')) || empty(env('MERCADO_PAGO_CLIENT_SECRET'))) {
+            $mercadoAccessToken = env('MERCADO_PAGO_ACCESS_TOKEN');
+            if (empty($mercadoAccessToken)) {
                 $this->showToastrMessage('error', 'MERCADO_PAGO payment gateway is off!');
                 return redirect()->back();
             }

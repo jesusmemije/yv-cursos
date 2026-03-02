@@ -1,8 +1,39 @@
 'use strict'
 $(function () {
-    $('input[type=radio][name=payment_method]').change(function () {
-        var payment_method = $('input[name="payment_method"]:checked').val();
-        var grand_total = parseFloat(($('.grand_total').html()).replace(',', ''));
+    const gatewaySelectors = {
+        paypal: ['.paypal_conversion_rate', '.paypal_currency'],
+        bank: ['.bank_conversion_rate', '.bank_currency'],
+        stripe: ['.stripe_conversion_rate', '.stripe_currency'],
+        openpay: ['.openpay_conversion_rate', '.openpay_currency'],
+        razorpay: ['.razorpay_conversion_rate', '.razorpay_currency'],
+        instamojo: ['.instamojo_conversion_rate', '.instamojo_currency'],
+        mollie: ['.mollie_conversion_rate', '.mollie_currency'],
+        mercadopago: ['.mercado_conversion_rate', '.mercado_currency'],
+        flutterwave: ['.flutterwave_conversion_rate', '.flutterwave_currency'],
+        sslcommerz: ['.sslcommerz_conversion_rate', '.sslcommerz_currency'],
+        paystack: ['.paystack_conversion_rate', '.paystack_currency'],
+        coinbase: ['.coinbase_conversion_rate', '.coinbase_currency'],
+        zitopay: ['.zitopay_conversion_rate', '.zitopay_currency'],
+        iyzipay: ['.iyzipay_conversion_rate', '.iyzipay_currency'],
+        bitpay: ['.bitpay_conversion_rate', '.bitpay_currency'],
+        braintree: ['.braintree_conversion_rate', '.braintree_currency']
+    };
+
+    function toNumber(value) {
+        return parseFloat(String(value || '').replace(/[^0-9.]/g, '')) || 0;
+    }
+
+    function setGatewayPrice(rate, currency, grandTotal) {
+        const calculated = (grandTotal * toNumber(rate)).toFixed(2);
+        $('.selected_conversation_rate').html(rate || '0');
+        $('.selected_currency').html(currency || '');
+        $('.gateway_calculated_rate_currency').html(currency || '');
+        $('.gateway_calculated_rate_price').html(calculated);
+    }
+
+    function updateSelectedGateway() {
+        const payment_method = $('input[name="payment_method"]:checked').val();
+        const grand_total = toNumber($('.grand_total').text());
 
         $("#openpay-form").addClass("d-none");
         if (payment_method === 'sslcommerz') {
@@ -13,193 +44,40 @@ $(function () {
             $(".regular-btn").removeClass('d-none');
         }
 
-        if (payment_method === 'paypal') {
-            var rate = $('.paypal_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.paypal_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'bank') {
-            var rate = $('.bank_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.bank_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'stripe') {
-            var rate = $('.stripe_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.stripe_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
+        if (payment_method && gatewaySelectors[payment_method]) {
+            const selectors = gatewaySelectors[payment_method];
+            const rate = $(selectors[0]).val();
+            const currency = $(selectors[1]).val();
+            setGatewayPrice(rate, currency, grand_total);
         }
 
         if (payment_method === 'openpay') {
-            var rate = $('.openpay_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.openpay_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
             $("#openpay-form").removeClass("d-none");
         }
+    }
+
+    $('input[type=radio][name=payment_method]').on('change', updateSelectedGateway);
+    updateSelectedGateway();
+
+    $('form.require-validation').on('submit', function (e) {
+        const payment_method = $('input[name="payment_method"]:checked').val();
 
         if (payment_method === 'razorpay') {
-            var rate = $('.razorpay_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.razorpay_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'instamojo') {
-            var rate = $('.instamojo_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.instamojo_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'mollie') {
-            var rate = $('.mollie_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.mollie_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'mercadopago') {
-            var rate = $('.mercado_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.mercado_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-        if (payment_method === 'flutterwave') {
-            var rate = $('.flutterwave_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.flutterwave_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'sslcommerz') {
-            var rate = $('.sslcommerz_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.sslcommerz_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
+            e.preventDefault();
+            $("#razorpay_payment").trigger('submit');
+            return;
         }
 
         if (payment_method === 'paystack') {
-            var rate = $('.paystack_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.paystack_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
+            e.preventDefault();
+            $("#paystack_payment").trigger('submit');
+            return;
         }
 
-        if (payment_method === 'coinbase') {
-            var rate = $('.coinbase_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.coinbase_currency').val();
+        if (payment_method === 'openpay') {
+            e.preventDefault();
 
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'zitopay') {
-            var rate = $('.zitopay_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.zitopay_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'iyzipay') {
-            var rate = $('.iyzipay_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.iyzipay_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'bitpay') {
-            var rate = $('.bitpay_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.bitpay_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-        if (payment_method === 'braintree') {
-            var rate = $('.braintree_conversion_rate').val();
-            var gateway_calculated_rate_price = (parseFloat(grand_total) * parseFloat(rate.replace(',', ''))).toFixed(2);
-            var currency = $('.braintree_currency').val();
-
-            $('.selected_conversation_rate').html(rate)
-            $('.selected_currency').html(currency)
-            $('.gateway_calculated_rate_currency').html(currency)
-            $('.gateway_calculated_rate_price').html(gateway_calculated_rate_price)
-        }
-
-    });
-
-    var $form = $(".require-validation");
-    $('form.require-validation').bind('submit', function (e) {
-
-        var payment_method = $('input[name="payment_method"]:checked').val();
-        if (payment_method === 'razorpay') {
-            $("#razorpay_payment").submit();
-            return false;
-        } else if (payment_method === 'openpay') {
-            const cardNumber = $("#card_number")
+            const cardNumber = $("#card_number");
             const holderName = $("#holder_name");
             const expirationYear = $("#expiration_year");
             const expirationMonth = $("#expiration_month");
@@ -209,37 +87,31 @@ $(function () {
                 && expirationYear.val() !== ''
                 && expirationMonth.val() !== ''
                 && cvv2.val() !== '';
+
             if (!isValidForm) {
-                toastr.error("Invalid data")
+                toastr.error("Invalid data");
                 return;
             }
+
             const cardData = {
                 card_number: cardNumber.val(),
                 holder_name: holderName.val(),
                 expiration_year: expirationYear.val(),
                 expiration_month: expirationMonth.val(),
-                cvv2: cvv2.val(),
+                cvv2: cvv2.val()
             };
 
             OpenPay.token.create(cardData, (response) => {
-                // success
                 $("#token_id").val(response.data.id);
                 this.submit();
             }, (error) => {
-
-                toastr.error(error.data.description)
+                const message = error && error.data && error.data.description
+                    ? error.data.description
+                    : "Openpay error";
+                toastr.error(message);
                 $("#token_id").val("");
-                //    error 
             });
-            return;
         }
-
-        if (payment_method === 'paystack') {
-            $("#paystack_payment").submit();
-            return false;
-        }
-
-        $('form.require-validation').submit();
     });
 
     $('.appDemo').click(function () {
@@ -264,9 +136,5 @@ $(function () {
         });
 
 
-    });
-
-    $("#payment-form").on("submit", function (event) {
-        event.preventDefault();
     });
 });

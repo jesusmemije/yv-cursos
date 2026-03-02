@@ -372,7 +372,7 @@
                                                value="mercadopago"
                                                {{ old('payment_method') == 'mercadopago' ? 'checked' : '' }}
                                                id="mercadopagoPayment">
-                                        <label class="form-check-label mb-0" for="merPayment">
+                                        <label class="form-check-label mb-0" for="mercadopagoPayment">
                                             <span class="font-16 color-heading font-medium">MERCADO PAGO</span>
                                         </label>
                                     </div>
@@ -383,7 +383,7 @@
                                                value="flutterwave"
                                                {{ old('payment_method') == 'flutterwave' ? 'checked' : '' }}
                                                id="flutterwavePayment">
-                                        <label class="form-check-label mb-0" for="merPayment">
+                                        <label class="form-check-label mb-0" for="flutterwavePayment">
                                             <span class="font-16 color-heading font-medium">Flutterwave</span>
                                         </label>
                                     </div>

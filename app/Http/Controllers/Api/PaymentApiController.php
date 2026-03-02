@@ -33,7 +33,7 @@ class PaymentApiController extends Controller
     {
         $payment_id = $request->input('paymentId', '-1');
         $payer_id = $request->input('PayerID', '-1');
-        $im_payment_id = $request->input('payment_id', '-1');
+        $mercado_payment_id = $this->extractMercadoPagoPaymentId($request);
         $this->logger->log('Payment Start', '==========');
         $this->logger->log('Payment paymentId', $payment_id);
         $this->logger->log('Payment PayerID', $payer_id);
@@ -45,8 +45,10 @@ class PaymentApiController extends Controller
         Log::info($order);
 
         if($order->payment_method == MERCADOPAGO){
-            $order->payment_id = $im_payment_id;
-            $order->save();
+            if (!is_null($mercado_payment_id)) {
+                $order->payment_id = $mercado_payment_id;
+                $order->save();
+            }
         }
 
         $this->logger->log('Payment verify request : ', json_encode($request->all()));
@@ -71,9 +73,12 @@ class PaymentApiController extends Controller
 
         if ($payment_data['success']) {
             if ($payment_data['data']['payment_status'] == 'success') {
-                CartManagement::whereUserId(auth()->id())->delete();
+                CartManagement::whereUserId($order->user_id)->delete();
                 DB::beginTransaction();
                 try {
+                    if ($order->payment_method == MERCADOPAGO && !empty($payment_data['data']['payment_id'])) {
+                        $order->payment_id = (string)$payment_data['data']['payment_id'];
+                    }
                     $order->payment_status = 'paid';
                     $order->payment_method = $payment_data['data']['payment_method'];
                     $order->save();
@@ -129,7 +134,7 @@ class PaymentApiController extends Controller
     {
         $payment_id = $request->input('paymentId', '-1');
         $payer_id = $request->input('PayerID', '-1');
-        $im_payment_id = $request->input('payment_id', '-1');
+        $mercado_payment_id = $this->extractMercadoPagoPaymentId($request);
         $this->logger->log('Payment Start', '==========');
         $this->logger->log('Payment paymentId', $payment_id);
         $this->logger->log('Payment PayerID', $payer_id);
@@ -138,6 +143,12 @@ class PaymentApiController extends Controller
             $this->showToastrMessage('error', SWR);
             return redirect()->route('main.index');
         }
+
+        if ($order->payment_method == MERCADOPAGO && !is_null($mercado_payment_id)) {
+            $order->payment_id = $mercado_payment_id;
+            $order->save();
+        }
+
         $payment_id = $order->payment_id;
         $data = ['id' => $order->uuid, 'payment_method' => getPaymentMethodId($order->payment_method), 'currency' => $order->payment_currency];
         $getWay = new BasePaymentService($data);
@@ -154,6 +165,9 @@ class PaymentApiController extends Controller
             if ($payment_data['data']['payment_status'] == 'success') {
                 DB::beginTransaction();
                 try {
+                    if ($order->payment_method == MERCADOPAGO && !empty($payment_data['data']['payment_id'])) {
+                        $order->payment_id = (string)$payment_data['data']['payment_id'];
+                    }
                     $order->payment_status = 'paid';
                     $order->payment_method = $payment_data['data']['payment_method'];
                     $order->save();
@@ -200,7 +214,7 @@ class PaymentApiController extends Controller
     {
         $payment_id = $request->input('paymentId', '-1');
         $payer_id = $request->input('PayerID', '-1');
-        $im_payment_id = $request->input('payment_id', '-1');
+        $mercado_payment_id = $this->extractMercadoPagoPaymentId($request);
         $this->logger->log('Payment Start', '==========');
         $this->logger->log('Payment paymentId', $payment_id);
         $this->logger->log('Payment PayerID', $payer_id);
@@ -209,6 +223,12 @@ class PaymentApiController extends Controller
             $this->showToastrMessage('error', SWR);
             return redirect()->route('main.index');
         }
+
+        if ($order->payment_method == MERCADOPAGO && !is_null($mercado_payment_id)) {
+            $order->payment_id = $mercado_payment_id;
+            $order->save();
+        }
+
         $payment_id = $order->payment_id;
         $data = ['id' => $order->uuid, 'payment_method' => getPaymentMethodId($order->payment_method), 'currency' => $order->payment_currency];
         $getWay = new BasePaymentService($data);
@@ -225,6 +245,9 @@ class PaymentApiController extends Controller
             if ($payment_data['data']['payment_status'] == 'success') {
                 DB::beginTransaction();
                 try {
+                    if ($order->payment_method == MERCADOPAGO && !empty($payment_data['data']['payment_id'])) {
+                        $order->payment_id = (string)$payment_data['data']['payment_id'];
+                    }
                     $order->payment_status = 'paid';
                     $order->payment_method = $payment_data['data']['payment_method'];
                     $order->save();
@@ -268,5 +291,39 @@ class PaymentApiController extends Controller
     public function paymentCancel(Request $request){
         $this->showToastrMessage('error', __('Payment has been canceled'));
         return redirect()->route('main.index');
+    }
+
+    protected function extractMercadoPagoPaymentId(Request $request)
+    {
+        $data = $request->input('data');
+        $candidates = [
+            $request->input('payment_id'),
+            $request->input('collection_id'),
+            $request->input('paymentId'),
+            $request->input('id'),
+            $request->input('data.id'),
+            $request->query('payment_id'),
+            $request->query('collection_id'),
+            $request->query('paymentId'),
+            $request->query('id'),
+            is_array($data) ? ($data['id'] ?? null) : null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_null($candidate)) {
+                continue;
+            }
+
+            $candidate = trim((string)$candidate);
+            if ($candidate === '' || $candidate === '-1') {
+                continue;
+            }
+
+            if (preg_match('/^\d+$/', $candidate) === 1) {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 }

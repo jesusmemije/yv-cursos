@@ -226,8 +226,8 @@
                                     <div class="form-check payment-method-card-box paypal-box pb-0 mt-30">
                                         <input class="form-check-input" type="radio" name="payment_method"
                                                 value="openpay" {{ old('payment_method') == 'openpay' ? 'checked' : '' }}
-                                                id="stripePayment">
-                                        <label class="form-check-label" for="stripePayment">
+                                                id="openpayPayment">
+                                        <label class="form-check-label" for="openpayPayment">
                                             <span>
                                                 <span class="font-16 color-heading font-medium me-3">Openpay</span>
                                             </span>
@@ -383,24 +383,24 @@
                                             </label>
                                         </div>
                                     @endif
-                                    @if (get_option('mercado_status') == 1)
+                                   
                                         <div class="form-check payment-method-card-box other-payment-box pb-0 mt-30">
                                             <input class="form-check-input" type="radio" name="payment_method"
                                                 value="mercadopago"
                                                 {{ old('payment_method') == 'mercadopago' ? 'checked' : '' }}
                                                 id="mercadopagoPayment">
-                                            <label class="form-check-label mb-0" for="merPayment">
-                                                <span class="font-16 color-heading font-medium">MERCADO PAGO</span>
+                                            <label class="form-check-label mb-0" for="mercadopagoPayment">
+                                                <span class="font-16 color-heading font-medium">Mercado Pago</span>
                                             </label>
                                         </div>
-                                    @endif
+                                   
                                     @if (get_option('flutterwave_status') == 1)
                                         <div class="form-check payment-method-card-box other-payment-box pb-0 mt-30">
                                             <input class="form-check-input" type="radio" name="payment_method"
                                                 value="flutterwave"
                                                 {{ old('payment_method') == 'flutterwave' ? 'checked' : '' }}
                                                 id="flutterwavePayment">
-                                            <label class="form-check-label mb-0" for="merPayment">
+                                            <label class="form-check-label mb-0" for="flutterwavePayment">
                                                 <span class="font-16 color-heading font-medium">Flutterwave</span>
                                             </label>
                                         </div>

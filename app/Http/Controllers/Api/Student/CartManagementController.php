@@ -812,6 +812,12 @@ class CartManagementController extends Controller
                 return $this->error([], __('Braintree payment gateway is off!'));
             }
         }
+        if ($request->payment_method == MERCADOPAGO) {
+            $mercadoAccessToken = env('MERCADO_PAGO_ACCESS_TOKEN');
+            if (empty($mercadoAccessToken)) {
+                return $this->error([], __('MERCADO_PAGO payment gateway is off!'));
+            }
+        }
 
         $order_data = $this->placeOrder($request->payment_method);
         if($order_data['status']){
@@ -1013,12 +1019,12 @@ class CartManagementController extends Controller
         try{
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
-            if ($responseData['success']) {
+            if ($responseData['success'] && !empty($responseData['redirect_url'])) {
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
                 return $this->success(['url' => $responseData['redirect_url'], 'order_id' => $order->uuid]);
             } else {
-                return $this->error([], __('Something went wrong!'));
+                return $this->error([], $responseData['message'] ?? __('Something went wrong!'));
             }
         }catch(Exception $e){
             return $this->error([], __('Something went wrong!'));

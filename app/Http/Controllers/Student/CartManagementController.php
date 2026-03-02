@@ -1288,6 +1288,13 @@ class CartManagementController extends Controller
                 return redirect()->back();
             }
         }
+        if ($request->payment_method == MERCADOPAGO) {
+            $mercadoAccessToken = env('MERCADO_PAGO_ACCESS_TOKEN');
+            if (empty($mercadoAccessToken)) {
+                $this->showToastrMessage('error', __('MERCADO_PAGO payment gateway is off!'));
+                return redirect()->back();
+            }
+        }
 
         $order_data = $this->placeOrder($request->payment_method);
         if($order_data['status']){
@@ -1353,12 +1360,12 @@ class CartManagementController extends Controller
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
 
-            if($responseData['success']){
+            if($responseData['success'] && !empty($responseData['redirect_url'])){
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
                 return Redirect::away($responseData['redirect_url']);
             }else{
-                $this->showToastrMessage('error', $responseData['message']);
+                $this->showToastrMessage('error', $responseData['message'] ?: __('Unable to start Mercado Pago checkout'));
                 return redirect()->back();
             }
         }  else if ($request->payment_method == FLUTTERWAVE) {
