@@ -32,14 +32,28 @@ class PaymentConfirmController extends Controller
 
     public function paymentOrderNotifier(Request $request, $id)
     {
+        if ($this->isMercadoMerchantOrderWebhook($request)) {
+            return response('ok', 200);
+        }
+
         $payment_id = $request->input('paymentId', '-1');
         $payer_id = $request->input('PayerID', '-1');
         $mercado_payment_id = $this->extractMercadoPagoPaymentId($request);
         $this->logger->log('Payment Start', '==========');
         $this->logger->log('Payment paymentId', $payment_id);
         $this->logger->log('Payment PayerID', $payer_id);
-        $order = Order::where(['uuid' => $id, 'payment_status' => ORDER_PAYMENT_STATUS_DUE])->first();
+        $order = Order::where('uuid', $id)->first();
         if (is_null($order)) {
+            $returnData['status'] = false;
+            $returnData['message'] = __('No pending payment found against this order. Please close this window');
+            return view('payment-api-success', $returnData);
+        }
+        if ($order->payment_status === 'paid') {
+            $returnData['status'] = true;
+            $returnData['message'] = __('Payment has been successfully. Please close this window');
+            return view('payment-api-success', $returnData);
+        }
+        if ($order->payment_status !== ORDER_PAYMENT_STATUS_DUE) {
             $returnData['status'] = false;
             $returnData['message'] = __('No pending payment found against this order. Please close this window');
             return view('payment-api-success', $returnData);
@@ -71,26 +85,44 @@ class PaymentConfirmController extends Controller
 
         if ($payment_data['success']) {
             if ($payment_data['data']['payment_status'] == 'success') {
-                CartManagement::whereUserId($order->user_id)->delete();
+                $paymentJustProcessed = false;
                 DB::beginTransaction();
                 try {
-                    if ($order->payment_method == MERCADOPAGO && !empty($payment_data['data']['payment_id'])) {
-                        $order->payment_id = (string)$payment_data['data']['payment_id'];
+                    $lockedOrder = Order::where('id', $order->id)->lockForUpdate()->first();
+                    if (is_null($lockedOrder)) {
+                        throw new \Exception(__('Order not found during payment confirmation'));
                     }
-                    $order->payment_status = 'paid';
-                    $order->payment_method = $payment_data['data']['payment_method'];
-                    $order->save();
-                    $this->logger->log('status', 'paid');
+                    if ($lockedOrder->payment_status === 'paid') {
+                        $order = $lockedOrder;
+                        $this->logger->log('status', 'already_paid');
+                    } else {
+                        if ($lockedOrder->payment_method == MERCADOPAGO && !empty($payment_data['data']['payment_id'])) {
+                            $lockedOrder->payment_id = (string)$payment_data['data']['payment_id'];
+                        }
+                        $lockedOrder->payment_status = 'paid';
+                        $lockedOrder->payment_method = $payment_data['data']['payment_method'];
+                        $lockedOrder->save();
+                        $this->logger->log('status', 'paid');
 
-                    /* Start:: Create transaction, affiliate history, user balance increment/decrement */
-                    distributeCommission($order);
-                    /* End:: Create transaction, affiliate history, user balance increment/decrement */
+                        /* Start:: Create transaction, affiliate history, user balance increment/decrement */
+                        distributeCommission($lockedOrder);
+                        /* End:: Create transaction, affiliate history, user balance increment/decrement */
+                        $paymentJustProcessed = true;
+                        $order = $lockedOrder;
+                    }
 
                     DB::commit();
                 } catch (\Exception $e) {
                     DB::rollBack();
                     $this->logger->log('End with Exception', $e->getMessage());
                 }
+                if (!$paymentJustProcessed) {
+                    $returnData['status'] = true;
+                    $returnData['message'] = __('Payment has been successfully. Please close this window');
+                    return view('payment-api-success', $returnData);
+                }
+
+                CartManagement::whereUserId($order->user_id)->delete();
                 $text = __("New student enrolled");
                 $target_url = route('instructor.all-student');
                 foreach ($order->items as $item) {
@@ -139,19 +171,30 @@ class PaymentConfirmController extends Controller
 
     protected function extractMercadoPagoPaymentId(Request $request)
     {
+        $topic = strtolower((string)($request->input('topic', $request->query('topic', ''))));
+        $action = strtolower((string)$request->input('action', ''));
+        if ($topic === 'merchant_order' || str_contains($action, 'merchant_order')) {
+            return null;
+        }
+
         $data = $request->input('data');
+        $resourcePaymentId = $this->extractMercadoPagoPaymentIdFromResource($request);
         $candidates = [
             $request->input('payment_id'),
             $request->input('collection_id'),
             $request->input('paymentId'),
-            $request->input('id'),
             $request->input('data.id'),
             $request->query('payment_id'),
             $request->query('collection_id'),
             $request->query('paymentId'),
-            $request->query('id'),
+            $resourcePaymentId,
             is_array($data) ? ($data['id'] ?? null) : null,
         ];
+
+        if ($topic === 'payment') {
+            $candidates[] = $request->input('id');
+            $candidates[] = $request->query('id');
+        }
 
         foreach ($candidates as $candidate) {
             if (is_null($candidate)) {
@@ -169,5 +212,35 @@ class PaymentConfirmController extends Controller
         }
 
         return null;
+    }
+
+    protected function extractMercadoPagoPaymentIdFromResource(Request $request)
+    {
+        $resource = $request->input('resource', $request->query('resource'));
+        if (is_null($resource)) {
+            return null;
+        }
+
+        $resource = trim((string)$resource);
+        if ($resource === '') {
+            return null;
+        }
+
+        if (preg_match('/^\d+$/', $resource) === 1) {
+            return $resource;
+        }
+
+        if (preg_match('/\/v1\/payments\/(\d+)/', $resource, $matches) === 1) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    protected function isMercadoMerchantOrderWebhook(Request $request)
+    {
+        $topic = strtolower((string)($request->input('topic', $request->query('topic', ''))));
+        $action = strtolower((string)$request->input('action', ''));
+        return $topic === 'merchant_order' || str_contains($action, 'merchant_order');
     }
 }
