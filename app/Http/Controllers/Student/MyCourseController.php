@@ -340,7 +340,7 @@ class MyCourseController extends Controller
                 }
 
                 if ($lecture->type == 'video') {
-                    $data['video_src'] = $lecture->file_path;
+                    $data['video_src'] = $lecture->file_path ?: optional($lecture->videoGallery)->file_path;
                 } elseif ($lecture->type == 'youtube') {
                     $data['youtube_video_src'] = $lecture->url_path;
                     $certificateData = $this->makePdfCertificate($lecture->course_id, $data['enrollment']->id);

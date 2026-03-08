@@ -11,11 +11,13 @@ use App\Models\Course_lecture_views;
 use App\Models\Course_lesson;
 use App\Models\Enrollment;
 use App\Models\Order_item;
+use App\Models\VideoGallery;
 use App\Tools\Repositories\Crud;
 use App\Traits\General;
 use App\Traits\ImageSaveTrait;
 use App\Traits\SendNotification;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use File;
 use Vimeo\Vimeo;
 
@@ -82,6 +84,7 @@ class LessonController extends Controller
         $data['course'] = $this->courseModel->getRecordByUuid($course_uuid);
         $data['lesson'] = $this->model->getRecordByUuid($lesson_uuid);
         $data['lessons'] = Course_lesson::where('course_id', $data['course']->id)->with('lectures')->get();
+        $data['videoGalleries'] = VideoGallery::orderBy('title')->get(['id', 'title', 'file_path']);
         return view('instructor.course.upload-lecture', $data);
     }
 
@@ -89,8 +92,19 @@ class LessonController extends Controller
     {
         if ($request->type == 'video') {
             $request->validate([
-                'video_file' => ['required'],
+                'video_source' => ['required', 'in:upload,gallery'],
             ]);
+
+            if ($request->video_source === 'upload') {
+                $request->validate([
+                    'video_title' => ['required', 'string', 'max:255', 'unique:video_galleries,title'],
+                    'video_file' => ['required', 'file', 'mimes:mp4,mov,avi,mkv,webm,wmv'],
+                ]);
+            } else {
+                $request->validate([
+                    'video_gallery_id' => ['required', 'exists:video_galleries,id'],
+                ]);
+            }
         } elseif ($request->type == 'youtube') {
             $request->validate([
                 'youtube_url_path' => ['required'],
@@ -155,8 +169,16 @@ class LessonController extends Controller
         $lecture->course_id = $course->id;
         $lecture->lesson_id = $lesson->id;
 
-        if ($request->video_file && $request->type == 'video') {
-            $this->saveLectureVideo($request, $lecture); // Save Video File, Path, Size, Duration
+        if ($request->type == 'video') {
+            if ($request->video_source === 'gallery') {
+                $videoGallery = VideoGallery::findOrFail($request->video_gallery_id);
+                $this->attachVideoGalleryToLecture($lecture, $videoGallery);
+            } else {
+                $videoGallery = $this->createVideoGalleryFromRequest($request);
+                $this->attachVideoGalleryToLecture($lecture, $videoGallery);
+            }
+        } else {
+            $lecture->video_gallery_id = null;
         }
 
         if ($request->type == 'youtube') {
@@ -257,12 +279,28 @@ class LessonController extends Controller
         $data['lessons'] = Course_lesson::where('course_id', $data['course']->id)->with(['lectures' => function($q) use($lecture_uuid){
             $q->where('uuid', '!=', $lecture_uuid);
         }])->get();
+        $data['videoGalleries'] = VideoGallery::orderBy('title')->get(['id', 'title', 'file_path']);
         return view('instructor.course.edit-lecture', $data);
     }
 
     public function updateLecture(Request $request,  $lecture_uuid)
     {
-        if ($request->type == 'youtube') {
+        if ($request->type == 'video') {
+            $request->validate([
+                'video_source' => ['required', 'in:upload,gallery'],
+            ]);
+
+            if ($request->video_source === 'gallery') {
+                $request->validate([
+                    'video_gallery_id' => ['required', 'exists:video_galleries,id'],
+                ]);
+            } elseif ($request->hasFile('video_file')) {
+                $request->validate([
+                    'video_title' => ['required', 'string', 'max:255', 'unique:video_galleries,title'],
+                    'video_file' => ['file', 'mimes:mp4,mov,avi,mkv,webm,wmv'],
+                ]);
+            }
+        } elseif ($request->type == 'youtube') {
             $request->validate([
                 'youtube_url_path' => ['required'],
             ]);
@@ -301,12 +339,31 @@ class LessonController extends Controller
         }
 
         $lecture = Course_lecture::whereUuid($lecture_uuid)->firstOrFail();
+        if (
+            $request->type == 'video' &&
+            $request->video_source === 'upload' &&
+            !$request->hasFile('video_file') &&
+            !$lecture->file_path &&
+            !$lecture->video_gallery_id
+        ) {
+            throw ValidationException::withMessages([
+                'video_file' => __('Sube un archivo de video o selecciona uno de la galeria.'),
+            ]);
+        }
+
         $lecture->fill($request->all());
         $lecture->pre_ids = ($lecture->pre_ids) ? json_encode($lecture->pre_ids) : NULL;
 
-        if ($request->video_file && $request->type == 'video') {
-            $this->deleteFile($lecture->file_path); // delete file from server
-            $this->saveLectureVideo($request, $lecture); // Save Video File, Path, Size, Duration
+        if ($request->type == 'video') {
+            if ($request->video_source === 'gallery') {
+                $videoGallery = VideoGallery::findOrFail($request->video_gallery_id);
+                $this->attachVideoGalleryToLecture($lecture, $videoGallery);
+            } elseif ($request->hasFile('video_file')) {
+                $videoGallery = $this->createVideoGalleryFromRequest($request);
+                $this->attachVideoGalleryToLecture($lecture, $videoGallery);
+            }
+        } else {
+            $lecture->video_gallery_id = null;
         }
 
         if ($request->type == 'youtube') {
@@ -407,7 +464,14 @@ class LessonController extends Controller
     public function deleteLecture($course_uuid, $lecture_uuid)
     {
         $lecture = $this->lectureModel->getRecordByUuid($lecture_uuid);
-        $this->deleteFile($lecture->file_path); // delete file from server
+        if (!$lecture->video_gallery_id && $lecture->file_path) {
+            $isUsedByAnotherLecture = Course_lecture::where('id', '!=', $lecture->id)
+                ->where('file_path', $lecture->file_path)
+                ->exists();
+            if (!$isUsedByAnotherLecture) {
+                $this->deleteFile($lecture->file_path); // delete file from server
+            }
+        }
 
         if ($lecture->type == 'vimeo')
         {
@@ -425,6 +489,56 @@ class LessonController extends Controller
 
         $this->showToastrMessage('success', __('Lecture has been deleted'));
         return redirect(route('instructor.course.edit', [$course_uuid, 'step=lesson']));
+    }
+
+    private function createVideoGalleryFromRequest(Request $request): VideoGallery
+    {
+        $fileDetails = $this->uploadFileWithDetails('video', $request->video_file);
+        if (!$fileDetails['is_uploaded']) {
+            throw ValidationException::withMessages([
+                'video_file' => __('No se pudo subir el archivo de video.'),
+            ]);
+        }
+
+        $seconds = $this->normalizeDuration($request->file_duration);
+
+        $videoGallery = new VideoGallery();
+        $videoGallery->title = trim($request->video_title);
+        $videoGallery->file_path = $fileDetails['path'];
+        $videoGallery->file_duration_second = $seconds;
+        $videoGallery->file_duration = $this->formatDuration($seconds);
+        $videoGallery->save();
+
+        return $videoGallery;
+    }
+
+    private function attachVideoGalleryToLecture(Course_lecture $lecture, VideoGallery $videoGallery): void
+    {
+        $lecture->video_gallery_id = $videoGallery->id;
+        $lecture->file_path = $videoGallery->file_path;
+        $lecture->file_size = $videoGallery->file_size;
+        $lecture->file_duration = $videoGallery->file_duration;
+        $lecture->file_duration_second = $videoGallery->file_duration_second;
+        $lecture->url_path = null;
+    }
+
+    private function normalizeDuration($duration): ?int
+    {
+        if ($duration === null || $duration === '') {
+            return null;
+        }
+
+        $seconds = (int) round((float) $duration);
+        return $seconds > 0 ? $seconds : null;
+    }
+
+    private function formatDuration($seconds): ?string
+    {
+        if (!$seconds) {
+            return null;
+        }
+
+        return $seconds >= 3600 ? gmdate('H:i:s', $seconds) : gmdate('i:s', $seconds);
     }
 
 

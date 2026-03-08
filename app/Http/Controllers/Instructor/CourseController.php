@@ -541,7 +541,14 @@ class CourseController extends Controller
                     foreach ($lectures as $lecture) {
                         $lecture = Course_lecture::find($lecture->id);
                         if ($lecture) {
-                            $this->deleteFile($lecture->file_path); // delete file from server
+                            if (!$lecture->video_gallery_id && $lecture->file_path) {
+                                $isUsedByAnotherLecture = Course_lecture::where('id', '!=', $lecture->id)
+                                    ->where('file_path', $lecture->file_path)
+                                    ->exists();
+                                if (!$isUsedByAnotherLecture) {
+                                    $this->deleteFile($lecture->file_path); // delete file from server
+                                }
+                            }
 
                             if ($lecture->type == 'vimeo') {
                                 if ($lecture->url_path) {

@@ -35,6 +35,13 @@
                                 <div class="upload-course-step-item upload-course-video-step-item">
                                     <form method="POST" action="{{route('update.lecture', [$lecture->uuid])}}" class="row g-3 needs-validation" novalidate enctype="multipart/form-data">
                                     @csrf
+                                    @php
+                                        $selectedVideoSource = old('video_source', $lecture->video_gallery_id ? 'gallery' : 'upload');
+                                        $selectedVideoGalleryId = old('video_gallery_id', $lecture->video_gallery_id);
+                                        $selectedVideoGallery = $videoGalleries->firstWhere('id', (int) $selectedVideoGalleryId);
+                                        $selectedVideoGalleryTitle = $selectedVideoGallery ? $selectedVideoGallery->title : '';
+                                        $selectedVideoTitle = old('video_title', optional($lecture->videoGallery)->title);
+                                    @endphp
                                     <!-- Upload Course Video-4 start -->
                                         <div id="upload-course-video-4" >
                                             <div class="upload-course-item-block course-overview-step1 radius-8">
@@ -58,18 +65,52 @@
                                                 </div>
 
                                                 <div id="video" class="{{$lecture->type == 'video' ? '' : 'd-none' }}">
-                                                    <div class="upload-course-video-4-wrap upload-introduction-box-content-left d-flex align-items-center flex-column">
-                                                        <div class="upload-introduction-box-content-img mb-3">
-                                                            <img src="{{asset('frontend/assets/img/instructor-img/upload-lesson-icon.png')}}" alt="upload">
+                                                    <div class="row mb-20">
+                                                        <div class="col-md-12">
+                                                            <label class="label-text-title color-heading font-medium font-16 mb-3">Fuente del video <span class="text-danger">*</span></label>
+                                                            <div class="d-flex flex-wrap">
+                                                                <label class="mr-20">
+                                                                    <input type="radio" name="video_source" value="upload" class="video-source-type"
+                                                                        {{ $selectedVideoSource === 'upload' ? 'checked' : '' }}>
+                                                                    Subir video nuevo
+                                                                </label>
+                                                                <label>
+                                                                    <input type="radio" name="video_source" value="gallery" class="video-source-type"
+                                                                        {{ $selectedVideoSource === 'gallery' ? 'checked' : '' }}>
+                                                                    Seleccionar video de la galeria
+                                                                </label>
+                                                            </div>
                                                         </div>
-                                                        <input type="hidden" id="file_duration" name="file_duration" value="{{ $lecture->file_duration }}">
-                                                        <input type="file" name="video_file" accept="video/mp4" class="form-control" id="video_file" title="Upload lesson">
                                                     </div>
 
-                                                    <p class="font-14 color-gray text-center mt-3 pb-30">{{ __('No file selected') }} (MP4 or WMV)</p>
-                                                    @if ($errors->has('video_file'))
-                                                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('video_file') }}</span>
-                                                    @endif
+                                                    <div id="videoUploadFields">
+                                                        <div class="row mb-20">
+                                                            <div class="col-md-12">
+                                                                <label class="label-text-title color-heading font-medium font-16 mb-3">Nombre del video</label>
+                                                                <input type="text" name="video_title" id="video_title" class="form-control" value="{{ $selectedVideoTitle }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="upload-course-video-4-wrap upload-introduction-box-content-left d-flex align-items-center flex-column">
+                                                            <div class="upload-introduction-box-content-img mb-3">
+                                                                <img src="{{asset('frontend/assets/img/instructor-img/upload-lesson-icon.png')}}" alt="upload">
+                                                            </div>
+                                                            <input type="hidden" id="file_duration" name="file_duration" value="{{ $lecture->file_duration }}">
+                                                            <input type="file" name="video_file" accept=".mp4,.mov,.avi,.mkv,.webm,.wmv" class="form-control" id="video_file" title="Subir leccion">
+                                                        </div>
+
+                                                        <p class="font-14 color-gray text-center mt-3 pb-30">Ningun archivo seleccionado (MP4, MOV, AVI, MKV, WEBM o WMV)</p>
+                                                    </div>
+
+                                                    <div id="videoGalleryFields" class="d-none">
+                                                        <label class="label-text-title color-heading font-medium font-16 mb-3">Video seleccionado <span class="text-danger">*</span></label>
+                                                        <input type="hidden" name="video_gallery_id" id="video_gallery_id" value="{{ $selectedVideoGalleryId }}">
+                                                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                            <input type="text" id="selected_video_title" class="form-control" style="max-width: 420px;" value="{{ $selectedVideoGalleryTitle }}" placeholder="No has seleccionado un video" readonly>
+                                                            <button type="button" class="btn btn-outline-primary open-video-gallery-modal">Seleccionar video</button>
+                                                            <button type="button" class="btn btn-outline-secondary clear-gallery-video-selection">Limpiar</button>
+                                                        </div>
+                                                        <small class="text-muted d-block mt-2">Solo puedes seleccionar un video por actividad.</small>
+                                                    </div>
                                                 </div>
 
                                                 <div id="youtube" class="{{$lecture->type == 'youtube' ? '' : 'd-none' }}">
@@ -193,6 +234,18 @@
                                                     </div>
                                                 </div>
                                                 <div>
+                                                    @if ($errors->has('video_source'))
+                                                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('video_source') }}</span>
+                                                    @endif
+                                                    @if ($errors->has('video_title'))
+                                                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('video_title') }}</span>
+                                                    @endif
+                                                    @if ($errors->has('video_gallery_id'))
+                                                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('video_gallery_id') }}</span>
+                                                    @endif
+                                                    @if ($errors->has('video_file'))
+                                                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('video_file') }}</span>
+                                                    @endif
                                                     @if ($errors->has('text_description'))
                                                         <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('text_description') }}</span>
                                                     @endif
@@ -334,6 +387,45 @@
                                 <!-- Upload Course Step-6 Item End -->
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="videoGalleryModal" tabindex="-1" aria-labelledby="videoGalleryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoGalleryModalLabel">Seleccionar video de la galeria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th>Nombre del video</th>
+                                <th width="28%">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($videoGalleries as $videoGallery)
+                                <tr>
+                                    <td>{{ $videoGallery->title }}</td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <a href="{{ getVideoFile($videoGallery->file_path) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Ver video</a>
+                                            <button type="button" class="btn btn-sm btn-primary select-gallery-video" data-video-id="{{ $videoGallery->id }}" data-video-title="{{ $videoGallery->title }}">Seleccionar</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center">No hay videos disponibles.</td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

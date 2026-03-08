@@ -1076,10 +1076,10 @@
                 $("#" + form_id).submit();
             } else if (result.dismiss === "cancel") {
                 Swal.fire(
-                    "Cancelled",
-                    "Your imaginary file is safe :)",
+                    "Cancelado",
+                    "La operación ha sido cancelada. No se realizaron cambios.",
                     "error"
-                );
+                )
             }
         });
     });

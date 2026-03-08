@@ -82,6 +82,15 @@
                         </li>
                     @endcan
 
+                    @can('manage_course')
+                        <li class="{{ active_if_match('admin/video-gallery') }}">
+                            <a href="{{ route('admin.video-gallery.index') }}">
+                                <i class="fa fa-circle"></i>
+                                <span>Galería de Videos</span>
+                            </a>
+                        </li>
+                    @endcan
+
                     <li class="{{ active_if_full_match('admin/course/enroll') }}">
                         <a href="{{route('admin.course.enroll')}}">
                             <i class="fa fa-circle"></i>

@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\SupportTicketController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VideoGalleryController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\EventCategoryController;
@@ -147,6 +148,15 @@ Route::prefix('main-images')->group(function () {
     Route::get('create', [MainImageController::class, 'create'])->name('admin.main-images.create');
     Route::post('store', [MainImageController::class, 'store'])->name('admin.main-images.store');
     Route::get('delete/{id}', [MainImageController::class, 'delete'])->name('admin.main-images.delete');
+});
+
+Route::prefix('video-gallery')->group(function () {
+    Route::get('/', [VideoGalleryController::class, 'index'])->name('admin.video-gallery.index');
+    Route::get('create', [VideoGalleryController::class, 'create'])->name('admin.video-gallery.create');
+    Route::post('store', [VideoGalleryController::class, 'store'])->name('admin.video-gallery.store');
+    Route::get('edit/{uuid}', [VideoGalleryController::class, 'edit'])->name('admin.video-gallery.edit');
+    Route::post('update/{uuid}', [VideoGalleryController::class, 'update'])->name('admin.video-gallery.update');
+    Route::post('delete/{uuid}', [VideoGalleryController::class, 'delete'])->name('admin.video-gallery.delete');
 });
 
 Route::get('course-upload-rules', [CourseController::class, 'courseUploadRuleIndex'])->name('course-rules.index');

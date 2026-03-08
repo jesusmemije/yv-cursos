@@ -16,6 +16,7 @@ class Course_lecture extends Model
     protected $fillable = [
         'course_id',
         'lesson_id',
+        'video_gallery_id',
         'title',
         'short_description',
         'lecture_type',
@@ -42,6 +43,11 @@ class Course_lecture extends Model
     public function views()
     {
         return $this->hasMany(Course_lecture_views::class, 'course_lecture_id');
+    }
+
+    public function videoGallery()
+    {
+        return $this->belongsTo(VideoGallery::class, 'video_gallery_id');
     }
 
     public function getImagePathAttribute()
