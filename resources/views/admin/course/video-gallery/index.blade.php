@@ -86,7 +86,6 @@
                                                             action="{{ route('admin.video-gallery.delete', $video->uuid) }}"
                                                             method="POST" id="delete_row_form_{{ $video->uuid }}">
                                                             @csrf
-                                                            @method('DELETE')
                                                         </form>
                                                     </div>
                                                 </td>

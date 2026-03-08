@@ -36,7 +36,6 @@
                         <div class="card-body p-4">
                             <form action="{{ route('admin.video-gallery.update', $video->uuid) }}" method="POST">
                                 @csrf
-                                @method('PUT') {{-- Asegúrate de usar PUT si tu ruta lo requiere --}}
                                 
                                 <div class="row">
                                     <div class="col-md-12 mb-4">
