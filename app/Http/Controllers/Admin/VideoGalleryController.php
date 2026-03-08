@@ -18,14 +18,12 @@ class VideoGalleryController extends Controller
     {
         $this->authorizeManageCourse();
 
-        $videos = VideoGallery::query()
-            ->orderByDesc('id')
-            ->get();
+        $videos = VideoGallery::latest()->paginate(25);
 
         $data['title'] = 'Galeria de videos';
         $data['videos'] = $videos;
 
-        return view('admin.video-gallery-index', $data);
+        return view('admin.course.video-gallery.index', $data);
     }
 
     public function create()
@@ -33,7 +31,7 @@ class VideoGalleryController extends Controller
         $this->authorizeManageCourse();
 
         $data['title'] = 'Agregar video';
-        return view('admin.video-gallery-create', $data);
+        return view('admin.course.video-gallery.create', $data);
     }
 
     public function store(Request $request)
@@ -72,7 +70,7 @@ class VideoGalleryController extends Controller
         $data['title'] = 'Editar video';
         $data['video'] = VideoGallery::where('uuid', $uuid)->firstOrFail();
 
-        return view('admin.video-gallery-edit', $data);
+        return view('admin.course.video-gallery.edit', $data);
     }
 
     public function update(Request $request, $uuid)

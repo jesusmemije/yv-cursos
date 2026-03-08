@@ -73,17 +73,9 @@
                                                 <div class="row mb-20">
                                                     <div class="col-md-12">
                                                         <label class="label-text-title color-heading font-medium font-16 mb-3">Fuente del video <span class="text-danger">*</span></label>
-                                                        <div class="d-flex flex-wrap">
-                                                            <label class="mr-20">
-                                                                <input type="radio" name="video_source" value="upload" class="video-source-type"
-                                                                    {{ old('video_source', 'upload') == 'upload' ? 'checked' : '' }}>
-                                                                Subir video nuevo
-                                                            </label>
-                                                            <label>
-                                                                <input type="radio" name="video_source" value="gallery" class="video-source-type"
-                                                                    {{ old('video_source') == 'gallery' ? 'checked' : '' }}>
-                                                                Seleccionar video de la galeria
-                                                            </label>
+                                                        <div>
+                                                            <label class="mr-15"><input type="radio" name="video_source" value="upload" class="video-source-type"{{ old('video_source', 'upload') == 'upload' ? 'checked' : '' }}> Subir video nuevo </label>
+                                                            <label class="mr-15"><input type="radio" name="video_source" value="gallery" class="video-source-type"{{ old('video_source') == 'gallery' ? 'checked' : '' }}> Seleccionar video de la galeria </label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -441,38 +433,48 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="videoGalleryModal" tabindex="-1" aria-labelledby="videoGalleryModalLabel" aria-hidden="true">
+<div class="modal fade" id="videoGalleryModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="videoGalleryModalLabel">Seleccionar video de la galeria</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-theme">
+                <h5 class="modal-title fw-bold text-white">
+                    <i class="fas fa-video me-2"></i>Galería de Videos
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            
+            <div class="modal-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-bordered align-middle mb-0">
-                        <thead>
+                    <table id="videoTable" class="table table-hover align-middle w-100">
+                        <thead class="table-light">
                             <tr>
-                                <th>Nombre del video</th>
-                                <th width="28%">Acciones</th>
+                                <th class="border-0 ps-3">Nombre del Video</th>
+                                <th class="border-0 text-end pe-3">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                        @forelse($videoGalleries as $videoGallery)
+                            @foreach($videoGalleries as $videoGallery)
                             <tr>
-                                <td>{{ $videoGallery->title }}</td>
-                                <td>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        <a href="{{ getVideoFile($videoGallery->file_path) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Ver video</a>
-                                        <button type="button" class="btn btn-sm btn-primary select-gallery-video" data-video-id="{{ $videoGallery->id }}" data-video-title="{{ $videoGallery->title }}">Seleccionar</button>
+                                <td class="ps-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-play-circle text-primary fs-5 me-2"></i>
+                                        <span class="fw-semibold text-dark">{{ $videoGallery->title }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group shadow-sm">
+                                        <a href="{{ getVideoFile($videoGallery->file_path) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-primary select-gallery-video" 
+                                                data-video-id="{{ $videoGallery->id }}" 
+                                                data-video-title="{{ $videoGallery->title }}">
+                                            <i class="fas fa-check-circle"></i> Seleccionar
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="2" class="text-center">No hay videos disponibles.</td>
-                            </tr>
-                        @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -491,14 +493,66 @@
 <link href="{{ asset('common/css/summernote/summernote.min.css') }}" rel="stylesheet">
 <link href="{{ asset('common/css/summernote/summernote-lite.min.css') }}" rel="stylesheet">
 <!-- //Summernote CSS - CDN Link -->
+<style>
+    .pagination {
+        margin-top: 0;
+    }
+    .dataTables_info {
+        position: unset;
+    }
+    .dataTables_filter input {
+        width: 250px !important;
+        border-radius: 20px;
+        padding-left: 15px;
+        border: 1px solid #ddd;
+        outline: none;
+    }
+    .dataTables_filter input:focus {
+        border-color: #0d6efd;
+    }
+</style>
 @endpush
 
 @push('script')
-
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="{{asset('common/js/select2.min.js')}}"></script>
 <script src="{{asset('frontend/assets/js/custom/form-validation.js')}}"></script>
 <script src="{{asset('frontend/assets/js/custom/img-view.js')}}"></script>
 <script src="{{asset('frontend/assets/js/custom/upload-lesson.js')}}"></script>
+
+<!-- Configuración de DataTables para la Galería de Videos -->
+<script>
+    $(document).ready(function() {
+        var table = $('#videoTable').DataTable({
+            "pageLength": 10,
+            "lengthChange": false,
+            "searching": true,
+            "language": {
+                "search": "",
+                "searchPlaceholder": "🔍 Buscar video...",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ videos",
+                "infoEmpty": "Mostrando 0 a 0 de 0 videos",
+                "infoFiltered": "",
+                "zeroRecords": "No se encontraron videos coincidentes",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": 1 }
+            ],
+            "dom": '<"d-flex justify-content-start mb-3"f>rt<"d-flex justify-content-between align-items-center mt-3"ip>'
+        });
+
+        $('#videoGalleryModal').on('shown.bs.modal', function () {
+            table.columns.adjust().draw();
+        });
+    });
+</script>
 
 <!-- Summernote JS - CDN Link -->
 <script src="{{ asset('common/js/summernote/summernote-lite.min.js') }}"></script>

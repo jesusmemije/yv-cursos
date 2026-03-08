@@ -37,6 +37,14 @@
                     <span>{{__('Manage Course')}}</span>
                 </a>
                 <ul>
+                    @can('manage_course')
+                        <li class="{{ active_if_match('admin/video-gallery') }}">
+                            <a href="{{ route('admin.video-gallery.index') }}">
+                                <i class="fa fa-circle"></i>
+                                <span>Galería de Videos</span>
+                            </a>
+                        </li>
+                    @endcan
                     @can('pending_course')
                         <li class="{{ active_if_match('admin/course/review-pending') }}">
                             <a href="{{route('admin.course.review_pending')}}">
@@ -78,15 +86,6 @@
                             <a href="{{route('admin.course.index')}}">
                                 <i class="fa fa-circle"></i>
                                 <span>{{__('All Courses')}}</span>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('manage_course')
-                        <li class="{{ active_if_match('admin/video-gallery') }}">
-                            <a href="{{ route('admin.video-gallery.index') }}">
-                                <i class="fa fa-circle"></i>
-                                <span>Galería de Videos</span>
                             </a>
                         </li>
                     @endcan
